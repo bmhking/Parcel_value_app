@@ -11,5 +11,5 @@ For the whole county's data, unzip `parcel_value_sdcounty.7z`, which will reveal
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
 
 # Need help with:
-- Optimize the web app it would be very helpful since it is taking a lot of ram
-- Plot the parcels on their actual parcel map since I don't have it - now it is plotted as a column with fixed radius
+- Optimize the web app - it would be very helpful since it is taking a lot of RAM
+- Plot the parcels on their actual parcel map since I don't have that map - now it is plotted as a column with fixed radius
