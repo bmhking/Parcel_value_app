@@ -1,0 +1,12 @@
+name: SD_map
+title: SD_map
+username: bmhking
+account: bmhking
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9600076
+bundleId: 7567761
+url: https://bmhking.shinyapps.io/SD_map/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
