@@ -5,7 +5,7 @@ For the whole county's data, unzip `parcel_value_sdcounty.7z`, which will reveal
 
 # Future plans:
 - Add stacked bar chart showing the table summary of value per sqft
-- Change button UI to be more user-friendly
+- ~~Change button UI to be more user-friendly~~
 - Add tooltip functionality to show you the address and zoning type of the parcel
 - Expand the analysis to further differentiate the zoning types to building types (detached single family house, duplexes, townhouses, highrises etc.)
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
