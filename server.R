@@ -16,7 +16,11 @@ property_value_layer <- list(
   elevation_scale=3,
   pickable=TRUE,
   get_fill_color=~color,
-  coverage = 0.02)
+  coverage = 0.02,
+  tooltip = use_tooltip(
+    html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+    style = "background: steelBlue; border-radius: 5px;"
+  ))
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -70,7 +74,11 @@ server <- function(input, output, session) {
         elevation_scale=3,
         pickable=TRUE,
         get_fill_color=~color,
-        coverage = 0.02)
+        coverage = 0.02,
+        tooltip = use_tooltip(
+          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+          style = "background: steelBlue; border-radius: 5px;"
+        ))
     }else if(input$datatype == 'Impr Value per SQFT'){
       value_layer <- list(
         get_position=~lon+lat,
@@ -78,7 +86,11 @@ server <- function(input, output, session) {
         elevation_scale=3,
         pickable=TRUE,
         get_fill_color=~color,
-        coverage = 0.02)
+        coverage = 0.02,
+        tooltip = use_tooltip(
+          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+          style = "background: steelBlue; border-radius: 5px;"
+        ))
     }else if(input$datatype == 'Land Value per SQFT'){
       value_layer <- list(
         get_position=~lon+lat,
@@ -86,7 +98,11 @@ server <- function(input, output, session) {
         elevation_scale=3,
         pickable=TRUE,
         get_fill_color=~color,
-        coverage = 0.02)
+        coverage = 0.02,
+        tooltip = use_tooltip(
+          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+          style = "background: steelBlue; border-radius: 5px;"
+        ))
     }
     value_layer
   })
