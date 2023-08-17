@@ -42,4 +42,8 @@ Generally speaking, the more resources you demand, the more you need to be able 
 - In the entire county, mixed-use/multi-family buildings produce on average 3x the property value per sqft of that of single family houses
 - In the entire city, mixed-use/multi-family buildings produce on average 1.5x the property value per sqft of that of single family houses
 
-Single family houses are not only worse for the environment and housing affordability, but is also less valuable. This is especially serious in cities like Poway or communities like Rancho Santa Fe or Ramona, where the extreme sprawl means that the single family houses are barely producing any value. These houses do not contribute to the city. Instead, they are bleeding the coffers dry, while their owners live out their self-made American dream.
+Single family houses are not only worse for the environment and housing affordability, but is also less valuable. This is especially serious in cities like Poway or communities like Rancho Santa Fe or Ramona, where the extreme sprawl means that the single family houses are barely producing any value. These houses do not contribute to the city. Instead, they are bleeding the coffers dry, while their owners live out their self-made American dream. For example, the average single family house in the city San Diego pays for infrastructure per sqft under the same 10% assumption:
+```math
+$74.14/sqft\times1\% property tax rate\times27.53\% property tax collection rate\times0.1=$0.02041/sqft
+```
+That is only a sixth of the infrastructure cost required under the best assumptions, and this trend can be observed throughout the county. There is no financial justification not to repeal Prop 13 and upzone the county.
