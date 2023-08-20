@@ -6,11 +6,11 @@ gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 
 ui <- fluidPage(
   titlePanel("SD Parcel ROI"),
-  fluidRow(column(6,deckglOutput("deck", height='600px')),
+  fluidRow(column(6,deckglOutput("deck", height='700px')),
            column(6, fluidRow(
-                        fluidRow(column(5, selectInput("city", h4("County/City/Unincorporated Area"), 
+                        fluidRow(column(5, selectInput("city", NULL, 
                                              choices = c('COUNTY', names(table(gg_df$SITUS_COMMUNITY))), selected = 'COUNTY'),
-                                           selectInput("zone", h4("Zoning Type"), 
+                                           selectInput("zone", NULL, 
                                              choices = c('All Zones',
                                                       'Unzoned',
                                                       'Single-Family',
@@ -19,7 +19,8 @@ ui <- fluidPage(
                                                       'Commercial',
                                                       'Industrial',
                                                       'Agricultural',
-                                                      'Special/Misc.'), selected = 'All Zones')),
+                                                      'Special/Misc.'), selected = 'All Zones'),
+                                            actionButton('filter', 'Apply Filter')),
                                 column(7, radioButtons("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value per SQFT" = "Total Value per SQFT", 
                                                                     "Land Value per SQFT" = "Land Value per SQFT", 
@@ -28,7 +29,8 @@ ui <- fluidPage(
                                        )
                               ),
                         textOutput('taxefficiency'),
-                        tableOutput('summarytable')
+                        tableOutput('summarytable'),
+                        plotOutput('valueplot', height='350px')
                         )
                   )
            )

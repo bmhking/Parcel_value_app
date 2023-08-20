@@ -1,5 +1,6 @@
 library(tableHTML)
 library(readr)
+library(ggplot2)
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
@@ -10,17 +11,6 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-property_value_layer <- list(
-  get_position=~lon+lat,
-  get_elevation=~total_value_per_sqft,
-  elevation_scale=3,
-  pickable=TRUE,
-  get_fill_color=~color,
-  coverage = 0.02,
-  tooltip = use_tooltip(
-    html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
-    style = "background: steelBlue; border-radius: 5px;"
-  ))
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -30,25 +20,10 @@ server <- function(input, output, session) {
              width = '100%', 
              height = "100%",
              bearing=0) %>%
-        add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
-        add_column_layer(data=gg_df, properties=property_value_layer)
+        add_mapbox_basemap("mapbox://styles/mapbox/light-v11") 
   })
-  
-  tabledata <- reactive({
-    plotdata_df <- gg_df
-    if(input$city != 'COUNTY'){
-      plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY==input$city)
-    }
-    plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
-    plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
-      summarize(Zone_Area = sum(as.numeric(shape_area)),
-                Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
-                Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
-                Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
-    plotdata_df_agg
-  })
-  
-  plotdata <- reactive({
+  values <- reactiveValues()
+  refilter <- eventReactive(input$filter, {
     plotdata_df <- gg_df
     if(input$city != 'COUNTY'){
       plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY==input$city)
@@ -63,7 +38,12 @@ server <- function(input, output, session) {
     if(input$zone != 'All Zones'){
       plotdata_df <- plotdata_df %>% filter(zoning_type_text==input$zone)
     }
-    plotdata_df
+    plotdata_df$land_print <- print_2_digits(plotdata_df$Zone_Land_Value)
+    plotdata_df$impr_print <- print_2_digits(plotdata_df$Zone_Impr_Value)
+    plotdata_df$total_print <- print_2_digits(plotdata_df$Zone_Total_Value)
+    values$agg_df <- plotdata_df_agg
+    values$plot_df <- plotdata_df
+    return(list(agg_df = plotdata_df_agg, plot_df = plotdata_df))
   })
   
   layerdata <- reactive({
@@ -76,7 +56,7 @@ server <- function(input, output, session) {
         get_fill_color=~color,
         coverage = 0.02,
         tooltip = use_tooltip(
-          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_print}}<br>ImprValue: {{impr_print}}<br>TotalValue: {{total_print}}",
           style = "background: steelBlue; border-radius: 5px;"
         ))
     }else if(input$datatype == 'Impr Value per SQFT'){
@@ -88,7 +68,7 @@ server <- function(input, output, session) {
         get_fill_color=~color,
         coverage = 0.02,
         tooltip = use_tooltip(
-          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_print}}<br>ImprValue: {{impr_print}}<br>TotalValue: {{total_print}}",
           style = "background: steelBlue; border-radius: 5px;"
         ))
     }else if(input$datatype == 'Land Value per SQFT'){
@@ -100,80 +80,87 @@ server <- function(input, output, session) {
         get_fill_color=~color,
         coverage = 0.02,
         tooltip = use_tooltip(
-          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_value_per_sqft}}<br>ImprValue: {{impr_value_per_sqft}}<br>TotalValue: {{total_value_per_sqft}}",
+          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_print}}<br>ImprValue: {{impr_print}}<br>TotalValue: {{total_print}}",
           style = "background: steelBlue; border-radius: 5px;"
         ))
     }
     value_layer
   })
   
-  observeEvent(input$city, {
-    plot_df <- plotdata()
-    table_df <- tabledata()
+  observeEvent(input$filter, {
+    refilter()
     layer_properties <- layerdata()
     deckgl_proxy('deck') %>%
-      add_column_layer(data=plot_df, properties=layer_properties)%>%
+      add_column_layer(data=values$plot_df, properties=layer_properties)%>%
       update_deckgl()
     output$taxefficiency <- renderText({
-      if(input$city %in% city_prop_tax_revenue$city){
-        total_prop_tax_base <- sum(table_df$Zone_Total_Value * table_df$Zone_Area)
-        paste('On average, this city collects', sprintf("%1.2f%%", 10000*city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city == input$city]/total_prop_tax_base), 'of potential property tax base based on 1% rate')
+      chosen_city <- isolate(input$city)
+      if(chosen_city %in% city_prop_tax_revenue$city){
+        total_prop_tax_base <- sum(values$agg_df$Zone_Total_Value * values$agg_df$Zone_Area)
+        paste('On average, this city collects', sprintf("%1.2f%%", 10000*city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city == chosen_city]/total_prop_tax_base), 'of potential property tax base based on 1% rate')
       }else{
         'No data available'
       }
     })
     output$summarytable <- render_tableHTML({
-        display_df <- table_df
-        display_df <- display_df[order(match(display_df$zoning_type_text, zones_list)), c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
-        colnames(display_df) <- output_colnames
-        display_df %>% 
-          mutate_if(is.numeric, print_2_digits) %>%
-          tableHTML(widths = c(100, rep(150, 4)),
-                    rownames = FALSE) %>% 
-          add_css_column(css = list('text-align', 'right'), 
-                         columns = output_colnames[2:length(output_colnames)]) %>%
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Single-Family', 
-                                     css = list('background-color', 'yellow'), 
-                                     columns = 'Zone Type') %>% 
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Mixed-Use', 
-                                     css = list('background-color', 'coral'), 
-                                     columns = 'Zone Type') %>% 
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Multi-Family', 
-                                     css = list('background-color', 'orange'), 
-                                     columns = 'Zone Type') %>% 
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Commercial', 
-                                     css = list('background-color', 'red'), 
-                                     columns = 'Zone Type') %>% 
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Industrial', 
-                                     css = list(c('background-color', 'color'), c('purple', 'white')), 
-                                     columns = 'Zone Type') %>% 
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Agricultural', 
-                                     css = list(c('background-color', 'color'), c('green', 'white')), 
-                                     columns = 'Zone Type') %>% 
-          add_css_conditional_column(conditional = '==', 
-                                     value = 'Special/Misc.', 
-                                     css = list(c('background-color', 'color'), c('blue', 'white')), 
-                                     columns = 'Zone Type')
-      })
-  })
-  observeEvent(input$zone, {
-    plot_df <- plotdata()
-    layer_properties <- layerdata()
-    deckgl_proxy('deck') %>%
-        add_column_layer(data=plot_df, properties=layer_properties)%>%
-        update_deckgl()
+      display_df <- values$agg_df[, 1:5]
+      display_df <- display_df[order(match(display_df$zoning_type_text, zones_list)), c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
+      colnames(display_df) <- output_colnames
+      display_df %>% 
+        mutate_if(is.numeric, print_2_digits) %>%
+        tableHTML(widths = c(100, rep(150, 4)),
+                  rownames = FALSE) %>% 
+        add_css_column(css = list('text-align', 'right'), 
+                       columns = output_colnames[2:length(output_colnames)]) %>%
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Single-Family', 
+                                   css = list('background-color', 'yellow'), 
+                                   columns = 'Zone Type') %>% 
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Mixed-Use', 
+                                   css = list('background-color', 'coral'), 
+                                   columns = 'Zone Type') %>% 
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Multi-Family', 
+                                   css = list('background-color', 'orange'), 
+                                   columns = 'Zone Type') %>% 
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Commercial', 
+                                   css = list('background-color', 'red'), 
+                                   columns = 'Zone Type') %>% 
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Industrial', 
+                                   css = list(c('background-color', 'color'), c('purple', 'white')), 
+                                   columns = 'Zone Type') %>% 
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Agricultural', 
+                                   css = list(c('background-color', 'color'), c('green', 'white')), 
+                                   columns = 'Zone Type') %>% 
+        add_css_conditional_column(conditional = '==', 
+                                   value = 'Special/Misc.', 
+                                   css = list(c('background-color', 'color'), c('blue', 'white')), 
+                                   columns = 'Zone Type')
+    })
+    output$valueplot <- renderPlot({
+      display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, each=2), 
+                               value=c(values$agg_df$Zone_Land_Value, values$agg_df$Zone_Impr_Value),
+                               type=rep(c('Zone_Land_Value', 'Zone_Impr_Value'), times=length(table(values$agg_df$zoning_type_text))))
+      display_df$value <- display_df$value[c(rep(1:nrow(values$agg_df), each=2) + rep(c(0,nrow(values$agg_df)), times=nrow(values$agg_df)))]
+      ggplot(display_df, aes(fill=type, x=zone, y=value)) +
+        geom_bar(position="stack", stat="identity") +
+        scale_fill_manual(labels = c("Impr Value per SQFT", "Land Value per SQFT"), values = c("blue", "red")) + 
+        labs(fill=NULL) +
+        theme(axis.title.x=element_blank(), 
+              axis.title.y=element_blank(), 
+              aspect.ratio = 1/2,
+              legend.position = 'top')+
+        coord_flip()
+    })
   })
   observeEvent(input$datatype, {
-    plot_df <- plotdata()
     layer_properties <- layerdata()
     deckgl_proxy('deck') %>%
-      add_column_layer(data=plot_df, properties=layer_properties)%>%
+      add_column_layer(data=values$plot_df, properties=layer_properties)%>%
       update_deckgl()
   })
 }
