@@ -11,6 +11,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+tooltip_html <- "Zoning Type: {{zoning_type_text}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -38,9 +39,9 @@ server <- function(input, output, session) {
     if(input$zone != 'All Zones'){
       plotdata_df <- plotdata_df %>% filter(zoning_type_text==input$zone)
     }
-    plotdata_df$land_print <- print_2_digits(plotdata_df$Zone_Land_Value)
-    plotdata_df$impr_print <- print_2_digits(plotdata_df$Zone_Impr_Value)
-    plotdata_df$total_print <- print_2_digits(plotdata_df$Zone_Total_Value)
+    plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
+    plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
+    plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
     values$agg_df <- plotdata_df_agg
     values$plot_df <- plotdata_df
     return(list(agg_df = plotdata_df_agg, plot_df = plotdata_df))
@@ -56,7 +57,7 @@ server <- function(input, output, session) {
         get_fill_color=~color,
         coverage = 0.02,
         tooltip = use_tooltip(
-          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_print}}<br>ImprValue: {{impr_print}}<br>TotalValue: {{total_print}}",
+          html = tooltip_html,
           style = "background: steelBlue; border-radius: 5px;"
         ))
     }else if(input$datatype == 'Impr Value per SQFT'){
@@ -68,7 +69,7 @@ server <- function(input, output, session) {
         get_fill_color=~color,
         coverage = 0.02,
         tooltip = use_tooltip(
-          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_print}}<br>ImprValue: {{impr_print}}<br>TotalValue: {{total_print}}",
+          html = tooltip_html,
           style = "background: steelBlue; border-radius: 5px;"
         ))
     }else if(input$datatype == 'Land Value per SQFT'){
@@ -80,7 +81,7 @@ server <- function(input, output, session) {
         get_fill_color=~color,
         coverage = 0.02,
         tooltip = use_tooltip(
-          html = "ZoningType: {{zoning_type_text}}<br>LandValue: {{land_print}}<br>ImprValue: {{impr_print}}<br>TotalValue: {{total_print}}",
+          html = tooltip_html,
           style = "background: steelBlue; border-radius: 5px;"
         ))
     }
@@ -150,11 +151,13 @@ server <- function(input, output, session) {
         geom_bar(position="stack", stat="identity") +
         scale_fill_manual(labels = c("Impr Value per SQFT", "Land Value per SQFT"), values = c("blue", "red")) + 
         labs(fill=NULL) +
+        theme_classic() +
         theme(axis.title.x=element_blank(), 
               axis.title.y=element_blank(), 
               aspect.ratio = 1/2,
-              legend.position = 'top')+
-        coord_flip()
+              legend.position = 'top') +
+        coord_flip()  +
+        scale_y_continuous(expand = c(0, NA))
     })
   })
   observeEvent(input$datatype, {
