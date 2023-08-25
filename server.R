@@ -1,9 +1,15 @@
 library(tableHTML)
 library(readr)
 library(ggplot2)
+library(rjson)
+library(DT)
+options(scipen=999)
+use_text <- fromJSON(file = "data/use_code_sd.txt")
+use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
+output_colnames2 <- c('Usage', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
 city_prop_tax_revenue <- data.frame(city=c('CARLSBAD', 'CHULA VISTA', 'CORONADO', 'DEL MAR', 'EL CAJON', 'ENCINITAS', 'ESCONDIDO', 'IMPERIAL BEACH', 'LA MESA', 'LEMON GROVE', 'NATIONAL CITY', 'OCEANSIDE', 'POWAY', 'SAN MARCOS', 'SAN DIEGO', 'SANTEE', 'SOLANA BEACH', 'VISTA'), 
                                     actual_prop_tax=c(84200000, 40877000, 39357663, 7532110, 13491146, 57756627, 35068340, 8450100, 16937640, 6826468, 13924393, 85070732, 26256293, 29253790, 706200000, 24588330, 9235000, 33589780))
 print_2_digits <- function(x){
@@ -24,12 +30,14 @@ server <- function(input, output, session) {
         add_mapbox_basemap("mapbox://styles/mapbox/light-v11") 
   })
   values <- reactiveValues()
+  values2 <- reactiveValues()
   refilter <- eventReactive(input$filter, {
     plotdata_df <- gg_df
     if(input$city != 'COUNTY'){
       plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY==input$city)
     }
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
+    plotdata_df$use_type <- use_df$name[match(plotdata_df$use_type, use_df$code)]
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
@@ -42,9 +50,15 @@ server <- function(input, output, session) {
     plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
     plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
     plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
+    plotdata_df_expanded <- plotdata_df %>% group_by(use_type) %>% 
+      summarize(Zone_Area = sum(as.numeric(shape_area)),
+                Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
+                Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
+                Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
     values$agg_df <- plotdata_df_agg
     values$plot_df <- plotdata_df
-    return(list(agg_df = plotdata_df_agg, plot_df = plotdata_df))
+    values$expanded_df <- plotdata_df_expanded
+    return(list(agg_df = plotdata_df_agg, plot_df = plotdata_df, expanded_df = plotdata_df_expanded))
   })
   
   layerdata <- reactive({
@@ -142,6 +156,13 @@ server <- function(input, output, session) {
                                    css = list(c('background-color', 'color'), c('blue', 'white')), 
                                    columns = 'Zone Type')
     })
+    output$expandedtable <- renderDT({
+      display_df <- values$expanded_df[, 1:5]
+      display_df <- display_df[order(match(display_df$use_type, zones_list)), c('use_type', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
+      display_df$use_type <- as.factor(display_df$use_type)
+      colnames(display_df) <- output_colnames2
+      datatable(display_df %>% mutate_if(is.numeric, print_2_digits), filter = 'top', rownames = FALSE)
+    })
     output$valueplot <- renderPlot({
       display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, each=2), 
                                value=c(values$agg_df$Zone_Land_Value, values$agg_df$Zone_Impr_Value),
@@ -160,6 +181,7 @@ server <- function(input, output, session) {
         scale_y_continuous(expand = c(0, NA))
     })
   })
+  
   observeEvent(input$datatype, {
     layer_properties <- layerdata()
     deckgl_proxy('deck') %>%

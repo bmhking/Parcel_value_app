@@ -2,6 +2,7 @@ library(shiny)
 library(deckgl)
 library(dplyr)
 library(readr)
+library(DT)
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 
 ui <- fluidPage(
@@ -20,7 +21,7 @@ ui <- fluidPage(
                                                       'Industrial',
                                                       'Agricultural',
                                                       'Special/Misc.'), selected = 'All Zones'),
-                                            actionButton('filter', 'Apply Filter')),
+                                            actionButton('filter', 'Apply Filter', value=0)),
                                 column(7, radioButtons("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value per SQFT" = "Total Value per SQFT", 
                                                                     "Land Value per SQFT" = "Land Value per SQFT", 
@@ -30,10 +31,12 @@ ui <- fluidPage(
                               ),
                         textOutput('taxefficiency'),
                         tableOutput('summarytable'),
-                        plotOutput('valueplot', height='350px')
+                        fluidRow(column(11, plotOutput('valueplot')))
                         )
                   )
-           )
+           ),
+  br(),
+  fluidRow(column(12, DTOutput('expandedtable')))
   
   # tags$head(tags$style(type = "text/css", "#summarytable th {display:none;}"))
 )
