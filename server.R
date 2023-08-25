@@ -3,6 +3,7 @@ library(readr)
 library(ggplot2)
 library(rjson)
 library(DT)
+library(shinyWidgets)
 options(scipen=999)
 use_text <- fromJSON(file = "data/use_code_sd.txt")
 use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
@@ -17,7 +18,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-tooltip_html <- "Zoning Type: {{zoning_type_text}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
+tooltip_html <- "Zoning Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -33,9 +34,7 @@ server <- function(input, output, session) {
   values2 <- reactiveValues()
   refilter <- eventReactive(input$filter, {
     plotdata_df <- gg_df
-    if(input$city != 'COUNTY'){
-      plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY==input$city)
-    }
+    plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY %in% input$city)
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df$use_type <- use_df$name[match(plotdata_df$use_type, use_df$code)]
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
@@ -44,9 +43,7 @@ server <- function(input, output, session) {
                 Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
                 Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
     plotdata_df <- plotdata_df %>% inner_join(plotdata_df_agg, by=join_by(zoning_type_text))
-    if(input$zone != 'All Zones'){
-      plotdata_df <- plotdata_df %>% filter(zoning_type_text==input$zone)
-    }
+    plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone)
     plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
     plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
     plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
@@ -110,9 +107,13 @@ server <- function(input, output, session) {
       update_deckgl()
     output$taxefficiency <- renderText({
       chosen_city <- isolate(input$city)
-      if(chosen_city %in% city_prop_tax_revenue$city){
+      if(all(chosen_city %in% city_prop_tax_revenue$city)){
         total_prop_tax_base <- sum(values$agg_df$Zone_Total_Value * values$agg_df$Zone_Area)
-        paste('On average, this city collects', sprintf("%1.2f%%", 10000*city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city == chosen_city]/total_prop_tax_base), 'of potential property tax base based on 1% rate')
+        if(length(chosen_city) == 1){
+          paste('On average,', chosen_city[1], 'collects', sprintf("%1.2f%%", 10000*sum(city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city %in% chosen_city])/total_prop_tax_base), 'of potential property tax base based on 1% rate')
+        }else{
+          paste('On average, the selected cities collect', sprintf("%1.2f%%", 10000*sum(city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city %in% chosen_city])/total_prop_tax_base), 'of potential property tax base based on 1% rate')
+        }
       }else{
         'No data available'
       }

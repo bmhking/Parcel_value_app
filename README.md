@@ -14,6 +14,7 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 - Fixed tooltip bug where the tooltip shows the average value of whole area for that zoning type instead of that specific building (8/24)
 - Improved stacked bar chart UI (8/24)
 - Expand the analysis to further differentiate the zoning types to building types (detached single family house, duplexes, townhouses, highrises etc.) (8/24)
+- Implemented multiple choice selection (8/24)
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
 
 # Need help with:
