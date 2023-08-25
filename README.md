@@ -2,6 +2,9 @@ This app requires `Shiny` to run.
 Note that the default Shiny host server can only allow 1GB of RAM, while this app requires at least 2GB. Therefore, the default version of this app can only show the results of the cities of Carlsbad and Chula Vista and the unicorpoated community of Rancho Santa Fe.  
 For the whole county's data, unzip `parcel_value_sdcounty.7z`, which will reveal the csv that has data for all parcels in the county and replace the existing file in `/data` with the unzipped file.
 
+# How to load the app in local
+I recommend using RStudio to run most R tasks, since RStudio integrates so well with many of the core functionalities of the language.  
+Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) that are listed in the `library(foo)` commands. Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. The app should work fine.
 
 # Future plans:
 - Change button UI to be more user-friendly (8/17)
@@ -16,3 +19,4 @@ For the whole county's data, unzip `parcel_value_sdcounty.7z`, which will reveal
 # Need help with:
 - Optimize the web app - it would be very helpful since it is taking a lot of RAM
 - Plot the parcels on their actual parcel map since I don't have that map - now it is plotted as a column with fixed radius
+- Since the base data is too big to load into Github, setup a sql database to read the data from
