@@ -19,7 +19,7 @@ Spread to 25 years, that requires $`\$3,568,800,000/25yr=\$142,752,000/yr`$.
 I don't have data for water pipe maintenance, but according to the Reason Foundations's the annual lane-mile maintenace cost of roads in california is $44,831. Assuming that all roads are two lanes (definitely lower than actual average), that means that annual maintenance cost is about  
 
 ```math
-2900mi\times$44831\\mi\times2=$260,019,800
+2900mi/times$44831/mi\times2=$260,019,800
 ```
 
 This means that annual infrastructure cost for San Diego is $`\$142,752,000+\$260,019,800=\$402,771,800$
