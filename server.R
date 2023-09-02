@@ -17,7 +17,7 @@ print_2_digits <- function(x){
   return(format(round(x, digits=2), nsmall = 2) )
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
-gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 tooltip_html <- "Zoning Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
@@ -59,45 +59,87 @@ server <- function(input, output, session) {
   })
   
   layerdata <- reactive({
-    if(input$datatype == 'Total Value per SQFT'){
-      value_layer <- list(
-        get_position=~lon+lat,
-        get_elevation=~total_value_per_sqft,
-        elevation_scale=3,
-        pickable=TRUE,
-        get_fill_color=~color,
-        coverage = 0.02,
-        tooltip = use_tooltip(
-          html = tooltip_html,
-          style = "background: steelBlue; border-radius: 5px;"
-        ))
-    }else if(input$datatype == 'Impr Value per SQFT'){
-      value_layer <- list(
-        get_position=~lon+lat,
-        get_elevation=~impr_value_per_sqft,
-        elevation_scale=3,
-        pickable=TRUE,
-        get_fill_color=~color,
-        coverage = 0.02,
-        tooltip = use_tooltip(
-          html = tooltip_html,
-          style = "background: steelBlue; border-radius: 5px;"
-        ))
-    }else if(input$datatype == 'Land Value per SQFT'){
-      value_layer <- list(
-        get_position=~lon+lat,
-        get_elevation=~land_value_per_sqft,
-        elevation_scale=3,
-        pickable=TRUE,
-        get_fill_color=~color,
-        coverage = 0.02,
-        tooltip = use_tooltip(
-          html = tooltip_html,
-          style = "background: steelBlue; border-radius: 5px;"
-        ))
+    value_layer <- list()
+    if(input$colortype == 'Zoning Type'){
+      if(input$datatype == 'Total Value per SQFT'){
+        value_layer <- list(
+          get_position=~lon+lat,
+          get_elevation=~total_value_per_sqft,
+          elevation_scale=3,
+          pickable=TRUE,
+          get_fill_color=~zonecolor,
+          coverage = 0.02,
+          tooltip = use_tooltip(
+            html = tooltip_html,
+            style = "background: steelBlue; border-radius: 5px;"
+          ))
+      }else if(input$datatype == 'Impr Value per SQFT'){
+        value_layer <- list(
+          get_position=~lon+lat,
+          get_elevation=~impr_value_per_sqft,
+          elevation_scale=3,
+          pickable=TRUE,
+          get_fill_color=~zonecolor,
+          coverage = 0.02,
+          tooltip = use_tooltip(
+            html = tooltip_html,
+            style = "background: steelBlue; border-radius: 5px;"
+          ))
+      }else if(input$datatype == 'Land Value per SQFT'){
+        value_layer <- list(
+          get_position=~lon+lat,
+          get_elevation=~land_value_per_sqft,
+          elevation_scale=3,
+          pickable=TRUE,
+          get_fill_color=~zonecolor,
+          coverage = 0.02,
+          tooltip = use_tooltip(
+            html = tooltip_html,
+            style = "background: steelBlue; border-radius: 5px;"
+          ))
+      }
+    }else{
+      if(input$datatype == 'Total Value per SQFT'){
+        value_layer <- list(
+          get_position=~lon+lat,
+          get_elevation=~total_value_per_sqft,
+          elevation_scale=3,
+          pickable=TRUE,
+          get_fill_color=~totalvaluecolor,
+          coverage = 0.02,
+          tooltip = use_tooltip(
+            html = tooltip_html,
+            style = "background: steelBlue; border-radius: 5px;"
+          ))
+      }else if(input$datatype == 'Land Value per SQFT'){
+        value_layer <- list(
+          get_position=~lon+lat,
+          get_elevation=~land_value_per_sqft,
+          elevation_scale=3,
+          pickable=TRUE,
+          get_fill_color=~landvaluecolor,
+          coverage = 0.02,
+          tooltip = use_tooltip(
+            html = tooltip_html,
+            style = "background: steelBlue; border-radius: 5px;"
+          ))
+      }else if(input$datatype == 'Impr Value per SQFT'){
+        value_layer <- list(
+          get_position=~lon+lat,
+          get_elevation=~impr_value_per_sqft,
+          elevation_scale=3,
+          pickable=TRUE,
+          get_fill_color=~imprvaluecolor,
+          coverage = 0.02,
+          tooltip = use_tooltip(
+            html = tooltip_html,
+            style = "background: steelBlue; border-radius: 5px;"
+          ))
+      }
     }
     value_layer
   })
+  
   
   observeEvent(input$filter, {
     refilter()
@@ -184,6 +226,13 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$datatype, {
+    layer_properties <- layerdata()
+    deckgl_proxy('deck') %>%
+      add_column_layer(data=values$plot_df, properties=layer_properties)%>%
+      update_deckgl()
+  })  
+  
+  observeEvent(input$colortype, {
     layer_properties <- layerdata()
     deckgl_proxy('deck') %>%
       add_column_layer(data=values$plot_df, properties=layer_properties)%>%

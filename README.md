@@ -15,9 +15,11 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 - Improved stacked bar chart UI (8/24)
 - Expand the analysis to further differentiate the zoning types to building types (detached single family house, duplexes, townhouses, highrises etc.) (8/24)
 - Implemented multiple choice selection (8/24)
+- Added Color Scheme by value instead of zone (9/1)
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
 
 # Need help with:
 - Optimize the web app - it would be very helpful since it is taking a lot of RAM
 - Plot the parcels on their actual parcel map since I don't have that map - now it is plotted as a column with fixed radius
 - Since the base data is too big to load into Github, setup a sql database to read the data from
+- Find a way to dynamically change color scheme

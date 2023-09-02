@@ -4,7 +4,7 @@ library(dplyr)
 library(readr)
 library(DT)
 library(shinyWidgets)
-gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 
 ui <- fluidPage(
   titlePanel("SD Parcel ROI"),
@@ -24,11 +24,20 @@ ui <- fluidPage(
                                                                    'Special/Misc.'), 
                                              options = list(`actions-box` = TRUE), multiple = T),
                                            actionButton('filter', 'Apply Filter', value=0)),
-                                column(7, radioButtons("datatype", h4("Type of Metric"),
+                                column(3, radioButtons("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value per SQFT" = "Total Value per SQFT", 
                                                                     "Land Value per SQFT" = "Land Value per SQFT", 
                                                                     "Impr Value per SQFT" = "Impr Value per SQFT"),
                                                         selected = "Total Value per SQFT")
+                                       ),
+                                column(4, radioButtons("colortype", h4("Coloring Scheme"),
+                                                       choices = c("Zoning Type" = "Zoning Type", 
+                                                                   "Value per SQFT" = "Value per SQFT"),
+                                                       # choices = c("Zoning Type" = "Zoning Type", 
+                                                       #             "Total Value per SQFT" = "Total Value per SQFT", 
+                                                       #             "Land Value per SQFT" = "Land Value per SQFT", 
+                                                       #             "Impr Value per SQFT" = "Impr Value per SQFT")
+                                                       selected = "Zoning Type")
                                        )
                               ),
                         textOutput('taxefficiency'),
