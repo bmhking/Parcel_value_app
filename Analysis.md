@@ -19,7 +19,7 @@ Spread to 25 years, that requires $`\$3,568,800,000/25yr=\$142,752,000/yr`$.
 I don't have data for water pipe maintenance, but according to the Reason Foundations's the annual lane-mile maintenace cost of roads in california is $44,831. Assuming that all roads are two lanes (definitely lower than actual average), that means that annual maintenance cost is about  
 
 ```math
-2900mi\times$44831\mi\times2=$260,019,800
+2900mi\times$44831\\mi\times2=$260,019,800
 ```
 
 This means that annual infrastructure cost for San Diego is $`\$142,752,000+\$260,019,800=\$402,771,800$
@@ -43,7 +43,7 @@ For the case of this analysis, we will still assume that infrastructure cost is 
 ```
 Assuming 10% of property tax revenue goes into infrastructure (an unrealisticly high percentage), that means you need to generate $`\$0.3879/yr/sqft`$ of property tax. Now the city can only generate $`\frac{\$744,138,493/yr}{372.4mi^2\times2.788e+7sqft/sqmi}=\$0.07167/yr/sqft`$ of property tax revenue.
 
-This is not even 20% of revenue required. In the state of California, property tax revenue is much smaller than what it should be not just because of the 1% ceiling because of Prop 13, but also because of another clause in Prop 13: that reassessment cannot happen without change in ownership or new construction. In reality this means that even assuming a 1% property tax rate, most of the potential property tax income from homeowners is not collectable as long as it is not traded (no city in the county of San Diego is able to recover more than 40% of its potential property tax pool). Prop 13 is overwhelmingly supported by homeowners, who are on average more affluent than renters.
+This is not even 20% of revenue required. In the state of California, property tax revenue is much smaller than what it should be not just because of the 1% ceiling because of Prop 13, but also because of another clause in Prop 13: that reassessment cannot happen without change in ownership or new construction. In reality this means that even assuming a 1% property tax rate, most of the potential property tax income from homeowners is not collectable as long as it is not traded (no city in the county of San Diego is able to recover more than 40% of its potential property tax pool). For example, for the city of San Diego, it can only recover 27.53% of its potential property tax base. Prop 13 is overwhelmingly supported by homeowners, who are on average more affluent than renters.
 
 This means that Prop 13 is a de facto financial weapon for homeowners to underpay their obligations while still forcing the city government to pay for their infrastructure in its full glory. In that process, infrastructure for poorer neighborhoods (which are usually majority-minority, more likely to have renters, have higher housing density, and have had their communities destroyed by the Federal Highway Act and urban renewal campaigns) is forced to be degraded, schools are defunded and privatized, and parks are abandoned.
 
@@ -54,6 +54,6 @@ Generally speaking, the more resources you demand, the more you need to be able 
 
 Single family houses are not only worse for the environment and housing affordability, but is also less valuable. This is especially serious in cities like Poway or communities like Rancho Santa Fe or Ramona, where the extreme sprawl means that the single family houses are barely producing any value. These houses do not contribute to the city. Instead, they are bleeding the coffers dry, while their owners live out their self-made American dream. For example, the average single family house in the city San Diego pays for infrastructure per sqft under the same 10% assumption:
 ```math
-$74.14/sqft\times1\% property tax rate\times27.53\% property tax collection rate\times0.1=$0.02041/sqft
+$74.14/sqft\times1\%\times27.53\%\times0.1=$0.02041/sqft
 ```
 That is only not even 5% of the infrastructure cost required under the best assumptions, and this trend can be observed throughout the county. There is no financial justification not to repeal Prop 13 and upzone the county.
