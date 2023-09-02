@@ -5,7 +5,7 @@ Why this is important:
 The city is responsible for the maintenace of the infrastructure. Most of it is (supposed) to be funded by local property taxes. However, it turns out that this is highly unrealistic. For example:
 
 San Diego has around 2900 miles of road and 3300 miles of pipe. Based on the following advantageous assumptions:
-- No maintenance is ever needed for infrastructure.
+- No maintenance is ever needed for water pipes
 - Re-install time is 25 years (irl it's 25 years if it's well maintained)
 - No other infrastructure is needed
 
@@ -16,7 +16,15 @@ Under market price (780k per mile for a road and 75 dollars per feet of water li
 
 Spread to 25 years, that requires $`\$3,568,800,000/25yr=\$142,752,000/yr`$.
 
-The adopted budget for the city of San Diego for 2022-2023 states that property tax revenue is $`\$744,138,493`$. This means that the city requires 20$ of property tax revenue to pay for its infrastructure - this is impossible because usually the city gets less than 20% of its property tax revenue back to begin with.
+I don't have data for water pipe maintenance, but according to the Reason Foundations's the annual lane-mile maintenace cost of roads in california is $44,831. Assuming that all roads are two lanes (definitely lower than actual average), that means that annual maintenance cost is about  
+
+```math
+2900mi\times$44831\mi\times2=$260,019,800
+```
+
+This means that annual infrastructure cost for San Diego is $`\$142,752,000+\$260,019,800=\$402,771,800$
+
+The adopted budget for the city of San Diego for 2022-2023 states that property tax revenue is $`\$744,138,493`$. This means that the city requires ~55% of property tax revenue to pay for its heavily underestimated infrastructure - this is impossible because usually the city gets less than 20% of its property tax revenue back to begin with.
 
 Let this sink in:  
 *Assuming that you never need to maintain for your infrastructure, the city of San Diego still spends more on infrastructure than the revenue it can create.*
@@ -31,11 +39,11 @@ The cost of infrastructure is actually pretty stable. For plots of land close to
 
 For the case of this analysis, we will still assume that infrastructure cost is consistent per sqft for simplicity, even if this will benefit more affluent people because their lifestyles require more infrastructure. The city of San Diego spans $`372.4sqmi`$ which means that for every sqft the infrastructure cost is
 ```math
-\frac{\$142,752,000/yr}{372.4mi^2\times2.788e+7sqft/sqmi}=\$0.01375/yr/sqft
+\frac{\$402,771,800/yr}{372.4mi^2\times2.788e+7sqft/sqmi}=\$0.03879/yr/sqft
 ```
-Assuming 10% of property tax revenue goes into infrastructure (an unrealisticly high percentage), that means you need to generate $`\$0.1375/yr/sqft`$ of property tax. Now the city can only generate $`\frac{\$744,138,493/yr}{372.4mi^2\times2.788e+7sqft/sqmi}=\$0.07167/yr/sqft`$ of property tax revenue.
+Assuming 10% of property tax revenue goes into infrastructure (an unrealisticly high percentage), that means you need to generate $`\$0.3879/yr/sqft`$ of property tax. Now the city can only generate $`\frac{\$744,138,493/yr}{372.4mi^2\times2.788e+7sqft/sqmi}=\$0.07167/yr/sqft`$ of property tax revenue.
 
-This is barely 50% of revenue required. In the state of California, property tax revenue is much smaller than what it should be not just because of the 1% ceiling because of Prop 13, but also because of another clause in Prop 13: that reassessment cannot happen without change in ownership or new construction. In reality this means that even assuming a 1% property tax rate, most of the potential property tax income from homeowners is not collectable as long as it is not traded (no city in the county of San Diego is able to recover more than 40% of its potential property tax pool). Prop 13 is overwhelmingly supported by homeowners, who are on average more affluent than renters.
+This is not even 20% of revenue required. In the state of California, property tax revenue is much smaller than what it should be not just because of the 1% ceiling because of Prop 13, but also because of another clause in Prop 13: that reassessment cannot happen without change in ownership or new construction. In reality this means that even assuming a 1% property tax rate, most of the potential property tax income from homeowners is not collectable as long as it is not traded (no city in the county of San Diego is able to recover more than 40% of its potential property tax pool). Prop 13 is overwhelmingly supported by homeowners, who are on average more affluent than renters.
 
 This means that Prop 13 is a de facto financial weapon for homeowners to underpay their obligations while still forcing the city government to pay for their infrastructure in its full glory. In that process, infrastructure for poorer neighborhoods (which are usually majority-minority, more likely to have renters, have higher housing density, and have had their communities destroyed by the Federal Highway Act and urban renewal campaigns) is forced to be degraded, schools are defunded and privatized, and parks are abandoned.
 
@@ -48,4 +56,4 @@ Single family houses are not only worse for the environment and housing affordab
 ```math
 $74.14/sqft\times1\% property tax rate\times27.53\% property tax collection rate\times0.1=$0.02041/sqft
 ```
-That is only a sixth of the infrastructure cost required under the best assumptions, and this trend can be observed throughout the county. There is no financial justification not to repeal Prop 13 and upzone the county.
+That is only not even 5% of the infrastructure cost required under the best assumptions, and this trend can be observed throughout the county. There is no financial justification not to repeal Prop 13 and upzone the county.
