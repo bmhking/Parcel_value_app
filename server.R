@@ -18,7 +18,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 # gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
+tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Area in SQFT: {{shape_print}}<br>Land Value per SQFT: {{land_print}}<br>Impr Value per SQFT: {{impr_print}}<br>Total Value per SQFT: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -47,6 +47,7 @@ server <- function(input, output, session) {
     plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
     plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
     plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
+    plotdata_df$shape_print <- print_2_digits(plotdata_df$shape_area)
     plotdata_df_expanded <- plotdata_df %>% group_by(use_type) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
@@ -144,18 +145,18 @@ server <- function(input, output, session) {
     if(input$colortype == 'Zone Type'){
       legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 7))
       legend_for_plot[, 1] <- ''
-      colnames(legend_for_plot) <- c('Color', 'Zone Type')
-      legend_for_plot$`Zone Type` <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.')
+      colnames(legend_for_plot) <- c('Color', 'Legend')
+      legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.')
     }else{
       legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 6))
       legend_for_plot[, 1] <- ''
-      colnames(legend_for_plot) <- c('Color', 'Value per SQFT')
+      colnames(legend_for_plot) <- c('Color', 'Legend')
       if(input$datatype == 'Total Value per SQFT'){
-        legend_for_plot$`Value per SQFT` <- c(' 0 - 100', ' 100 - 140', ' 140 - 280', ' 280 - 560', ' 560 - 2800', ' 2800 - ')
+        legend_for_plot$Legend <- c(' 0 - 100', ' 100 - 140', ' 140 - 280', ' 280 - 560', ' 560 - 2800', ' 2800 - ')
       }else if(input$datatype == 'Land Value per SQFT'){
-        legend_for_plot$`Value per SQFT` <- c(' 0 - 25', ' 25 - 50', ' 50 - 100', ' 100 - 150', ' 150 - 250', ' 250 - ')
+        legend_for_plot$Legend <- c(' 0 - 25', ' 25 - 50', ' 50 - 100', ' 100 - 150', ' 150 - 250', ' 250 - ')
       }else if(input$datatype == 'Impr Value per SQFT'){
-        legend_for_plot$`Value per SQFT` <- c(' 0 - 75', ' 75 - 90', ' 90 - 180', ' 180 - 410', ' 410 - 2550', ' 2550 - ')
+        legend_for_plot$Legend <- c(' 0 - 75', ' 75 - 90', ' 90 - 180', ' 180 - 410', ' 410 - 2550', ' 2550 - ')
       }
     }
     legend_for_plot
@@ -191,35 +192,6 @@ server <- function(input, output, session) {
                   rownames = FALSE) %>% 
         add_css_column(css = list('text-align', 'right'), 
                        columns = output_colnames[2:length(output_colnames)])
-      # %>%
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Single-Family', 
-      #                              css = list('background-color', 'yellow'), 
-      #                              columns = 'Zone Type') %>% 
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Mixed-Use', 
-      #                              css = list('background-color', 'coral'), 
-      #                              columns = 'Zone Type') %>% 
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Multi-Family', 
-      #                              css = list('background-color', 'orange'), 
-      #                              columns = 'Zone Type') %>% 
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Commercial', 
-      #                              css = list('background-color', 'red'), 
-      #                              columns = 'Zone Type') %>% 
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Industrial', 
-      #                              css = list(c('background-color', 'color'), c('purple', 'white')), 
-      #                              columns = 'Zone Type') %>% 
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Agricultural', 
-      #                              css = list(c('background-color', 'color'), c('green', 'white')), 
-      #                              columns = 'Zone Type') %>% 
-      #   add_css_conditional_column(conditional = '==', 
-      #                              value = 'Special/Misc.', 
-      #                              css = list(c('background-color', 'color'), c('blue', 'white')), 
-      #                              columns = 'Zone Type')
     })
     output$expandedtable <- renderDT({
       display_df <- values$expanded_df[, 1:5]
@@ -259,13 +231,15 @@ server <- function(input, output, session) {
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color', 
                                               c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue')),
-                                   column = 'Color')
+                                   column = 'Color') %>%
+            add_css_header(css = list('opacity', 0), headers = 1)
         }else if(input$colortype == 'Value per SQFT'){
           legend_table %>% 
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color', 
                                               c('#008000', '#90EE90', '#FFFFED', '#FED8B1', '#FF0000', '#FF00FF')),
-                                   column = 'Color')
+                                   column = 'Color') %>%
+            add_css_header(css = list('opacity', 0), headers = 1)
         }
       })
   })  
@@ -282,13 +256,15 @@ server <- function(input, output, session) {
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color', 
                                             c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue')),
-                                 column = 'Color')
+                                 column = 'Color') %>%
+          add_css_header(css = list('opacity', 0), headers = 1)
       }else if(input$colortype == 'Value per SQFT'){
         legend_table %>% 
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color', 
                                             c('#008000', '#90EE90', '#FFFFED', '#FED8B1', '#FF0000', '#FF00FF')),
-                                 column = 'Color')
+                                 column = 'Color') %>%
+          add_css_header(css = list('opacity', 0), headers = 1)
       }
     })
   })
