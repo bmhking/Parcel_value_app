@@ -18,6 +18,7 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 - Expand the analysis to further differentiate the zoning types to building types (detached single family house, duplexes, townhouses, highrises etc.) (8/24)
 - Implemented multiple choice selection (8/24)
 - Added Color Scheme by value instead of zone (9/2)
+- Updated color legend so now it shows the legend based on whether the user selected zone type or value per sqft to color (9/2)
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
 
 # Need help with:

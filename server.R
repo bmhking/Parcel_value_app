@@ -18,7 +18,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 # gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-tooltip_html <- "Zoning Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
+tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Land Value: {{land_print}}<br>Impr Value: {{impr_print}}<br>Total Value: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -60,7 +60,7 @@ server <- function(input, output, session) {
   
   layerdata <- reactive({
     value_layer <- list()
-    if(input$colortype == 'Zoning Type'){
+    if(input$colortype == 'Zone Type'){
       if(input$datatype == 'Total Value per SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
@@ -140,6 +140,27 @@ server <- function(input, output, session) {
     value_layer
   })
   
+  legenddata <- reactive({
+    if(input$colortype == 'Zone Type'){
+      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 7))
+      legend_for_plot[, 1] <- ''
+      colnames(legend_for_plot) <- c('Color', 'Zone Type')
+      legend_for_plot$`Zone Type` <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.')
+    }else{
+      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 6))
+      legend_for_plot[, 1] <- ''
+      colnames(legend_for_plot) <- c('Color', 'Value per SQFT')
+      if(input$datatype == 'Total Value per SQFT'){
+        legend_for_plot$`Value per SQFT` <- c(' 0 - 100', ' 100 - 140', ' 140 - 280', ' 280 - 560', ' 560 - 2800', ' 2800 - ')
+      }else if(input$datatype == 'Land Value per SQFT'){
+        legend_for_plot$`Value per SQFT` <- c(' 0 - 25', ' 25 - 50', ' 50 - 100', ' 100 - 150', ' 150 - 250', ' 250 - ')
+      }else if(input$datatype == 'Impr Value per SQFT'){
+        legend_for_plot$`Value per SQFT` <- c(' 0 - 75', ' 75 - 90', ' 90 - 180', ' 180 - 410', ' 410 - 2550', ' 2550 - ')
+      }
+    }
+    legend_for_plot
+  })
+  
   
   observeEvent(input$filter, {
     refilter()
@@ -169,35 +190,36 @@ server <- function(input, output, session) {
         tableHTML(widths = c(100, rep(150, 4)),
                   rownames = FALSE) %>% 
         add_css_column(css = list('text-align', 'right'), 
-                       columns = output_colnames[2:length(output_colnames)]) %>%
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Single-Family', 
-                                   css = list('background-color', 'yellow'), 
-                                   columns = 'Zone Type') %>% 
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Mixed-Use', 
-                                   css = list('background-color', 'coral'), 
-                                   columns = 'Zone Type') %>% 
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Multi-Family', 
-                                   css = list('background-color', 'orange'), 
-                                   columns = 'Zone Type') %>% 
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Commercial', 
-                                   css = list('background-color', 'red'), 
-                                   columns = 'Zone Type') %>% 
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Industrial', 
-                                   css = list(c('background-color', 'color'), c('purple', 'white')), 
-                                   columns = 'Zone Type') %>% 
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Agricultural', 
-                                   css = list(c('background-color', 'color'), c('green', 'white')), 
-                                   columns = 'Zone Type') %>% 
-        add_css_conditional_column(conditional = '==', 
-                                   value = 'Special/Misc.', 
-                                   css = list(c('background-color', 'color'), c('blue', 'white')), 
-                                   columns = 'Zone Type')
+                       columns = output_colnames[2:length(output_colnames)])
+      # %>%
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Single-Family', 
+      #                              css = list('background-color', 'yellow'), 
+      #                              columns = 'Zone Type') %>% 
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Mixed-Use', 
+      #                              css = list('background-color', 'coral'), 
+      #                              columns = 'Zone Type') %>% 
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Multi-Family', 
+      #                              css = list('background-color', 'orange'), 
+      #                              columns = 'Zone Type') %>% 
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Commercial', 
+      #                              css = list('background-color', 'red'), 
+      #                              columns = 'Zone Type') %>% 
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Industrial', 
+      #                              css = list(c('background-color', 'color'), c('purple', 'white')), 
+      #                              columns = 'Zone Type') %>% 
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Agricultural', 
+      #                              css = list(c('background-color', 'color'), c('green', 'white')), 
+      #                              columns = 'Zone Type') %>% 
+      #   add_css_conditional_column(conditional = '==', 
+      #                              value = 'Special/Misc.', 
+      #                              css = list(c('background-color', 'color'), c('blue', 'white')), 
+      #                              columns = 'Zone Type')
     })
     output$expandedtable <- renderDT({
       display_df <- values$expanded_df[, 1:5]
@@ -218,7 +240,7 @@ server <- function(input, output, session) {
         theme_classic() +
         theme(axis.title.x=element_blank(), 
               axis.title.y=element_blank(), 
-              aspect.ratio = 1/2,
+              aspect.ratio = 0.6,
               legend.position = 'top') +
         coord_flip()  +
         scale_y_continuous(expand = c(0, NA))
@@ -227,15 +249,47 @@ server <- function(input, output, session) {
   
   observeEvent(input$datatype, {
     layer_properties <- layerdata()
+    legend_table <- legenddata()
     deckgl_proxy('deck') %>%
       add_column_layer(data=values$plot_df, properties=layer_properties)%>%
       update_deckgl()
+    output$legend <- render_tableHTML({
+        if(input$colortype == 'Zone Type'){
+          legend_table %>% 
+            tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
+            add_css_rows_in_column(css = list('background-color', 
+                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue')),
+                                   column = 'Color')
+        }else if(input$colortype == 'Value per SQFT'){
+          legend_table %>% 
+            tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
+            add_css_rows_in_column(css = list('background-color', 
+                                              c('#008000', '#90EE90', '#FFFFED', '#FED8B1', '#FF0000', '#FF00FF')),
+                                   column = 'Color')
+        }
+      })
   })  
   
   observeEvent(input$colortype, {
     layer_properties <- layerdata()
+    legend_table <- legenddata()
     deckgl_proxy('deck') %>%
       add_column_layer(data=values$plot_df, properties=layer_properties)%>%
       update_deckgl()
+    output$legend <- render_tableHTML({
+      if(input$colortype == 'Zone Type'){
+        legend_table %>% 
+          tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
+          add_css_rows_in_column(css = list('background-color', 
+                                            c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue')),
+                                 column = 'Color')
+      }else if(input$colortype == 'Value per SQFT'){
+        legend_table %>% 
+          tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
+          add_css_rows_in_column(css = list('background-color', 
+                                            c('#008000', '#90EE90', '#FFFFED', '#FED8B1', '#FF0000', '#FF00FF')),
+                                 column = 'Color')
+      }
+    })
   })
 }

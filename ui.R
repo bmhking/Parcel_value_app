@@ -31,18 +31,16 @@ ui <- fluidPage(
                                                         selected = "Total Value per SQFT")
                                        ),
                                 column(4, radioButtons("colortype", h4("Coloring Scheme"),
-                                                       choices = c("Zoning Type" = "Zoning Type", 
+                                                       choices = c("Zone Type" = "Zone Type", 
                                                                    "Value per SQFT" = "Value per SQFT"),
-                                                       # choices = c("Zoning Type" = "Zoning Type", 
-                                                       #             "Total Value per SQFT" = "Total Value per SQFT", 
-                                                       #             "Land Value per SQFT" = "Land Value per SQFT", 
-                                                       #             "Impr Value per SQFT" = "Impr Value per SQFT")
-                                                       selected = "Zoning Type")
+                                                       selected = "Zone Type")
                                        )
                               ),
                         textOutput('taxefficiency'),
                         tableOutput('summarytable'),
-                        fluidRow(column(11, plotOutput('valueplot')))
+                        fluidRow(column(3, br(),
+                                           tableOutput('legend')),
+                                 column(8, plotOutput('valueplot')))
                         )
                   )
            ),
