@@ -152,11 +152,11 @@ server <- function(input, output, session) {
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
       if(input$datatype == 'Total Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 100', ' 100 - 140', ' 140 - 280', ' 280 - 560', ' 560 - 2800', ' 2800 - ')
+        legend_for_plot$Legend <- c(' 0 - 100', ' 100 - 150', ' 150 - 300', ' 300 - 600', ' 600 - 3000', ' 3000 - ')
       }else if(input$datatype == 'Land Value per SQFT'){
         legend_for_plot$Legend <- c(' 0 - 25', ' 25 - 50', ' 50 - 100', ' 100 - 150', ' 150 - 250', ' 250 - ')
       }else if(input$datatype == 'Impr Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 75', ' 75 - 90', ' 90 - 180', ' 180 - 410', ' 410 - 2550', ' 2550 - ')
+        legend_for_plot$Legend <- c(' 0 - 75', ' 75 - 100', ' 100 - 200', ' 200 - 450', ' 450 - 2750', ' 2750 - ')
       }
     }
     legend_for_plot
