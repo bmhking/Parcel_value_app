@@ -18,7 +18,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 # gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type}}<br>Area in SQFT: {{shape_print}}<br>Land Value per SQFT: {{land_print}}<br>Impr Value per SQFT: {{impr_print}}<br>Total Value per SQFT: {{total_print}}"
+tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value per SQFT: {{land_print}}<br>Impr Value per SQFT: {{impr_print}}<br>Total Value per SQFT: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -36,7 +36,6 @@ server <- function(input, output, session) {
     plotdata_df <- gg_df
     plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY %in% input$city)
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
-    plotdata_df$use_type <- use_df$name[match(plotdata_df$use_type, use_df$code)]
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
@@ -48,7 +47,7 @@ server <- function(input, output, session) {
     plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
     plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
     plotdata_df$shape_print <- print_2_digits(plotdata_df$shape_area)
-    plotdata_df_expanded <- plotdata_df %>% group_by(use_type) %>% 
+    plotdata_df_expanded <- plotdata_df %>% group_by(use_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
                 Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
@@ -99,7 +98,7 @@ server <- function(input, output, session) {
             style = "background: steelBlue; border-radius: 5px;"
           ))
       }
-    }else{
+    }else if(input$colortype == 'Value per SQFT'){
       if(input$datatype == 'Total Value per SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
@@ -147,7 +146,7 @@ server <- function(input, output, session) {
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
       legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.')
-    }else{
+    }else if(input$colortype == 'Value per SQFT'){
       legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 6))
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
@@ -195,8 +194,8 @@ server <- function(input, output, session) {
     })
     output$expandedtable <- renderDT({
       display_df <- values$expanded_df[, 1:5]
-      display_df <- display_df[order(match(display_df$use_type, zones_list)), c('use_type', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
-      display_df$use_type <- as.factor(display_df$use_type)
+      display_df <- display_df[order(match(display_df$use_type_text, zones_list)), c('use_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
+      display_df$use_type_text <- as.factor(display_df$use_type_text)
       colnames(display_df) <- output_colnames2
       datatable(display_df %>% mutate_if(is.numeric, print_2_digits), filter = 'top', rownames = FALSE)
     })
@@ -245,6 +244,8 @@ server <- function(input, output, session) {
   })  
   
   observeEvent(input$colortype, {
+    refilter()
+    print(1)
     layer_properties <- layerdata()
     legend_table <- legenddata()
     deckgl_proxy('deck') %>%
