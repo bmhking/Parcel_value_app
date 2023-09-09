@@ -244,8 +244,6 @@ server <- function(input, output, session) {
   })  
   
   observeEvent(input$colortype, {
-    refilter()
-    print(1)
     layer_properties <- layerdata()
     legend_table <- legenddata()
     deckgl_proxy('deck') %>%
