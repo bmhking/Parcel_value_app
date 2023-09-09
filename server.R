@@ -17,7 +17,7 @@ print_2_digits <- function(x){
   return(format(round(x, digits=2), nsmall = 2) )
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
-# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value per SQFT: {{land_print}}<br>Impr Value per SQFT: {{impr_print}}<br>Total Value per SQFT: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
@@ -151,11 +151,11 @@ server <- function(input, output, session) {
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
       if(input$datatype == 'Total Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 100', ' 100 - 150', ' 150 - 300', ' 300 - 600', ' 600 - 3000', ' 3000 - ')
+        legend_for_plot$Legend <- c(' 0 - 120', ' 120 - 160', ' 160 - 320', ' 320 - 640', ' 640 - 3200', ' 3000 - ')
       }else if(input$datatype == 'Land Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 25', ' 25 - 50', ' 50 - 100', ' 100 - 150', ' 150 - 250', ' 250 - ')
+        legend_for_plot$Legend <- c(' 0 - 40', ' 40 - 60', ' 60 - 120', ' 100 - 120', ' 150 - 250', ' 250 - ')
       }else if(input$datatype == 'Impr Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 75', ' 75 - 100', ' 100 - 200', ' 200 - 450', ' 450 - 2750', ' 2750 - ')
+        legend_for_plot$Legend <- c(' 0 - 80', ' 80 - 100', ' 100 - 200', ' 200 - 500', ' 500 - 3000', ' 3000 - ')
       }
     }
     legend_for_plot

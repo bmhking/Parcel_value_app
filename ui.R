@@ -4,7 +4,7 @@ library(dplyr)
 library(readr)
 library(DT)
 library(shinyWidgets)
-# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 
 ui <- fluidPage(
   titlePanel("SD Parcel ROI"),
