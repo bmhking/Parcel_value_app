@@ -168,19 +168,6 @@ server <- function(input, output, session) {
     deckgl_proxy('deck') %>%
       add_column_layer(data=values$plot_df, properties=layer_properties)%>%
       update_deckgl()
-    output$taxefficiency <- renderText({
-      chosen_city <- isolate(input$city)
-      if(all(chosen_city %in% city_prop_tax_revenue$city)){
-        total_prop_tax_base <- sum(values$agg_df$Zone_Total_Value * values$agg_df$Zone_Area)
-        if(length(chosen_city) == 1){
-          paste('On average,', chosen_city[1], 'collects', sprintf("%1.2f%%", 10000*sum(city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city %in% chosen_city])/total_prop_tax_base), 'of potential property tax base based on 1% rate')
-        }else{
-          paste('On average, the selected cities collect', sprintf("%1.2f%%", 10000*sum(city_prop_tax_revenue$actual_prop_tax[city_prop_tax_revenue$city %in% chosen_city])/total_prop_tax_base), 'of potential property tax base based on 1% rate')
-        }
-      }else{
-        'No data available'
-      }
-    })
     output$summarytable <- render_tableHTML({
       display_df <- values$agg_df[, 1:5]
       display_df <- display_df[order(match(display_df$zoning_type_text, zones_list)), c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]

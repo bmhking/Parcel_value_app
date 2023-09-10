@@ -36,7 +36,7 @@ ui <- fluidPage(
                                                        selected = "Zone Type")
                                        )
                               ),
-                        textOutput('taxefficiency'),
+                        br(),
                         tableOutput('summarytable'),
                         fluidRow(column(3, br(),
                                            tableOutput('legend')),
@@ -46,6 +46,5 @@ ui <- fluidPage(
            ),
   br(),
   fluidRow(column(12, DTOutput('expandedtable')))
-  
-  # tags$head(tags$style(type = "text/css", "#summarytable th {display:none;}"))
+
 )
