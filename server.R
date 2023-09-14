@@ -147,15 +147,15 @@ server <- function(input, output, session) {
       colnames(legend_for_plot) <- c('Color', 'Legend')
       legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.')
     }else if(input$colortype == 'Value per SQFT'){
-      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 6))
+      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 12))
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
       if(input$datatype == 'Total Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 120', ' 120 - 160', ' 160 - 320', ' 320 - 640', ' 640 - 3200', ' 3000 - ')
+        legend_for_plot$Legend <- c(' 0 - 15', ' 15 - 30', ' 30 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 135', ' 135 - 175', ' 175 - 250', ' 250 - 500', ' 500 - 1000', ' 1000 - 2000', ' 2000 - ')
       }else if(input$datatype == 'Land Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 40', ' 40 - 60', ' 60 - 120', ' 100 - 120', ' 150 - 250', ' 250 - ')
+        legend_for_plot$Legend <- c(' 0 - 5', ' 5 - 10', ' 10 - 15', ' 15 - 20', ' 20 - 30', ' 30 - 40', ' 50 - 60', ' 60 - 90', ' 90 - 150', ' 150 - 300', ' 300 - 500', ' 500 - ')
       }else if(input$datatype == 'Impr Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 80', ' 80 - 100', ' 100 - 200', ' 200 - 500', ' 500 - 3000', ' 3000 - ')
+        legend_for_plot$Legend <- c(' 0 - 7', ' 7 - 15', ' 15 - 25', ' 25 - 35', ' 35 - 45', ' 45 - 60', ' 60 - 80', ' 80 - 120', ' 120 - 250', ' 250 - 500', ' 500 - 1000', ' 1000 - ')
       }
     }
     legend_for_plot
@@ -223,7 +223,7 @@ server <- function(input, output, session) {
           legend_table %>% 
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color', 
-                                              c('#008000', '#90EE90', '#FFFFED', '#FED8B1', '#FF0000', '#FF00FF')),
+                                              c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FA8128', '#FF4500', '#B0054B', '#B65FCF', '#603FEF')),
                                    column = 'Color') %>%
             add_css_header(css = list('opacity', 0), headers = 1)
         }
@@ -248,7 +248,7 @@ server <- function(input, output, session) {
         legend_table %>% 
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color', 
-                                            c('#008000', '#90EE90', '#FFFFED', '#FED8B1', '#FF0000', '#FF00FF')),
+                                            c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FA8128', '#FF4500', '#B0054B', '#B65FCF', '#603FEF')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
       }
