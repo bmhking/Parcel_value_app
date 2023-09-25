@@ -5,10 +5,10 @@ library(rjson)
 library(DT)
 library(shinyWidgets)
 options(scipen=999)
-use_text <- fromJSON(file = "data/use_code_sd.txt")
+# use_text <- fromJSON(file = "data/use_code_sd.txt")
 use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
-                'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.')
+                'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
 output_colnames2 <- c('Usage', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
 city_prop_tax_revenue <- data.frame(city=c('CARLSBAD', 'CHULA VISTA', 'CORONADO', 'DEL MAR', 'EL CAJON', 'ENCINITAS', 'ESCONDIDO', 'IMPERIAL BEACH', 'LA MESA', 'LEMON GROVE', 'NATIONAL CITY', 'OCEANSIDE', 'POWAY', 'SAN MARCOS', 'SAN DIEGO', 'SANTEE', 'SOLANA BEACH', 'VISTA'), 
@@ -17,7 +17,7 @@ print_2_digits <- function(x){
   return(format(round(x, digits=2), nsmall = 2) )
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
-gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 tooltip_html <- "Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value per SQFT: {{land_print}}<br>Impr Value per SQFT: {{impr_print}}<br>Total Value per SQFT: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
@@ -28,7 +28,7 @@ server <- function(input, output, session) {
              width = '100%', 
              height = "100%",
              bearing=0) %>%
-        add_mapbox_basemap("mapbox://styles/mapbox/light-v11") 
+        add_mapbox_basemap("mapbox://styles/mapbox/light-v11")
   })
   values <- reactiveValues()
   values2 <- reactiveValues()
@@ -142,20 +142,20 @@ server <- function(input, output, session) {
   
   legenddata <- reactive({
     if(input$colortype == 'Zone Type'){
-      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 7))
+      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 8))
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
-      legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.')
+      legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.', 'Multi-Zone')
     }else if(input$colortype == 'Value per SQFT'){
-      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 12))
+      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 13))
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
       if(input$datatype == 'Total Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 15', ' 15 - 30', ' 30 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 135', ' 135 - 175', ' 175 - 250', ' 250 - 500', ' 500 - 1000', ' 1000 - 2000', ' 2000 - ')
+        legend_for_plot$Legend <- c(' 0 - 25', ' 25 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 150', ' 150 - 200', ' 200 - 250', ' 250 - 350', ' 350 - 500', ' 500 - 750', ' 750 - 1000', ' 1000 - 2000', ' 2000 -')
       }else if(input$datatype == 'Land Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 5', ' 5 - 10', ' 10 - 15', ' 15 - 20', ' 20 - 30', ' 30 - 40', ' 50 - 60', ' 60 - 90', ' 90 - 150', ' 150 - 300', ' 300 - 500', ' 500 - ')
+        legend_for_plot$Legend <- c(' 0 - 10', ' 10 - 20', ' 20 - 35', ' 35 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 125', ' 125 - 150', ' 150 - 200', ' 200 - 300', ' 300 - 400', ' 400 - 500', ' 500 - ')
       }else if(input$datatype == 'Impr Value per SQFT'){
-        legend_for_plot$Legend <- c(' 0 - 7', ' 7 - 15', ' 15 - 25', ' 25 - 35', ' 35 - 45', ' 45 - 60', ' 60 - 80', ' 80 - 120', ' 120 - 250', ' 250 - 500', ' 500 - 1000', ' 1000 - ')
+        legend_for_plot$Legend <- c(' 0 - 10', ' 10 - 20', ' 20 - 35', ' 35 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 150', ' 150 - 200', ' 200 - 300', ' 300 - 500', ' 500 - 900', ' 900 - 1500', ' 1500 - ')
       }
     }
     legend_for_plot
@@ -166,7 +166,7 @@ server <- function(input, output, session) {
     refilter()
     layer_properties <- layerdata()
     deckgl_proxy('deck') %>%
-      add_column_layer(data=values$plot_df, properties=layer_properties)%>%
+      add_column_layer(data=values$plot_df, properties=layer_properties )%>%
       update_deckgl()
     output$summarytable <- render_tableHTML({
       display_df <- values$agg_df[, 1:5]
@@ -191,6 +191,7 @@ server <- function(input, output, session) {
                                value=c(values$agg_df$Zone_Land_Value, values$agg_df$Zone_Impr_Value),
                                type=rep(c('Zone_Land_Value', 'Zone_Impr_Value'), times=length(table(values$agg_df$zoning_type_text))))
       display_df$value <- display_df$value[c(rep(1:nrow(values$agg_df), each=2) + rep(c(0,nrow(values$agg_df)), times=nrow(values$agg_df)))]
+      display_df$zone<- factor(display_df$zone, levels=rev(sort(unique(display_df$zone))))
       ggplot(display_df, aes(fill=type, x=zone, y=value)) +
         geom_bar(position="stack", stat="identity") +
         scale_fill_manual(labels = c("Impr Value per SQFT", "Land Value per SQFT"), values = c("blue", "red")) + 
@@ -198,7 +199,6 @@ server <- function(input, output, session) {
         theme_classic() +
         theme(axis.title.x=element_blank(), 
               axis.title.y=element_blank(), 
-              aspect.ratio = 0.6,
               legend.position = 'top') +
         coord_flip()  +
         scale_y_continuous(expand = c(0, NA))
@@ -209,21 +209,21 @@ server <- function(input, output, session) {
     layer_properties <- layerdata()
     legend_table <- legenddata()
     deckgl_proxy('deck') %>%
-      add_column_layer(data=values$plot_df, properties=layer_properties)%>%
+      add_column_layer(data=values$plot_df, properties=layer_properties) %>%
       update_deckgl()
     output$legend <- render_tableHTML({
         if(input$colortype == 'Zone Type'){
           legend_table %>% 
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color', 
-                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue')),
+                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
                                    column = 'Color') %>%
             add_css_header(css = list('opacity', 0), headers = 1)
         }else if(input$colortype == 'Value per SQFT'){
           legend_table %>% 
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color', 
-                                              c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FA8128', '#FF4500', '#B0054B', '#B65FCF', '#603FEF')),
+                                              c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
                                    column = 'Color') %>%
             add_css_header(css = list('opacity', 0), headers = 1)
         }
@@ -234,21 +234,21 @@ server <- function(input, output, session) {
     layer_properties <- layerdata()
     legend_table <- legenddata()
     deckgl_proxy('deck') %>%
-      add_column_layer(data=values$plot_df, properties=layer_properties)%>%
+      add_column_layer(data=values$plot_df, properties=layer_properties) %>%
       update_deckgl()
     output$legend <- render_tableHTML({
       if(input$colortype == 'Zone Type'){
         legend_table %>% 
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color', 
-                                            c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue')),
+                                            c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
       }else if(input$colortype == 'Value per SQFT'){
         legend_table %>% 
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color', 
-                                            c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FA8128', '#FF4500', '#B0054B', '#B65FCF', '#603FEF')),
+                                            c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
       }

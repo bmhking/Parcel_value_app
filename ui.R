@@ -4,7 +4,7 @@ library(dplyr)
 library(readr)
 library(DT)
 library(shinyWidgets)
-gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 
 ui <- fluidPage(
   titlePanel("SD Parcel ROI"),
@@ -21,7 +21,8 @@ ui <- fluidPage(
                                                                    'Commercial',
                                                                    'Industrial',
                                                                    'Agricultural',
-                                                                   'Special/Misc.'), 
+                                                                   'Special/Misc.',
+                                                                   'Multi-Zone'), 
                                              options = list(`actions-box` = TRUE), multiple = T),
                                            actionButton('filter', 'Apply Filter', value=0)),
                                 column(3, radioButtons("datatype", h4("Type of Metric"),
@@ -40,7 +41,7 @@ ui <- fluidPage(
                         tableOutput('summarytable'),
                         fluidRow(column(3, br(),
                                            tableOutput('legend')),
-                                 column(8, plotOutput('valueplot')))
+                                 column(8, fluidRow(plotOutput('valueplot', height='340px'))))
                         )
                   )
            ),
