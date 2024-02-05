@@ -5,6 +5,7 @@ library(rjson)
 library(DT)
 library(shinyWidgets)
 options(scipen=999)
+# gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 # use_text <- fromJSON(file = "data/use_code_sd.txt")
 use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
