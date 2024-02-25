@@ -5,12 +5,11 @@ library(readr)
 library(DT)
 library(shinyWidgets)
 # gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-
+gg_df[which(gg_df$use_type_text == "NATURAL RESOURCES – MINING, EXTRACTIVE, PROCESSING CEMENT/SILICA PRODUCTS, ROCK & GRAVEL"), "use_type_text"] <-"NATURAL RESOURCES – MINING, ETC."
 ui <- fluidPage(
-  titlePanel("SD Parcel ROI"),
-  fluidRow(column(6,deckglOutput("deck", height='700px')),
+  fluidRow(column(6, titlePanel("SD Parcel ROI"), deckglOutput("deck", height='700px')),
            column(6, fluidRow(
-                        fluidRow(column(5, pickerInput("city", NULL, 
+                        fluidRow(br(), column(5, pickerInput("city", NULL, 
                                              choices=names(table(gg_df$SITUS_COMMUNITY)), 
                                              options = list(`actions-box` = TRUE), multiple = T),
                                            pickerInput("zone", NULL, 
@@ -24,6 +23,9 @@ ui <- fluidPage(
                                                                    'Special/Misc.',
                                                                    'Multi-Zone'), 
                                              options = list(`actions-box` = TRUE), multiple = T),
+                                           pickerInput("use", NULL, 
+                                              choices = names(table(gg_df$use_type_text)),
+                                              options = list(`actions-box` = TRUE), multiple = T),
                                            actionButton('filter', 'Apply Filter', value=0)),
                                 column(3, radioButtons("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value per SQFT" = "Total Value per SQFT", 

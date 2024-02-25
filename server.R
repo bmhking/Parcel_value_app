@@ -36,14 +36,21 @@ server <- function(input, output, session) {
   refilter <- eventReactive(input$filter, {
     plotdata_df <- gg_df
     plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY %in% input$city)
+    plotdata_df <- plotdata_df %>% filter(use_type_text %in% input$use)
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
                 Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
                 Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
+    plotdata_df_agg[nrow(plotdata_df_agg) + 1, ] <- list(zoning_type_text = "Total",
+       Zone_Area = sum(plotdata_df_agg$Zone_Area),
+       Zone_Land_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Land_Value) / sum(plotdata_df_agg$Zone_Area),
+       Zone_Impr_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Impr_Value) / sum(plotdata_df_agg$Zone_Area),
+       Zone_Total_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Total_Value) / sum(plotdata_df_agg$Zone_Area))
     plotdata_df <- plotdata_df %>% inner_join(plotdata_df_agg, by=join_by(zoning_type_text))
-    plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone)
+    plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone) %>%
+      filter(use_type_text %in% input$use)
     plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
     plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
     plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
@@ -172,7 +179,8 @@ server <- function(input, output, session) {
       update_deckgl()
     output$summarytable <- render_tableHTML({
       display_df <- values$agg_df[, 1:5]
-      display_df <- display_df[order(match(display_df$zoning_type_text, zones_list)), c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
+      display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
+        c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
       colnames(display_df) <- output_colnames
       display_df %>% 
         mutate_if(is.numeric, print_2_digits) %>%
