@@ -166,6 +166,7 @@ server <- function(input, output, session) {
   observeEvent(input$filter, {
     refilter()
     layer_properties <- layerdata()
+    legend_table <- legenddata()
     deckgl_proxy('deck') %>%
       add_column_layer(data=values$plot_df, properties=layer_properties )%>%
       update_deckgl()
@@ -204,51 +205,18 @@ server <- function(input, output, session) {
         coord_flip()  +
         scale_y_continuous(expand = c(0, NA))
     })
-  })
-  
-  observeEvent(input$datatype, {
-    layer_properties <- layerdata()
-    legend_table <- legenddata()
-    deckgl_proxy('deck') %>%
-      add_column_layer(data=values$plot_df, properties=layer_properties) %>%
-      update_deckgl()
-    output$legend <- render_tableHTML({
-        if(input$colortype == 'Zone Type'){
-          legend_table %>% 
-            tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
-            add_css_rows_in_column(css = list('background-color', 
-                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
-                                   column = 'Color') %>%
-            add_css_header(css = list('opacity', 0), headers = 1)
-        }else if(input$colortype == 'Value per SQFT'){
-          legend_table %>% 
-            tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
-            add_css_rows_in_column(css = list('background-color', 
-                                              c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
-                                   column = 'Color') %>%
-            add_css_header(css = list('opacity', 0), headers = 1)
-        }
-      })
-  })  
-  
-  observeEvent(input$colortype, {
-    layer_properties <- layerdata()
-    legend_table <- legenddata()
-    deckgl_proxy('deck') %>%
-      add_column_layer(data=values$plot_df, properties=layer_properties) %>%
-      update_deckgl()
     output$legend <- render_tableHTML({
       if(input$colortype == 'Zone Type'){
-        legend_table %>% 
+        legend_table %>%
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
-          add_css_rows_in_column(css = list('background-color', 
+          add_css_rows_in_column(css = list('background-color',
                                             c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
       }else if(input$colortype == 'Value per SQFT'){
-        legend_table %>% 
+        legend_table %>%
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
-          add_css_rows_in_column(css = list('background-color', 
+          add_css_rows_in_column(css = list('background-color',
                                             c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
