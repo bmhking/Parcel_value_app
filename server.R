@@ -10,8 +10,8 @@ options(scipen=999)
 use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
-output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
-output_colnames2 <- c('Usage', 'Total Area in SQFT', 'Land Value per SQFT', 'Impr Value per SQFT', 'Total Value per SQFT')
+output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
+output_colnames2 <- c('Usage', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
 city_prop_tax_revenue <- data.frame(city=c('CARLSBAD', 'CHULA VISTA', 'CORONADO', 'DEL MAR', 'EL CAJON', 'ENCINITAS', 'ESCONDIDO', 'IMPERIAL BEACH', 'LA MESA', 'LEMON GROVE', 'NATIONAL CITY', 'OCEANSIDE', 'POWAY', 'SAN MARCOS', 'SAN DIEGO', 'SANTEE', 'SOLANA BEACH', 'VISTA'), 
                                     actual_prop_tax=c(84200000, 40877000, 39357663, 7532110, 13491146, 57756627, 35068340, 8450100, 16937640, 6826468, 13924393, 85070732, 26256293, 29253790, 706200000, 24588330, 9235000, 33589780))
 print_2_digits <- function(x){
@@ -19,7 +19,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 # gg_df <- read_csv("{data/parcel_value_sdcounty.csv")
-tooltip_html <- "APN: {{APN_list}}<br>PARCELID: {{PARCELID}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value per SQFT: {{land_print}}<br>Impr Value per SQFT: {{impr_print}}<br>Total Value per SQFT: {{total_print}}"
+tooltip_html <- "APN: {{APN_list}}<br>PARCELID: {{PARCELID}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
   output$deck <- renderDeckgl({
       deckgl(longitude=-116.75, 
@@ -69,7 +69,7 @@ server <- function(input, output, session) {
   layerdata <- reactive({
     value_layer <- list()
     if(input$colortype == 'Zone Type'){
-      if(input$datatype == 'Total Value per SQFT'){
+      if(input$datatype == 'Total Value/SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
           get_elevation=~total_value_per_sqft,
@@ -81,7 +81,7 @@ server <- function(input, output, session) {
             html = tooltip_html,
             style = "background: steelBlue; border-radius: 5px;"
           ))
-      }else if(input$datatype == 'Impr Value per SQFT'){
+      }else if(input$datatype == 'Impr Value/SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
           get_elevation=~impr_value_per_sqft,
@@ -93,7 +93,7 @@ server <- function(input, output, session) {
             html = tooltip_html,
             style = "background: steelBlue; border-radius: 5px;"
           ))
-      }else if(input$datatype == 'Land Value per SQFT'){
+      }else if(input$datatype == 'Land Value/SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
           get_elevation=~land_value_per_sqft,
@@ -106,8 +106,8 @@ server <- function(input, output, session) {
             style = "background: steelBlue; border-radius: 5px;"
           ))
       }
-    }else if(input$colortype == 'Value per SQFT'){
-      if(input$datatype == 'Total Value per SQFT'){
+    }else if(input$colortype == 'Value/SQFT'){
+      if(input$datatype == 'Total Value/SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
           get_elevation=~total_value_per_sqft,
@@ -119,7 +119,7 @@ server <- function(input, output, session) {
             html = tooltip_html,
             style = "background: steelBlue; border-radius: 5px;"
           ))
-      }else if(input$datatype == 'Land Value per SQFT'){
+      }else if(input$datatype == 'Land Value/SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
           get_elevation=~land_value_per_sqft,
@@ -131,7 +131,7 @@ server <- function(input, output, session) {
             html = tooltip_html,
             style = "background: steelBlue; border-radius: 5px;"
           ))
-      }else if(input$datatype == 'Impr Value per SQFT'){
+      }else if(input$datatype == 'Impr Value/SQFT'){
         value_layer <- list(
           get_position=~lon+lat,
           get_elevation=~impr_value_per_sqft,
@@ -154,15 +154,15 @@ server <- function(input, output, session) {
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
       legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.', 'Multi-Zone')
-    }else if(input$colortype == 'Value per SQFT'){
+    }else if(input$colortype == 'Value/SQFT'){
       legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 13))
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
-      if(input$datatype == 'Total Value per SQFT'){
+      if(input$datatype == 'Total Value/SQFT'){
         legend_for_plot$Legend <- c(' 0 - 25', ' 25 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 150', ' 150 - 200', ' 200 - 250', ' 250 - 350', ' 350 - 500', ' 500 - 750', ' 750 - 1000', ' 1000 - 2000', ' 2000 -')
-      }else if(input$datatype == 'Land Value per SQFT'){
+      }else if(input$datatype == 'Land Value/SQFT'){
         legend_for_plot$Legend <- c(' 0 - 10', ' 10 - 20', ' 20 - 35', ' 35 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 125', ' 125 - 150', ' 150 - 200', ' 200 - 300', ' 300 - 400', ' 400 - 500', ' 500 - ')
-      }else if(input$datatype == 'Impr Value per SQFT'){
+      }else if(input$datatype == 'Impr Value/SQFT'){
         legend_for_plot$Legend <- c(' 0 - 10', ' 10 - 20', ' 20 - 35', ' 35 - 50', ' 50 - 75', ' 75 - 100', ' 100 - 150', ' 150 - 200', ' 200 - 300', ' 300 - 500', ' 500 - 900', ' 900 - 1500', ' 1500 - ')
       }
     }
@@ -204,7 +204,7 @@ server <- function(input, output, session) {
       display_df$zone<- factor(display_df$zone, levels=rev(sort(unique(display_df$zone))))
       ggplot(display_df, aes(fill=type, x=zone, y=value)) +
         geom_bar(position="stack", stat="identity") +
-        scale_fill_manual(labels = c("Impr Value per SQFT", "Land Value per SQFT"), values = c("blue", "red")) + 
+        scale_fill_manual(labels = c("Impr Value/SQFT", "Land Value/SQFT"), values = c("blue", "red")) + 
         labs(fill=NULL) +
         theme_classic() +
         theme(axis.title.x=element_blank(), 
@@ -221,7 +221,7 @@ server <- function(input, output, session) {
                                             c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
-      }else if(input$colortype == 'Value per SQFT'){
+      }else if(input$colortype == 'Value/SQFT'){
         legend_table %>%
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color',
