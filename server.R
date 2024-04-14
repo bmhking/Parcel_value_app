@@ -4,6 +4,7 @@ library(ggplot2)
 library(rjson)
 library(DT)
 library(shinyWidgets)
+library(scales)
 options(scipen=999)
 # gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 # use_text <- fromJSON(file = "data/use_code_sd.txt")
@@ -36,18 +37,21 @@ server <- function(input, output, session) {
   refilter <- eventReactive(input$filter, {
     plotdata_df <- gg_df
     plotdata_df <- plotdata_df %>% filter(SITUS_COMMUNITY %in% input$city)
+    plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone)
     plotdata_df <- plotdata_df %>% filter(use_type_text %in% input$use)
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
                 Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
-                Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
+                Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)),
+                Zone_Total_Value_2 = sum(as.numeric(total_value)))
     plotdata_df_agg[nrow(plotdata_df_agg) + 1, ] <- list(zoning_type_text = "Total",
        Zone_Area = sum(plotdata_df_agg$Zone_Area),
        Zone_Land_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Land_Value) / sum(plotdata_df_agg$Zone_Area),
        Zone_Impr_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Impr_Value) / sum(plotdata_df_agg$Zone_Area),
-       Zone_Total_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Total_Value) / sum(plotdata_df_agg$Zone_Area))
+       Zone_Total_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Total_Value) / sum(plotdata_df_agg$Zone_Area),
+       Zone_Total_Value_2 = sum(plotdata_df_agg$Zone_Total_Value_2))
     plotdata_df <- plotdata_df %>% inner_join(plotdata_df_agg, by=join_by(zoning_type_text))
     plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone) %>%
       filter(use_type_text %in% input$use)
@@ -197,21 +201,39 @@ server <- function(input, output, session) {
       datatable(display_df %>% mutate_if(is.numeric, print_2_digits), filter = 'top', rownames = FALSE)
     })
     output$valueplot <- renderPlot({
-      display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, each=2), 
-                               value=c(values$agg_df$Zone_Land_Value, values$agg_df$Zone_Impr_Value),
-                               type=rep(c('Zone_Land_Value', 'Zone_Impr_Value'), times=length(table(values$agg_df$zoning_type_text))))
-      display_df$value <- display_df$value[c(rep(1:nrow(values$agg_df), each=2) + rep(c(0,nrow(values$agg_df)), times=nrow(values$agg_df)))]
+      print(values$agg_df)
+      display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, times=2), 
+                               Percentage=c(values$agg_df$Zone_Area, 
+                                       values$agg_df$Zone_Total_Value_2),
+                               type=rep(c('Area', 'Total Value'), each=length(table(values$agg_df$zoning_type_text))))
+      display_df[display_df$type=='Area', 'Percentage'] <- display_df[display_df$type=='Area', 'Percentage']/display_df[(display_df$type=='Area') & (display_df$zone=='Total'), 'Percentage']
+      display_df[display_df$type=='Total Value', 'Percentage'] <- display_df[display_df$type=='Total Value', 'Percentage']/display_df[(display_df$type=='Total Value') & (display_df$zone=='Total'), 'Percentage']
+      display_df <- display_df[display_df$zone != 'Total', ]
+      display_df$Percentage_label <- paste0(round(display_df$Percentage*100, 2), "%")
       display_df$zone<- factor(display_df$zone, levels=rev(sort(unique(display_df$zone))))
-      ggplot(display_df, aes(fill=type, x=zone, y=value)) +
-        geom_bar(position="stack", stat="identity") +
-        scale_fill_manual(labels = c("Impr Value/SQFT", "Land Value/SQFT"), values = c("blue", "red")) + 
-        labs(fill=NULL) +
-        theme_classic() +
-        theme(axis.title.x=element_blank(), 
-              axis.title.y=element_blank(), 
-              legend.position = 'top') +
-        coord_flip()  +
-        scale_y_continuous(expand = c(0, NA))
+      ggplot(display_df, aes(fill=Percentage, y=zone, x=type), linetype=0) +
+        geom_tile() + 
+        geom_label(aes(label = Percentage_label)) + 
+          theme_classic() +
+          theme(axis.line=element_blank(),
+                axis.title.x=element_blank(),
+                axis.title.y=element_blank()) + 
+          scale_fill_gradient(low='white', high='blue', limits=c(0,1), labels=percent)
+      # display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, each=2), 
+      #                          value=c(values$agg_df$Zone_Land_Value, values$agg_df$Zone_Impr_Value),
+      #                          type=rep(c('Zone_Land_Value', 'Zone_Impr_Value'), times=length(table(values$agg_df$zoning_type_text))))
+      # display_df$value <- display_df$value[c(rep(1:nrow(values$agg_df), each=2) + rep(c(0,nrow(values$agg_df)), times=nrow(values$agg_df)))]
+      # display_df$zone<- factor(display_df$zone, levels=rev(sort(unique(display_df$zone))))
+      # ggplot(display_df, aes(fill=type, x=zone, y=value)) +
+      #   geom_bar(position="stack", stat="identity") +
+      #   scale_fill_manual(labels = c("Impr Value/SQFT", "Land Value/SQFT"), values = c("blue", "red")) + 
+      #   labs(fill=NULL) +
+      #   theme_classic() +
+      #   theme(axis.title.x=element_blank(), 
+      #         axis.title.y=element_blank(), 
+      #         legend.position = 'top') +
+      #   coord_flip()  +
+      #   scale_y_continuous(expand = c(0, NA))
     })
     output$legend <- render_tableHTML({
       if(input$colortype == 'Zone Type'){
