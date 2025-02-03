@@ -27,23 +27,26 @@ ui <- fluidPage(
                                               choices = names(table(gg_df$use_type_text)),
                                               options = list(`actions-box` = TRUE), multiple = T),
                                            actionButton('filter', 'Apply Filter', value=0)),
-                                column(3, radioButtons("datatype", h4("Type of Metric"),
+                                column(3, fluidRow(selectInput("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value/SQFT" = "Total Value/SQFT", 
                                                                     "Land Value/SQFT" = "Land Value/SQFT", 
                                                                     "Impr Value/SQFT" = "Impr Value/SQFT"),
-                                                        selected = "Total Value/SQFT")
+                                                        selected = "Total Value/SQFT")),
+                                       fluidRow(selectInput("colortype", h4("Coloring Scheme"),
+                                                             choices = c("Value/SQFT" = "Value/SQFT",
+                                                                         "Zone Type" = "Zone Type"),
+                                                             selected = "Value/SQFT"))
                                        ),
-                                column(4, radioButtons("colortype", h4("Coloring Scheme"),
-                                                       choices = c("Zone Type" = "Zone Type", 
-                                                                   "Value/SQFT" = "Value/SQFT"),
-                                                       selected = "Zone Type")
+                                column(4, h4("APN prefixes"),
+                                       textAreaInput("APNs", h5('Separate prefixes with a comma e.g. 001,0022'))
                                        )
                               ),
-                        br(),
                         tableOutput('summarytable'),
                         fluidRow(column(3, br(),
                                            tableOutput('legend')),
-                                 column(8, fluidRow(plotOutput('valueplot', height='340px'))))
+                                 column(9, br(),
+                                           tableOutput('parcelareatable')))
+                                 # column(8, fluidRow(plotOutput('valueplot', height='315px'))))
                         )
                   )
            ),

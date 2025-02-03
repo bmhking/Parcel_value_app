@@ -20,10 +20,11 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 - Added Color Scheme by value instead of zone (9/2)
 - Updated color legend so now it shows the legend based on whether the user selected zone type or value per sqft to color (9/2)
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
+- Added filter for parcels based on APN that integrates with the other dropdown menus (2/2)
+- Replaced stacked barchart with a further summary of the zoning types. Also added more statistics to the usage type table (2/2)
 
 # Need help with:
-- Optimize the web app - it would be very helpful since it is taking a lot of RAM
-- Plot the parcels on their actual parcel map since I don't have that map - now it is plotted as a column with fixed radius
-- Since the base data is too big to load into Github, setup a sql database to read the data from
-- Find a way to dynamically change color scheme
-- Implement vmt analysis
+- Getting it running on a web server
+- Plot the parcels on their actual parcel map since the parcel shapefile is too large for my computer to run
+- Since the base data is too big to load into Github, setup a database to read the data from
+- Get the latest 2024 assessment from SANDAG
