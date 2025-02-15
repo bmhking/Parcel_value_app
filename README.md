@@ -22,9 +22,9 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 - Add mode of map which shows ROI (total value per sqft - infrastructure cost per sqft) under certain assumptions
 - Added filter for parcels based on APN that integrates with the other dropdown menus (2/2)
 - Replaced stacked barchart with a further summary of the zoning types. Also added more statistics to the usage type table (2/2)
+- Updated with 2024 SANDAG assessments (2/13)
 
 # Need help with:
-- Getting it running on a web server
+- Getting it running on a web server. Currently I can run it on local Docker
 - Plot the parcels on their actual parcel map since the parcel shapefile is too large for my computer to run
 - Since the base data is too big to load into Github, setup a database to read the data from
-- Get the latest 2024 assessment from SANDAG
