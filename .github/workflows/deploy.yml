@@ -43,5 +43,5 @@ jobs:
           --image ${{ env.IMAGE_NAME }} \
           --region us-west2 \
           --platform managed \
-          --port=3838 \
+          --port=383 \
           --allow-unauthenticated
