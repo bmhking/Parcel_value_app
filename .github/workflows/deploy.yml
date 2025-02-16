@@ -2,7 +2,7 @@ name: Deploy to GCP
 on: push
 jobs:
   deploy:
-    runs-on: 'ubuntu-24.04'
+    runs-on: 'windows-latest'
     env:
       IMAGE_NAME: gcr.io/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.GCP_APP_NAME }}
       GCP_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
