@@ -63,7 +63,14 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqf
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 gg_df[which(gg_df$use_type_text == "NATURAL RESOURCES – MINING, EXTRACTIVE, PROCESSING CEMENT/SILICA PRODUCTS, ROCK & GRAVEL"), "use_type_text"] <-"NATURAL RESOURCES – MINING, ETC."
 ui <- fluidPage(
-  fluidRow(column(7, h2("San Diego Parcel Value Height Map"), h5("Evaluating every lot's value by standardizing the area"), deckglOutput("deck", height='675px')),
+  fluidRow(column(7, h2("San Diego Parcel Value Height Map"), 
+                  "Evaluating every lot's value by standardizing the area.", 
+                  tags$a(href="https://github.com/bmhking/Parcel_value_app", 
+                         "Repo link."), 
+                  tags$a(href="https://github.com/bmhking/Parcel_value_app", 
+                         "How to use this app."),
+                  
+                  deckglOutput("deck", height='675px')),
            column(5, fluidRow(
                         fluidRow(br(), column(5, pickerInput("city", NULL, 
                                              choices=names(table(gg_df$SITUS_COMM)), 
