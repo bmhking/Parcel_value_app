@@ -2,7 +2,7 @@ This app requires `Shiny` to run.
 
 # How to load the app in local
 I recommend using RStudio to run most R tasks, since RStudio integrates so well with many of the core functionalities of the language.  
-Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) that are listed in the `library(foo)` commands. Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. The app should work fine.  
+Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) that are listed in the `library(foo)` commands (or use the `renv.lock` file to download the environment). Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. The app should work fine.  
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example.png)
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example2.png)
 The APN box allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
