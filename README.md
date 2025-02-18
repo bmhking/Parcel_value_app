@@ -7,6 +7,8 @@ I recommend using RStudio to run most R tasks, since RStudio integrates so well 
 Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) that are listed in the `library(foo)` commands. Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. The app should work fine.  
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example.png)
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example2.png)
+The APN box allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels.
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
 
 # Future plans:
 - Change button UI to be more user-friendly (8/17)
@@ -23,8 +25,8 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 - Added filter for parcels based on APN that integrates with the other dropdown menus (2/2)
 - Replaced stacked barchart with a further summary of the zoning types. Also added more statistics to the usage type table (2/2)
 - Updated with 2024 SANDAG assessments (2/13)
+- Updated UI to make it more friendly (2/18)
 
 # Need help with:
-- Getting it running on a web server. Currently I can run it on local Docker
+- Optimizing the dashboard so it costs less to run on GCP
 - Plot the parcels on their actual parcel map since the parcel shapefile is too large for my computer to run
-- Since the base data is too big to load into Github, setup a database to read the data from

@@ -156,16 +156,16 @@ Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2
 # gg_df <- read_csv("{data/parcel_value_sdcounty.csv")
 tooltip_html <- "APN: {{APN_list}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
-  output$deck <- renderDeckgl({
-      deckgl(longitude=-116.75, 
-             latitude=33,
-             zoom=8.25,
-             pitch=45.0,
-             width = '100%', 
-             height = "100%",
-             bearing=0) %>%
-        add_mapbox_basemap("mapbox://styles/mapbox/light-v11")
-  })
+  # output$deck <- renderDeckgl({
+  #     deckgl(longitude=-116.75, 
+  #            latitude=33,
+  #            zoom=8.25,
+  #            pitch=45.0,
+  #            width = '100%', 
+  #            height = "100%",
+  #            bearing=0) %>%
+  #       add_mapbox_basemap("mapbox://styles/mapbox/light-v11")
+  # })
   values <- reactiveValues()
   values2 <- reactiveValues()
   refilter <- eventReactive(input$filter, {
@@ -331,10 +331,21 @@ server <- function(input, output, session) {
   observeEvent(input$filter, {
     refilter()
     layer_properties <- layerdata()
-    legend_table <- legenddata()
-    deckgl_proxy('deck') %>%
-      add_column_layer(data=values$plot_df, properties=layer_properties )%>%
-      update_deckgl()
+    legend_table <- legenddata()  
+    output$deck <- renderDeckgl({
+        deckgl(longitude=-116.75,
+               latitude=33,
+               zoom=8.25,
+               pitch=45.0,
+               width = '100%',
+               height = "100%",
+               bearing=0) %>%
+        add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
+        add_column_layer(data=values$plot_df, properties=layer_properties )
+    })
+    # deckgl_proxy('deck') %>%
+    #   add_column_layer(data=values$plot_df, properties=layer_properties )%>%
+    #   update_deckgl()
     output$summarytable <- render_tableHTML({
       display_df <- values$agg_df[, 1:5]
       display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
