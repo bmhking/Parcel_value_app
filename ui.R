@@ -63,11 +63,11 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqf
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 gg_df[which(gg_df$use_type_text == "NATURAL RESOURCES – MINING, EXTRACTIVE, PROCESSING CEMENT/SILICA PRODUCTS, ROCK & GRAVEL"), "use_type_text"] <-"NATURAL RESOURCES – MINING, ETC."
 ui <- fluidPage(
-  fluidRow(column(7, titlePanel("SD Parcel ROI"), deckglOutput("deck", height='700px')),
+  fluidRow(column(7, h2("San Diego Parcel Value Height Map"), h5("Evaluating every lot's value by standardizing the area"), deckglOutput("deck", height='675px')),
            column(5, fluidRow(
                         fluidRow(br(), column(5, pickerInput("city", NULL, 
                                              choices=names(table(gg_df$SITUS_COMM)), 
-                                             options = list(`actions-box` = TRUE), multiple = T),
+                                             options = list(`actions-box` = TRUE, title = "Select city/communities"), multiple = T),
                                            pickerInput("zone", NULL, 
                                                        choices = c('Unzoned',
                                                                    'Single-Family',
@@ -78,10 +78,10 @@ ui <- fluidPage(
                                                                    'Agricultural',
                                                                    'Special/Misc.',
                                                                    'Multi-Zone'), 
-                                             options = list(`actions-box` = TRUE), multiple = T),
+                                             options = list(`actions-box` = TRUE, title = "Select zoning types"), multiple = T),
                                            pickerInput("use", NULL, 
                                               choices = names(table(gg_df$use_type_text)),
-                                              options = list(`actions-box` = TRUE), multiple = T),
+                                              options = list(`actions-box` = TRUE, title = "Select parcel usages"), multiple = T),
                                            actionButton('filter', 'Apply Filter', value=0)),
                                 column(3, fluidRow(selectInput("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value/SQFT" = "Total Value/SQFT", 
@@ -94,14 +94,16 @@ ui <- fluidPage(
                                                              selected = "Value/SQFT"))
                                        ),
                                 column(4, h4("APN prefixes"),
-                                       textAreaInput("APNs", h5('Separate prefixes with a comma e.g. 001,0022'))
+                                       textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', height = '140px')
                                        )
                               ),
                         tableOutput('summarytable'),
                         fluidRow(column(3, br(),
                                            tableOutput('legend')),
                                  column(9, br(),
-                                           tableOutput('parcelareatable')))
+                                           tableOutput('parcelareatable'),
+                                           br(),
+                                           htmlOutput('scrolldowntip')))
                                  # column(8, fluidRow(plotOutput('valueplot', height='315px'))))
                         )
                   )

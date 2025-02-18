@@ -368,6 +368,9 @@ server <- function(input, output, session) {
         add_css_column(css = list('text-align', 'right'), 
                        columns = output_colnames3[2:length(output_colnames3)])
     })
+    output$scrolldowntip <- renderText({
+      '<h4>&#x2193 Scroll down to view usage-level summary</h4>'
+    })
     # output$valueplot <- renderPlot({
     #   display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, times=2), 
     #                            Percentage=c(values$agg_df$Zone_Area, 
