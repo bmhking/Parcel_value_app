@@ -8,7 +8,7 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 The APN box allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
 
-# Future plans:
+# History of edits:
 - Change button UI to be more user-friendly (8/17)
 - Add tooltip functionality to show you the address and zoning type of the parcel (8/17)
 - Add stacked bar chart showing the table summary of value per sqft (8/20)
