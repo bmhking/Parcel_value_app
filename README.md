@@ -16,9 +16,13 @@ The third column is the APN box which allows you to write in prefixes for the 10
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
 
 After setting all the filters, you can click the `Apply Filter` button and wait for the map to load. For example, the following image shows the results for selecting parcels from every community, zoning type, and parcel usage:
+
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_2.png)
+
 The left side is the map, while the right side includes summary statistics for every zoning type.
+
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_3.png)
+
 Scrolling down gives the summary statistics for every usage type.
 
 # How to load the app in local
