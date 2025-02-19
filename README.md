@@ -5,7 +5,7 @@ Foxhill Estates is the most expensive property in La Jolla, spanning over 30 acr
 
 # How to use the app
 When you open the link, the website looks like this:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_1.png)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_1.PNG)
 There are three columns of filters.
 
 In the first column, you can select different communities/zoning types/usages to map. The communities are taken from SANDAG, and selecting all of them gives you the full county. Note that the zoning types and usages are two separate classfications: just because a parcel is zoned for a specific type does not mean that the usage of the parcel is limited to that zoning type (e.g. a single family home zoning type parcel might still be a duplex or small corner store).
@@ -16,12 +16,9 @@ The third column is the APN box which allows you to write in prefixes for the 10
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
 
 After setting all the filters, you can click the `Apply Filter` button and wait for the map to load. For example, the following image shows the results for selecting parcels from every community, zoning type, and parcel usage:
-
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_2.png)
-
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_2.PNG)
 The left side is the map, while the right side includes summary statistics for every zoning type.
-
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_3.png)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_3.PNG)
 
 Scrolling down gives the summary statistics for every usage type.
 
