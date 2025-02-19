@@ -85,7 +85,7 @@ is_noninteger_column <- function(x){
   }
 }
 print_2_digits <- function(x){
-  return(format(round(x, digits=2), nsmall = 2))
+  return(format(round(x, digits=2), nsmall = 2, big.mark = ","))
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 # gg_df <- read_csv("{data/parcel_value_sdcounty.csv")
