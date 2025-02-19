@@ -67,7 +67,7 @@ ui <- fluidPage(
                   "Evaluating every lot's value by standardizing the area.", 
                   tags$a(href="https://github.com/bmhking/Parcel_value_app", 
                          "Repo link."), 
-                  tags$a(href="https://github.com/bmhking/Parcel_value_app", 
+                  tags$a(href="https://bmhking.github.io/Parcel_value_app/", 
                          "How to use this app."),
                   
                   deckglOutput("deck", height='675px')),
