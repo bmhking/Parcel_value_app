@@ -3,6 +3,8 @@ The dashboard shows value/sqft of every taxable parcel in San Diego County. Why 
 
 Foxhill Estates is the most expensive property in La Jolla, spanning over 30 acres and just sold at $35 million. That means it is assessed at $25/sqft. In contrast, Meadowbrook Apartments in Bay Terrace is a Section 8 housing unit that houses more than 200 households. It used to be a very sketchy place, albeit in the past 10 years it has been improving. It is assessed at $65/sqft - 280% that of Foxhill Estate's. Therefore for the public to evaluate the efficacy of land, just looking at market or assessed value is not enough. The value must be standardized by area for it to be meaningful.
 
+I am using this methodology to write a paper on how high residential water usage and low property tax efficiency are connected in San Diego.
+
 # How to use the app
 When you open the link, the website looks like this:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_1.PNG)
@@ -14,6 +16,10 @@ The second column decides what value is plotted and the coloring scheme. There a
 
 The third column is the APN box which allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. The app will only show parcels that begin with those prefixes (you can enter any amount of prefixes, and there is no prefix digit requirement). Separate every prefix with a comma. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
+Another example for Convoy district. All parcels in Convoy have an APN that start with 356:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/tutorial/tutorial_4.png)
+Hovering over a column will show you information about that parcel:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/tutorial/tutorial_5.png)
 
 After setting all the filters, you can click the `Apply Filter` button and wait for the map to load. For example, the following image shows the results for selecting parcels from every community, zoning type, and parcel usage:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_2.PNG)
@@ -23,9 +29,9 @@ The left side is the map, while the right side includes summary statistics for e
 Scrolling down gives the summary statistics for every usage type.
 
 # How to load the app in local
-This app requires `Shiny` to runi in local.  
+This app requires `Shiny` to run in local. 
 I recommend using RStudio to run most R tasks, since RStudio integrates so well with many of the core functionalities of the language.  
-Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) that are listed in the `library(foo)` commands (or use the `renv.lock` file to download the environment). Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. 
+Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) (or use the `renv.lock` file to download the environment - requires `renv` package). Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. 
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example.png)
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example2.png)
 
