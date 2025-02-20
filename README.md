@@ -17,9 +17,9 @@ The second column decides what value is plotted and the coloring scheme. There a
 The third column is the APN box which allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. The app will only show parcels that begin with those prefixes (you can enter any amount of prefixes, and there is no prefix digit requirement). Separate every prefix with a comma. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
 Another example for Convoy district. All parcels in Convoy have an APN that start with 356:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/tutorial/tutorial_4.png)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/tutorial/tutorial_4.PNG)
 Hovering over a column will show you information about that parcel:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/tutorial/tutorial_5.png)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/tutorial/tutorial_5.PNG)
 
 After setting all the filters, you can click the `Apply Filter` button and wait for the map to load. For example, the following image shows the results for selecting parcels from every community, zoning type, and parcel usage:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_2.PNG)
