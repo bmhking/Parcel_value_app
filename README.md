@@ -13,6 +13,7 @@ There are three columns of filters. After setting all the filters, you can click
 The left side is the map, while the right side includes summary statistics for every zoning type.
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_3.PNG)
 Scrolling down gives the summary statistics for every usage type.
+
 In the first column, you can select different communities/zoning types/usages to map. The communities are taken from SANDAG, and selecting all of them gives you the full county. Note that the zoning types and usages are two separate classfications: just because a parcel is zoned for a specific type does not mean that the usage of the parcel is limited to that zoning type (e.g. a single family home zoning type parcel might still be a duplex or small corner store).
 
 The second column decides what value is plotted and the coloring scheme. There are three values to select: land, improvement, and total value per sqft. Land value + improvement value = total value. There are two coloring schemes: by value and by zoning type. The zoning type color scheme is taken from [New York's zoning guide](https://www.nyc.gov/assets/planning/download/pdf/applicants/applicant-portal/area_map_standard.pdf). The value color scheme was created by me to cater specifically to the three value types in San Diego County. While for all three value types, the color goes from dark green to red to blue, for each of the three value types, the thresholds are different.
