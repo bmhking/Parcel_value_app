@@ -62,14 +62,14 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 900 & gg_df$impr_value_per_sqft
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqft >= 900] <- '#C54BBC'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 gg_df[which(gg_df$use_type_text == "NATURAL RESOURCES – MINING, EXTRACTIVE, PROCESSING CEMENT/SILICA PRODUCTS, ROCK & GRAVEL"), "use_type_text"] <-"NATURAL RESOURCES – MINING, ETC."
+
 ui <- fluidPage(
   fluidRow(column(7, h2("San Diego Parcel Value Height Map"), 
-                  "Evaluating every lot's value by standardizing the area.", 
+                  "Evaluating every lot's value through standardizing by area.", 
                   tags$a(href="https://github.com/bmhking/Parcel_value_app", 
                          "Repo link."), 
                   tags$a(href="https://bmhking.github.io/Parcel_value_app/", 
                          "How to use this app."),
-                  
                   deckglOutput("deck", height='675px')),
            column(5, fluidRow(
                         fluidRow(br(), column(5, pickerInput("city", NULL, 
@@ -89,7 +89,8 @@ ui <- fluidPage(
                                            pickerInput("use", NULL, 
                                               choices = names(table(gg_df$use_type_text)),
                                               options = list(`actions-box` = TRUE, title = "Select parcel usages"), multiple = T),
-                                           actionButton('filter', 'Apply Filter', value=0)),
+                                           tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
+                                                    actionButton('filter', HTML("<b>Apply Filters</b>"), value=0))),
                                 column(3, fluidRow(selectInput("datatype", h4("Type of Metric"),
                                                         choices = c("Total Value/SQFT" = "Total Value/SQFT", 
                                                                     "Land Value/SQFT" = "Land Value/SQFT", 
@@ -111,7 +112,6 @@ ui <- fluidPage(
                                            tableOutput('parcelareatable'),
                                            br(),
                                            htmlOutput('scrolldowntip')))
-                                 # column(8, fluidRow(plotOutput('valueplot', height='315px'))))
                         )
                   )
            ),

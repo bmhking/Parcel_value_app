@@ -131,6 +131,10 @@ server <- function(input, output, session) {
                 Zone_Avg_Area = mean(as.numeric(shape_area)),
                 Zone_Median_Area = median(as.numeric(shape_area)))
     plotdata_df_parcelarea <- plotdata_df_agg[, c(1, 7, 8, 9)]
+    plotdata_df_parcelarea[nrow(plotdata_df_parcelarea) + 1, ] <- list(zoning_type_text = "Total",
+       Zone_Parcel_Num = sum(plotdata_df_agg$Zone_Parcel_Num),
+       Zone_Avg_Area = sum(plotdata_df_agg$Zone_Area) / sum(plotdata_df_agg$Zone_Parcel_Num),
+       Zone_Median_Area = median(as.numeric(plotdata_df$shape_area)))
     plotdata_df_agg <- plotdata_df_agg[, 1:6]
     plotdata_df_agg[nrow(plotdata_df_agg) + 1, ] <- list(zoning_type_text = "Total",
        Zone_Area = sum(plotdata_df_agg$Zone_Area),
@@ -315,7 +319,7 @@ server <- function(input, output, session) {
                        columns = output_colnames3[2:length(output_colnames3)])
     })
     output$scrolldowntip <- renderText({
-      '<h4>&#x2193 Scroll down to view usage-level summary</h4>'
+      '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;">  &#x2193Scroll down to view usage-level summary  </b>'
     })
     # output$valueplot <- renderPlot({
     #   display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, times=2), 
