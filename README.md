@@ -32,6 +32,7 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 
 # Further examples of what you can do with the app:
 1. Rancho Santa Fe analysis
+
 Rancho Santa Fe is the most affluent neighborhood in San Diego county. Are their houses as wealthy as we think they are?
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_ranchosantafe.PNG)
 Rancho Santa Fe is assessed at $25.54/sqft. San Diego city is assessed at $84.62/sqft - more than 3 times that of Rancho Santa Fe. Rancho Santa Fe is receiving subsidies that is paid for by citizens in the city. If Rancho Santa Fe was developed to San Diego city's average value/sqft, we would see an increase of property value equal to:
@@ -41,6 +42,7 @@ Rancho Santa Fe is assessed at $25.54/sqft. San Diego city is assessed at $84.62
 That's 47 full Shohei Ohtani contracts, or 5 full lineups of him.
 
 2. Comparing the two sides of Balboa Park
+
 To the west side of Balboa Park is 6th Ave which is full of "luxury" apartments (aka anything built in the past 10 years) whom white homeowners keep telling me makes housing unaffordable (I'm sure they live in very affordable homes) and will block the sun (because it is common knowledge that the sun rests on second floor). To the east of Balboa Park are a bunch of single family homes in North and South Park where a lot of these homeowners live:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_balboaparkcomparison.PNG)
 The west side apartments full of million dollar, unaffordable condos are assessed at 6 times more than the east side 1.5 million dollar, affordable houses. The difference in property value is around $1.76 billion - or $17.6 million dollars of property tax income every year. It's obvious which side is more affordable for the local government
