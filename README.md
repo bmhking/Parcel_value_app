@@ -36,9 +36,7 @@ Once you download RStudio, download the required libraries in `ui.R` and `server
 Rancho Santa Fe is the most affluent neighborhood in San Diego county. Are their houses as wealthy as we think they are?
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_ranchosantafe.PNG)
 Rancho Santa Fe is assessed at $25.54/sqft. San Diego city is assessed at $84.62/sqft - more than 3 times that of Rancho Santa Fe. Rancho Santa Fe is receiving subsidies that is paid for by citizens in the city. If Rancho Santa Fe was developed to San Diego city's average value/sqft, we would see an increase of property value equal to:
-```math
-(\$84.62-\$25.54)\times556,300,609.60=\$32,866,240,015.20
-```
+$(\$84.62-\$25.54)\times556,300,609.60=\$32,866,240,015.20$
 That's 47 full Shohei Ohtani contracts, or 5 full lineups of him.
 
 2. Comparing the two sides of Balboa Park
