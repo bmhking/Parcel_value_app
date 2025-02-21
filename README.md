@@ -21,16 +21,26 @@ The second column decides what value is plotted and the coloring scheme. There a
 The third column is the APN box which allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. The app will only show parcels that begin with those prefixes (you can enter any amount of prefixes, and there is no prefix digit requirement). Separate every prefix with a comma. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
 Another example for Convoy district. All parcels in Convoy have an APN that start with 356:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_4.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_convoy.PNG)
 Hovering over a column will show you information about that parcel:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_5.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_convoy_column.PNG)
 
 # How to load the app in local
 This app requires `Shiny` to run in local. 
 I recommend using RStudio to run most R tasks, since RStudio integrates so well with many of the core functionalities of the language.  
 Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) (or use the `renv.lock` file to download the environment - requires `renv` package). Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. 
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example.png)
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example2.png)
+
+# Further examples of what you can do with the app:
+1. Rancho Santa Fe analysis
+Rancho Santa Fe is the most affluent neighborhood in San Diego county. Are their houses as wealthy as we think they are?
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_ranchosantafe.PNG)
+Rancho Santa Fe is assessed at $25.54/sqft. San Diego city is assessed at $84.62/sqft - more than 3 times that of Rancho Santa Fe. Rancho Santa Fe is receiving subsidies that is paid for by citizens in the city. If Rancho Santa Fe was developed to San Diego city's average value/sqft, we would see an increase of property value equal to:
+$$(\$84.62-\$25.54)\times556,300,609.60=\$32,866,240,015.20$$
+That's 47 full Shohei Ohtani contracts, or 5 full lineups of him.
+2. Comparing the two sides of Balboa Park
+To the west side of Balboa Park is 6th Ave which is full of "luxury" apartments (aka anything built in the past 10 years) whom white homeowners keep telling me makes housing unaffordable (I'm sure they live in very affordable homes) and will block the sun (because it is common knowledge that the sun rests on second floor). To the east of Balboa Park are a bunch of single family homes in North and South Park where a lot of these homeowners live:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_balboaparkcomparison.PNG)
+The west side apartments full of million dollar, unaffordable condos are assessed at 6 times more than the east side 1.5 million dollar, affordable houses. The difference in property value is around $1.76 billion - or $17.6 million dollars of property tax income every year. It's obvious which side is more affordable for the local government
 
 # History of edits:
 - Change button UI to be more user-friendly (8/17)
