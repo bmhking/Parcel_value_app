@@ -39,6 +39,7 @@ Rancho Santa Fe is assessed at $25.54/sqft. San Diego city is assessed at $84.62
 (\$84.62-\$25.54)\times556,300,609.60=\$32,866,240,015.20
 ```
 That's 47 full Shohei Ohtani contracts, or 5 full lineups of him.
+
 2. Comparing the two sides of Balboa Park
 To the west side of Balboa Park is 6th Ave which is full of "luxury" apartments (aka anything built in the past 10 years) whom white homeowners keep telling me makes housing unaffordable (I'm sure they live in very affordable homes) and will block the sun (because it is common knowledge that the sun rests on second floor). To the east of Balboa Park are a bunch of single family homes in North and South Park where a lot of these homeowners live:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_balboaparkcomparison.PNG)
