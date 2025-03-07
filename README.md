@@ -64,6 +64,9 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Updated with 2024 SANDAG assessments (2/13)
 - Updated UI to make it more friendly (2/18)
 - Added commas to the area values (2/18)
+- Add ability to read in a file of APNs
+- Add ability to filter by lot size
+- Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius)
 
 # Need help with:
 - Optimizing the dashboard so it costs less to run on GCP
