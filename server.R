@@ -120,6 +120,13 @@ server <- function(input, output, session) {
       APN_selected <- APN_selected[!duplicated(APN_selected)]
       plotdata_df <- plotdata_df %>% filter(APN_list %in% APN_selected)
     }
+    if(is.na(input$lotsizemax) & !is.na(input$lotsizemin)){
+      plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin)
+    }else if(!is.na(input$lotsizemax) & is.na(input$lotsizemin)){
+      plotdata_df <- plotdata_df %>% filter(shape_area <= input$lotsizemax)
+    }else if(!is.na(input$lotsizemax) & !is.na(input$lotsizemin)){
+      plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin & shape_area <= input$lotsizemax)
+    }
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -266,6 +273,10 @@ server <- function(input, output, session) {
     legend_for_plot
   })
   
+  observeEvent(input$resetlotsize, {
+    updateNumericInput(session, "lotsizemin", value = NA)
+    updateNumericInput(session, "lotsizemax", value = NA)
+  })
   
   observeEvent(input$filter, {
     refilter()
