@@ -8,59 +8,6 @@ gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
-gg_df$zonecolor <- '#000000'
-gg_df$zonecolor[gg_df$zoning_type_group == 0] <- '#FFFFFF'
-gg_df$zonecolor[gg_df$zoning_type_group == 10] <- '#FFFF00'
-gg_df$zonecolor[gg_df$zoning_type_group == 20] <- '#FF7F50'
-gg_df$zonecolor[gg_df$zoning_type_group == 30] <- '#FF7F50'
-gg_df$zonecolor[gg_df$zoning_type_group == 40] <- '#FFA500'
-gg_df$zonecolor[gg_df$zoning_type_group == 50] <- '#FF0000'
-gg_df$zonecolor[gg_df$zoning_type_group == 60] <- '#FF0000'
-gg_df$zonecolor[gg_df$zoning_type_group == 70] <- '#800080'
-gg_df$zonecolor[gg_df$zoning_type_group == 80] <- '#00FF00'
-gg_df$zonecolor[gg_df$zoning_type_group == 90] <- '#0000FF'
-gg_df$totalvaluecolor <- '#000000'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 25 & gg_df$total_value_per_sqft >= 0] <- '#0B5345'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 50 & gg_df$total_value_per_sqft >= 25] <- '#0E6655'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 75 & gg_df$total_value_per_sqft >= 50] <- '#1E8449'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 100 & gg_df$total_value_per_sqft >= 75] <- '#229954'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 150 & gg_df$total_value_per_sqft >= 100] <- '#27AE60'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 200 & gg_df$total_value_per_sqft >= 150] <- '#9ACD32'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 250 & gg_df$total_value_per_sqft >= 200] <- '#E1E000'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 350 & gg_df$total_value_per_sqft >= 250] <- '#FEBA4F'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 500 & gg_df$total_value_per_sqft >= 350] <- '#FF7F50'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 750 & gg_df$total_value_per_sqft >= 500] <- '#FF4500'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 1000 & gg_df$total_value_per_sqft >= 750] <- '#D21404'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 2000 & gg_df$total_value_per_sqft >= 1000] <- '#C54BBC'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft >= 2000] <- '#603FEF'
-gg_df$landvaluecolor <- '#000000'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 10 & gg_df$land_value_per_sqft >= 0] <- '#0B5345'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 20 & gg_df$land_value_per_sqft >= 10] <- '#0E6655'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 35 & gg_df$land_value_per_sqft >= 20] <- '#1E8449'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 50 & gg_df$land_value_per_sqft >= 35] <- '#229954'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 75 & gg_df$land_value_per_sqft >= 50] <- '#27AE60'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 100 & gg_df$land_value_per_sqft >= 75] <- '#9ACD32'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 125 & gg_df$land_value_per_sqft >= 100] <- '#E1E000'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 150 & gg_df$land_value_per_sqft >= 125] <- '#FEBA4F'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 200 & gg_df$land_value_per_sqft >= 150] <- '#FF7F50'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 300 & gg_df$land_value_per_sqft >= 200] <- '#FF4500'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 400 & gg_df$land_value_per_sqft >= 300] <- '#D21404'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 500 & gg_df$land_value_per_sqft >= 400] <- '#C54BBC'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft >= 500] <- '#603FEF'
-gg_df$imprvaluecolor <- '#000000'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 10 & gg_df$impr_value_per_sqft >= 0] <- '#008000'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 20 & gg_df$impr_value_per_sqft >= 10] <- '#0E6655'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 35 & gg_df$impr_value_per_sqft >= 20] <- '#1E8449'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 50 & gg_df$impr_value_per_sqft >= 35] <- '#229954'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 75 & gg_df$impr_value_per_sqft >= 50] <- '#27AE60'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 100 & gg_df$impr_value_per_sqft >= 75] <- '#9ACD32'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 150 & gg_df$impr_value_per_sqft >= 100] <- '#E1E000'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 200 & gg_df$impr_value_per_sqft >= 150] <- '#FEBA4F'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 300 & gg_df$impr_value_per_sqft >= 200] <- '#FF7F50'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 500 & gg_df$impr_value_per_sqft >= 300] <- '#FF4500'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 900 & gg_df$impr_value_per_sqft >= 500] <- '#D21404'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqft >= 900] <- '#C54BBC'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 gg_df[which(gg_df$use_type_text == "NATURAL RESOURCES – MINING, EXTRACTIVE, PROCESSING CEMENT/SILICA PRODUCTS, ROCK & GRAVEL"), "use_type_text"] <-"NATURAL RESOURCES – MINING, ETC."
 
 tabset_css <- "
@@ -122,11 +69,11 @@ ui <- fluidPage(
                                             textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
                                                           height = '140px', width = '100%')
                                             ),
-                                   tabPanel("Lot Size", HTML("<b>In SQFT (1 Acre = 43560 SQFT)</b>"),
-                                            fluidRow(column(6, 
-                                                      numericInput("lotsizemin", "Minimum Lot Size:", NA, min = 0, max = max(gg_df$shape_area)),
+                                   tabPanel("Lot Size (in SQFT)", br(),
+                                            fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size:", NA, min = 0, max = max(gg_df$shape_area)),
                                                       numericInput("lotsizemax", "Maximum Lot Size:", NA, min = 0, max = max(gg_df$shape_area))),
-                                                     column(5, actionButton('resetlotsize', "Reset Lot Size Range", value=0, style = "height: 120px")))
+                                                     column(5, HTML("<b>1 Acre = 43560 SQFT</b>"),
+                                                            actionButton('resetlotsize', "Reset Lot Size Range", value=0, style = "height: 120px")))
                                             )
                                    ),
                   tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",

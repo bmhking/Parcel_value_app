@@ -14,6 +14,7 @@ gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
+# old color scheme: '#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF'
 gg_df$zonecolor <- '#000000'
 gg_df$zonecolor[gg_df$zoning_type_group == 0] <- '#FFFFFF'
 gg_df$zonecolor[gg_df$zoning_type_group == 10] <- '#FFFF00'
@@ -27,13 +28,13 @@ gg_df$zonecolor[gg_df$zoning_type_group == 80] <- '#00FF00'
 gg_df$zonecolor[gg_df$zoning_type_group == 90] <- '#0000FF'
 gg_df$totalvaluecolor <- '#000000'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 25 & gg_df$total_value_per_sqft >= 0] <- '#0B5345'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 50 & gg_df$total_value_per_sqft >= 25] <- '#0E6655'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 75 & gg_df$total_value_per_sqft >= 50] <- '#1E8449'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 100 & gg_df$total_value_per_sqft >= 75] <- '#229954'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 150 & gg_df$total_value_per_sqft >= 100] <- '#27AE60'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 200 & gg_df$total_value_per_sqft >= 150] <- '#9ACD32'
+gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 50 & gg_df$total_value_per_sqft >= 25] <- '#14714E'
+gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 75 & gg_df$total_value_per_sqft >= 50] <- '#1E9057'
+gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 100 & gg_df$total_value_per_sqft >= 75] <- '#27AE60'
+gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 150 & gg_df$total_value_per_sqft >= 100] <- '#65BF40'
+gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 200 & gg_df$total_value_per_sqft >= 150] <- '#A3CF20'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 250 & gg_df$total_value_per_sqft >= 200] <- '#E1E000'
-gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 350 & gg_df$total_value_per_sqft >= 250] <- '#FEBA4F'
+gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 350 & gg_df$total_value_per_sqft >= 250] <- '#F0B028'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 500 & gg_df$total_value_per_sqft >= 350] <- '#FF7F50'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 750 & gg_df$total_value_per_sqft >= 500] <- '#FF4500'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 1000 & gg_df$total_value_per_sqft >= 750] <- '#D21404'
@@ -41,42 +42,40 @@ gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 2000 & gg_df$total_value_per_
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft >= 2000] <- '#603FEF'
 gg_df$landvaluecolor <- '#000000'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft < 10 & gg_df$land_value_per_sqft >= 0] <- '#0B5345'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 20 & gg_df$land_value_per_sqft >= 10] <- '#0E6655'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 35 & gg_df$land_value_per_sqft >= 20] <- '#1E8449'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 50 & gg_df$land_value_per_sqft >= 35] <- '#229954'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 75 & gg_df$land_value_per_sqft >= 50] <- '#27AE60'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 100 & gg_df$land_value_per_sqft >= 75] <- '#9ACD32'
+gg_df$landvaluecolor[gg_df$land_value_per_sqft < 20 & gg_df$land_value_per_sqft >= 10] <- '#14714E'
+gg_df$landvaluecolor[gg_df$land_value_per_sqft < 35 & gg_df$land_value_per_sqft >= 20] <- '#1E9057'
+gg_df$landvaluecolor[gg_df$land_value_per_sqft < 50 & gg_df$land_value_per_sqft >= 35] <- '#27AE60'
+gg_df$landvaluecolor[gg_df$land_value_per_sqft < 75 & gg_df$land_value_per_sqft >= 50] <- '#65BF40'
+gg_df$landvaluecolor[gg_df$land_value_per_sqft < 100 & gg_df$land_value_per_sqft >= 75] <- '#A3CF20'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft < 125 & gg_df$land_value_per_sqft >= 100] <- '#E1E000'
-gg_df$landvaluecolor[gg_df$land_value_per_sqft < 150 & gg_df$land_value_per_sqft >= 125] <- '#FEBA4F'
+gg_df$landvaluecolor[gg_df$land_value_per_sqft < 150 & gg_df$land_value_per_sqft >= 125] <- '#F0B028'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft < 200 & gg_df$land_value_per_sqft >= 150] <- '#FF7F50'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft < 300 & gg_df$land_value_per_sqft >= 200] <- '#FF4500'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft < 400 & gg_df$land_value_per_sqft >= 300] <- '#D21404'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft < 500 & gg_df$land_value_per_sqft >= 400] <- '#C54BBC'
 gg_df$landvaluecolor[gg_df$land_value_per_sqft >= 500] <- '#603FEF'
 gg_df$imprvaluecolor <- '#000000'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 10 & gg_df$impr_value_per_sqft >= 0] <- '#008000'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 20 & gg_df$impr_value_per_sqft >= 10] <- '#0E6655'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 35 & gg_df$impr_value_per_sqft >= 20] <- '#1E8449'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 50 & gg_df$impr_value_per_sqft >= 35] <- '#229954'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 75 & gg_df$impr_value_per_sqft >= 50] <- '#27AE60'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 100 & gg_df$impr_value_per_sqft >= 75] <- '#9ACD32'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 10 & gg_df$impr_value_per_sqft >= 0] <- '#0B5345'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 20 & gg_df$impr_value_per_sqft >= 10] <- '#14714E'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 35 & gg_df$impr_value_per_sqft >= 20] <- '#1E9057'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 50 & gg_df$impr_value_per_sqft >= 35] <- '#27AE60'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 75 & gg_df$impr_value_per_sqft >= 50] <- '#65BF40'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 100 & gg_df$impr_value_per_sqft >= 75] <- '#A3CF20'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 150 & gg_df$impr_value_per_sqft >= 100] <- '#E1E000'
-gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 200 & gg_df$impr_value_per_sqft >= 150] <- '#FEBA4F'
+gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 200 & gg_df$impr_value_per_sqft >= 150] <- '#F0B028'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 300 & gg_df$impr_value_per_sqft >= 200] <- '#FF7F50'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 500 & gg_df$impr_value_per_sqft >= 300] <- '#FF4500'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 900 & gg_df$impr_value_per_sqft >= 500] <- '#D21404'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqft >= 900] <- '#C54BBC'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
-use_text <- fromJSON(file = "data/use_code_sd.txt")
 
+use_text <- fromJSON(file = "data/use_code_sd.txt")
 use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
 output_colnames2 <- c('Usage', 'No. of Parcels', 'Total Area in SQFT', 'Mean Parcel Area', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
 output_colnames3 <- c('Zone Type', 'No. of Parcels', 'Mean Parcel Area', 'Median Parcel Area')
-city_prop_tax_revenue <- data.frame(city=c('CARLSBAD', 'CHULA VISTA', 'CORONADO', 'DEL MAR', 'EL CAJON', 'ENCINITAS', 'ESCONDIDO', 'IMPERIAL BEACH', 'LA MESA', 'LEMON GROVE', 'NATIONAL CITY', 'OCEANSIDE', 'POWAY', 'SAN MARCOS', 'SAN DIEGO', 'SANTEE', 'SOLANA BEACH', 'VISTA'), 
-                                    actual_prop_tax=c(84200000, 40877000, 39357663, 7532110, 13491146, 57756627, 35068340, 8450100, 16937640, 6826468, 13924393, 85070732, 26256293, 29253790, 706200000, 24588330, 9235000, 33589780))
 is_noninteger_column <- function(x){
   if(is.numeric(x)){
     return(!all(x==as.integer(x)))
@@ -363,7 +362,7 @@ server <- function(input, output, session) {
         legend_table %>%
           tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
           add_css_rows_in_column(css = list('background-color',
-                                            c('#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
+                                            c('#0B5345', '#14714E', '#1E9057', '#27AE60', '#65BF40', '#A3CF20', '#E1E000', '#F0B028', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
                                  column = 'Color') %>%
           add_css_header(css = list('opacity', 0), headers = 1)
       }
