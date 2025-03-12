@@ -75,7 +75,7 @@ ui <- fluidPage(
                                             )
                                    ),
                   tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
-                            actionButton('filter', HTML("<b>Apply Filters</b>"), value=0)),
+                            actionButton('filter', HTML("<b>Show Map</b>"), value=0)),
                   br(), br(),
                   tableOutput('summarytable'),
                   fluidRow(column(3, tableOutput('legend')),
