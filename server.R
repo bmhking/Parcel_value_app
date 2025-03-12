@@ -88,7 +88,7 @@ print_2_digits <- function(x){
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 # gg_df <- read_csv("{data/parcel_value_sdcounty.csv")
-tooltip_html <- "APN: {{APN_list}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Area in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
+tooltip_html <- "APN: {{APN_list}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Lot Size in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
   # output$deck <- renderDeckgl({
   #     deckgl(longitude=-116.75, 
@@ -300,12 +300,12 @@ server <- function(input, output, session) {
       display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
         c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
       colnames(display_df) <- output_colnames
-      display_df %>% 
+      display_df <- display_df %>% 
         mutate_if(is_noninteger_column, print_2_digits) %>%
-        tableHTML(widths = c(100, rep(150, 4)),
-                  rownames = FALSE) %>% 
+        tableHTML(widths = c(100, rep(150, 4)), rownames = FALSE) %>% 
         add_css_column(css = list('text-align', 'right'), 
-                       columns = output_colnames[2:length(output_colnames)])
+                       columns = output_colnames[2:length(output_colnames)]) %>%
+        add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
     })
     output$expandedtable <- renderDT({
       display_df <- values$expanded_df[, 1:7]
@@ -326,7 +326,8 @@ server <- function(input, output, session) {
         tableHTML(widths = c(100, 110, 150, 150),
                   rownames = FALSE) %>% 
         add_css_column(css = list('text-align', 'right'), 
-                       columns = output_colnames3[2:length(output_colnames3)])
+                       columns = output_colnames3[2:length(output_colnames3)]) %>%
+        add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
     })
     output$scrolldowntip <- renderText({
       '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;">  &#x2193Scroll down to view usage-level summary  </b>'
