@@ -67,11 +67,17 @@ ui <- fluidPage(
                                             textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
                                                           height = '140px', width = '100%')
                                             ),
-                                   tabPanel("Lot Size Condition (in SQFT)", br(),
+                                   tabPanel("Latitude/Longitude", br(),
+                                            fluidRow(column(6, numericInput("lat", "Latitude (SD center: 32.7157):", NA, min = -90, max = 90),
+                                                            numericInput("lon", "Longitude (SD center: -117.1611):", NA, min = -180, max = 180)),
+                                                     column(5, HTML("<b>Show parcels within 0.01 degrees of entered coordinates (around a radius of 1 mile).</b>"),
+                                                            br(), br(), actionButton('resetlatlon', HTML("<b>Reset Latitude & Longitude</b>"), value=0, style = "height: 50px")))
+                                   ),
+                                   tabPanel("Lot Size Condition", br(),
                                             fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size:", NA, min = 0, max = max(gg_df$shape_area)),
                                                       numericInput("lotsizemax", "Maximum Lot Size:", NA, min = 0, max = max(gg_df$shape_area))),
-                                                     column(5, HTML("<b>1 Acre = 43560 SQFT</b>"),
-                                                            actionButton('resetlotsize', "Reset Lot Size Range", value=0, style = "height: 120px")))
+                                                     column(5, HTML("<b>In SQFT<br>1 Acre = 43560 SQFT</b>"),
+                                                            actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100px")))
                                             )
                                    ),
                   tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",

@@ -126,6 +126,9 @@ server <- function(input, output, session) {
     }else if(!is.na(input$lotsizemax) & !is.na(input$lotsizemin)){
       plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin & shape_area <= input$lotsizemax)
     }
+    if(!is.na(input$lat) & !is.na(input$lon)){
+      plotdata_df <- plotdata_df %>% filter(lat >= input$lat - 0.01 & lat <= input$lat + 0.01 & lon >= input$lon - 0.01 & lon <= input$lon + 0.01)
+    }
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -277,14 +280,25 @@ server <- function(input, output, session) {
     updateNumericInput(session, "lotsizemax", value = NA)
   })
   
+  observeEvent(input$resetlotsize, {
+    updateNumericInput(session, "latitude", value = NA)
+    updateNumericInput(session, "longitude", value = NA)
+  })
+  
   observeEvent(input$filter, {
     refilter()
     layer_properties <- layerdata()
-    legend_table <- legenddata()  
+    legend_table <- legenddata()
+    map_centroid <- c(33, -116.75)
+    map_zoom <- 8.25
+    if(!is.na(input$lat) & !is.na(input$lon)){
+      map_centroid <- c(input$lat, input$lon)
+      map_zoom <- 12.5
+    }
     output$deck <- renderDeckgl({
-        deckgl(longitude=-116.75,
-               latitude=33,
-               zoom=8.25,
+        deckgl(longitude=map_centroid[2],
+               latitude=map_centroid[1],
+               zoom=map_zoom,
                pitch=45.0,
                width = '100%',
                height = "100%",
