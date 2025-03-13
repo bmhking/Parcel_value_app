@@ -14,7 +14,6 @@ gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
-# old color scheme: '#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF'
 gg_df$zonecolor <- '#000000'
 gg_df$zonecolor[gg_df$zoning_type_group == 0] <- '#FFFFFF'
 gg_df$zonecolor[gg_df$zoning_type_group == 10] <- '#FFFF00'
@@ -26,6 +25,7 @@ gg_df$zonecolor[gg_df$zoning_type_group == 60] <- '#FF0000'
 gg_df$zonecolor[gg_df$zoning_type_group == 70] <- '#800080'
 gg_df$zonecolor[gg_df$zoning_type_group == 80] <- '#00FF00'
 gg_df$zonecolor[gg_df$zoning_type_group == 90] <- '#0000FF'
+# old color scheme: '#0B5345', '#0E6655', '#1E8449', '#229954', '#27AE60', '#9ACD32', '#E1E000', '#FEBA4F', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF'
 gg_df$totalvaluecolor <- '#000000'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 25 & gg_df$total_value_per_sqft >= 0] <- '#0B5345'
 gg_df$totalvaluecolor[gg_df$total_value_per_sqft < 50 & gg_df$total_value_per_sqft >= 25] <- '#14714E'
@@ -127,7 +127,12 @@ server <- function(input, output, session) {
       plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin & shape_area <= input$lotsizemax)
     }
     if(!is.na(input$lat) & !is.na(input$lon)){
-      plotdata_df <- plotdata_df %>% filter(lat >= input$lat - 0.01 & lat <= input$lat + 0.01 & lon >= input$lon - 0.01 & lon <= input$lon + 0.01)
+      if(is.na(input$rad)){
+        filter_radius <- 0.00001
+      }else{
+        filter_radius <- input$rad
+      }
+      plotdata_df <- plotdata_df %>% filter(lat >= input$lat - filter_radius & lat <= input$lat + filter_radius & lon >= input$lon - filter_radius & lon <= input$lon + filter_radius)
     }
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
@@ -280,9 +285,10 @@ server <- function(input, output, session) {
     updateNumericInput(session, "lotsizemax", value = NA)
   })
   
-  observeEvent(input$resetlotsize, {
-    updateNumericInput(session, "latitude", value = NA)
-    updateNumericInput(session, "longitude", value = NA)
+  observeEvent(input$resetlatlonrad, {
+    updateNumericInput(session, "lat", value = NA)
+    updateNumericInput(session, "lon", value = NA)
+    updateNumericInput(session, "rad", value = NA)
   })
   
   observeEvent(input$filter, {

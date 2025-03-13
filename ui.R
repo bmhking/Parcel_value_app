@@ -70,8 +70,9 @@ ui <- fluidPage(
                                    tabPanel("Latitude/Longitude", br(),
                                             fluidRow(column(6, numericInput("lat", "Latitude (SD center: 32.7157):", NA, min = -90, max = 90),
                                                             numericInput("lon", "Longitude (SD center: -117.1611):", NA, min = -180, max = 180)),
-                                                     column(5, HTML("<b>Show parcels within 0.01 degrees of entered coordinates (around a radius of 1 mile).</b>"),
-                                                            br(), br(), actionButton('resetlatlon', HTML("<b>Reset Latitude & Longitude</b>"), value=0, style = "height: 50px")))
+                                                     column(5, tags$div(style="display:inline-block",title="As a rule of thumb, 0.01 degrees radius is around 1 mile.", 
+                                                                        numericInput("rad", "Radius (in degrees):", NA, min = 0, max = 90)),
+                                                            br(), br(), actionButton('resetlatlonrad', HTML("<b>Reset Tab</b>"), value=0, style = "width: 100%")))
                                    ),
                                    tabPanel("Lot Size Condition", br(),
                                             fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size:", NA, min = 0, max = max(gg_df$shape_area)),
