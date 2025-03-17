@@ -34,7 +34,7 @@ ui <- fluidPage(
                          "How to use this app."),
                   deckglOutput("deck", height='675px')),
            column(5, tabsetPanel(id = "filters",
-                                 tabPanel("Basic Filters", br(),
+                                 tabPanel("Required Filters", br(),
                                             column(6, pickerInput("city", NULL, 
                                                                choices=names(table(gg_df$SITUS_COMM)), 
                                                                options = list(`actions-box` = TRUE, title = "Select city/communities"), multiple = T),
