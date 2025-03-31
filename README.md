@@ -66,9 +66,13 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Added commas to the area values (2/18)
 - Add ability to filter by lot size (3/9)
 - Add ability to filter by lat/lon with a 0.01 degree radius - around 1 mile (3/12)
+- Add ability to download data of selected parcels in map (03/30)
+- Replaced Parcel with Lot in tables for clarity (03/30)
+- Disabled buttons when the data is loading (03/30)
 - Add ability to read in a file of APNs
-- Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius)
+- Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
 
 # Need help with:
 - Optimizing the dashboard so it costs less to run on GCP
+- Add loading tooltips when rendering the map to improve UI (basic Shiny capabilities cannot cover deck.gl maps)
 - Plot the parcels on their actual parcel map since the parcel shapefile is too large for my computer to run
