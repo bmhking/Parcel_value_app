@@ -9,6 +9,8 @@ library(dplyr)
 library(purrr)
 library(stringr)
 library(stringi)
+library(shinyjs)
+useShinyjs()
 options(scipen=999)
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
@@ -74,8 +76,8 @@ use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.fr
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
-output_colnames2 <- c('Usage', 'No. of Parcels', 'Total Area in SQFT', 'Mean Parcel Area', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
-output_colnames3 <- c('Zone Type', 'No. of Parcels', 'Mean Parcel Area', 'Median Parcel Area')
+output_colnames2 <- c('Usage', '# of Parcels', 'Total Area in SQFT', 'Mean Lot Area', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
+output_colnames3 <- c('Zone Type', '# of Parcels', 'Mean Lot Area', 'Median Lot Area')
 is_noninteger_column <- function(x){
   if(is.numeric(x)){
     return(!all(x==as.integer(x)))
@@ -91,11 +93,11 @@ Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2
 tooltip_html <- "APN: {{APN_list}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Lot Size in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
   # output$deck <- renderDeckgl({
-  #     deckgl(longitude=-116.75, 
+  #     deckgl(longitude=-116.75,
   #            latitude=33,
   #            zoom=8.25,
   #            pitch=45.0,
-  #            width = '100%', 
+  #            width = '100%',
   #            height = "100%",
   #            bearing=0) %>%
   #       add_mapbox_basemap("mapbox://styles/mapbox/light-v11")
@@ -103,6 +105,8 @@ server <- function(input, output, session) {
   values <- reactiveValues()
   values2 <- reactiveValues()
   refilter <- eventReactive(input$filter, {
+    disable("filter")
+    disable("downloadData")
     plotdata_df <- gg_df
     plotdata_df <- plotdata_df %>% filter(SITUS_COMM %in% input$city)
     plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone)
@@ -302,15 +306,15 @@ server <- function(input, output, session) {
       map_zoom <- 12.5
     }
     output$deck <- renderDeckgl({
-        deckgl(longitude=map_centroid[2],
-               latitude=map_centroid[1],
-               zoom=map_zoom,
-               pitch=45.0,
-               width = '100%',
-               height = "100%",
-               bearing=0) %>%
+      deckgl(longitude=map_centroid[2],
+             latitude=map_centroid[1],
+             zoom=map_zoom,
+             pitch=45.0,
+             width = '100%',
+             height = "100%",
+             bearing=0) %>%
         add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
-        add_column_layer(data=values$plot_df, properties=layer_properties )
+        add_column_layer(data=values$plot_df, properties=layer_properties)
     })
     # deckgl_proxy('deck') %>%
     #   add_column_layer(data=values$plot_df, properties=layer_properties )%>%
@@ -352,25 +356,6 @@ server <- function(input, output, session) {
     output$scrolldowntip <- renderText({
       '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;">  &#x2193Scroll down to view usage-level summary  </b>'
     })
-    # output$valueplot <- renderPlot({
-    #   display_df <- data.frame(zone=rep(values$agg_df$zoning_type_text, times=2), 
-    #                            Percentage=c(values$agg_df$Zone_Area, 
-    #                                    values$agg_df$Zone_Total_Value_2),
-    #                            type=rep(c('Area', 'Total Value'), each=length(table(values$agg_df$zoning_type_text))))
-    #   display_df[display_df$type=='Area', 'Percentage'] <- display_df[display_df$type=='Area', 'Percentage']/display_df[(display_df$type=='Area') & (display_df$zone=='Total'), 'Percentage']
-    #   display_df[display_df$type=='Total Value', 'Percentage'] <- display_df[display_df$type=='Total Value', 'Percentage']/display_df[(display_df$type=='Total Value') & (display_df$zone=='Total'), 'Percentage']
-    #   display_df <- display_df[display_df$zone != 'Total', ]
-    #   display_df$Percentage_label <- paste0(round(display_df$Percentage*100, 2), "%")
-    #   display_df$zone<- factor(display_df$zone, levels=rev(sort(unique(display_df$zone))))
-    #   ggplot(display_df, aes(fill=Percentage, y=zone, x=type), linetype=0) +
-    #     geom_tile() + 
-    #     geom_label(aes(label = Percentage_label)) + 
-    #       theme_classic() +
-    #       theme(axis.line=element_blank(),
-    #             axis.title.x=element_blank(),
-    #             axis.title.y=element_blank()) + 
-    #       scale_fill_gradient(low='white', high='blue', limits=c(0,1), labels=percent)
-    # })
     output$legend <- render_tableHTML({
       if(input$colortype == 'Zone Type'){
         legend_table %>%
@@ -388,5 +373,14 @@ server <- function(input, output, session) {
           add_css_header(css = list('opacity', 0), headers = 1)
       }
     })
+    enable("filter")
+    enable("downloadData")
   })
+  
+  output$downloadData <- downloadHandler(
+    filename = "dashboardata.csv",
+    content = function(file) {
+      write.csv(values$plot_df[, 1:14], file, row.names = FALSE)
+    }
+  )
 }

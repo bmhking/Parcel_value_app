@@ -4,6 +4,8 @@ library(dplyr)
 library(readr)
 library(DT)
 library(shinyWidgets)
+library(shinyjs)
+
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
@@ -22,7 +24,9 @@ tabset_css <- "
 }
 "
 
+
 ui <- fluidPage(
+  useShinyjs(),
   tags$head(
     tags$style(HTML(tabset_css))
   ),
@@ -81,13 +85,19 @@ ui <- fluidPage(
                                                             actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100px")))
                                             )
                                    ),
-                  tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
-                            actionButton('filter', HTML("<b>Show Map</b>"), value=0)),
-                  br(), br(),
+                  fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
+                             actionButton('filter', HTML("<b>Show Map</b>"), value=0))),
+                           column(3, conditionalPanel(condition = "output.deck",
+                             downloadButton("downloadData", HTML("<b>Download Data</b>"))
+                           )),
+                           column(7, conditionalPanel(condition = "output.deck",
+                             htmlOutput('scrolldowntip')
+                           ))
+                           ),
+                  br(),
                   tableOutput('summarytable'),
                   fluidRow(column(3, tableOutput('legend')),
-                           column(9, br(), tableOutput('parcelareatable'),
-                                  br(), htmlOutput('scrolldowntip'))
+                           column(9, br(), tableOutput('parcelareatable'))
                            )
                   )
            ),
