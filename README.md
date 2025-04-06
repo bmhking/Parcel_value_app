@@ -1,4 +1,5 @@
 # The value of standardizing value by area
+**The screenshots are taken from older versions of the dashboard.**
 The dashboard shows value/sqft of every taxable parcel in San Diego County. Why value/sqft instead of just value? Because land is the most important resource for the government and we measure yield with a standardized area. To illustrate the immense differences in value/sqft, I will compare the most expensive mansion in La Jolla and a Section 8 housing unit that used to be "where you bought weed".
 
 Foxhill Estates is the most expensive property in La Jolla, spanning over 30 acres and just sold at $35 million. That means it is assessed at $25/sqft. In contrast, Meadowbrook Apartments in Bay Terrace is a Section 8 housing unit that houses more than 200 households. It used to be a very sketchy place, albeit in the past 10 years it has been improving. It is assessed at $65/sqft - 280% that of Foxhill Estate's. Therefore for the public to evaluate the efficacy of land, just looking at market or assessed value is not enough. The value must be standardized by area for it to be meaningful.
@@ -69,7 +70,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Add ability to download data of selected parcels in map (03/30)
 - Replaced Parcel with Lot in tables for clarity (03/30)
 - Disabled buttons when the data is loading (03/30)
-- Add ability to read in a file of APNs
+- Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
 
 # Need help with:
