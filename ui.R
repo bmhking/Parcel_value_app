@@ -74,15 +74,14 @@ ui <- fluidPage(
                                    tabPanel("Latitude/Longitude", br(),
                                             fluidRow(column(6, numericInput("lat", "Latitude (SD center: 32.7157):", NA, min = -90, max = 90),
                                                             numericInput("lon", "Longitude (SD center: -117.1611):", NA, min = -180, max = 180)),
-                                                     column(5, tags$div(style="display:inline-block",title="As a rule of thumb, 0.01 degrees radius is around 1 mile.", 
-                                                                        numericInput("rad", "Radius (in degrees):", NA, min = 0, max = 90)),
-                                                            br(), br(), actionButton('resetlatlonrad', HTML("<b>Reset Tab</b>"), value=0, style = "width: 100%")))
+                                                     column(5, numericInput("rad", HTML("Radius (&#176;): 0.01&#176; radius &asymp; 1 mile."), NA, min = 0, max = 90),
+                                                            br(), actionButton('resetlatlonrad', HTML("<b>Reset Tab</b>"), value=0, style = "width: 100%")))
                                    ),
                                    tabPanel("Lot Size Condition", br(),
-                                            fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size:", NA, min = 0, max = max(gg_df$shape_area)),
-                                                      numericInput("lotsizemax", "Maximum Lot Size:", NA, min = 0, max = max(gg_df$shape_area))),
-                                                     column(5, HTML("<b>In SQFT<br>1 Acre = 43560 SQFT</b>"),
-                                                            actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100px")))
+                                            fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area)),
+                                                      numericInput("lotsizemax", "Maximum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
+                                                     column(5, HTML("<b>1 Acre = 43560 SQFT</b>"),
+                                                            actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 110px")))
                                             )
                                    ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
