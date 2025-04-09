@@ -16,6 +16,7 @@ gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
+gg_df$impr_land_ratio <- gg_df$impr_value/gg_df$land_value
 gg_df$zonecolor <- '#000000'
 gg_df$zonecolor[gg_df$zoning_type_group == 0] <- '#FFFFFF'
 gg_df$zonecolor[gg_df$zoning_type_group == 10] <- '#FFFF00'
@@ -121,7 +122,11 @@ server <- function(input, output, session) {
         APN_selected <- c(APN_selected, gg_df$APN_list[substring(gg_df$APN_list, 1, prefix_length) %in% prefixs])
       }
       APN_selected <- APN_selected[!duplicated(APN_selected)]
-      plotdata_df <- plotdata_df %>% filter(APN_list %in% APN_selected)
+      if(input$includeorexclude == "include"){
+        plotdata_df <- plotdata_df %>% filter(APN_list %in% APN_selected)
+      }else{
+        plotdata_df <- plotdata_df %>% filter(!(APN_list %in% APN_selected))
+      }
     }
     if(is.na(input$lotsizemax) & !is.na(input$lotsizemin)){
       plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin)

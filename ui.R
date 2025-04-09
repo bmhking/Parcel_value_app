@@ -68,15 +68,17 @@ ui <- fluidPage(
                                                                selected = "Value/SQFT"))
                                             ),
                                    tabPanel("APN Prefixes", br(),
-                                            textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
-                                                          height = '140px', width = '100%')
+                                            fluidRow(column(10, textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
+                                                          height = '140px', width = '100%')),
+                                                     column(2, radioButtons("includeorexclude", "", 
+                                                                   c("Include" = "include", "Exclude" = "exclude"))))
                                             ),
                                    tabPanel("Latitude/Longitude", br(),
-                                            fluidRow(column(6, numericInput("lat", "Latitude (SD center: 32.7157):", NA, min = -90, max = 90),
-                                                            numericInput("lon", "Longitude (SD center: -117.1611):", NA, min = -180, max = 180)),
-                                                     column(5, numericInput("rad", HTML("Radius (&#176;): 0.01&#176; radius &asymp; 1 mile."), NA, min = 0, max = 90),
+                                            fluidRow(column(6, numericInput("lat", HTML("Latitude (SD center: 32.7157&#176;):"), NA, min = -90, max = 90),
+                                                            numericInput("lon", HTML("Longitude (SD center: -117.1611&#176;):"), NA, min = -180, max = 180)),
+                                                     column(5, numericInput("rad", HTML("Radius (&#176;): 0.01&#176; &asymp; 1 mile radius"), NA, min = 0, max = 90),
                                                             br(), actionButton('resetlatlonrad', HTML("<b>Reset Tab</b>"), value=0, style = "width: 100%")))
-                                   ),
+                                            ),
                                    tabPanel("Lot Size Condition", br(),
                                             fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area)),
                                                       numericInput("lotsizemax", "Maximum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),

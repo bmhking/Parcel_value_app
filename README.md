@@ -70,6 +70,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Add ability to download data of selected parcels in map (03/30)
 - Replaced Parcel with Lot in tables for clarity (03/30)
 - Disabled buttons when the data is loading (03/30)
+- Add ability to exclude a certain list of APN prefixes in the APN prefix tab in addition to current functionality that filters based on these APN prefixes (04/09)
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
 
@@ -77,3 +78,5 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Optimizing the dashboard so it costs less to run on GCP
 - Add loading tooltips when rendering the map to improve UI (basic Shiny capabilities cannot cover deck.gl maps)
 - Plot the parcels on their actual parcel map since the parcel shapefile is too large for my computer to run
+- Find a way to implement "reverse mode" - highlighting parcels with a low value per sqft
+- Explore other color schemes
