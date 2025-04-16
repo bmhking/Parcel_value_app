@@ -30,14 +30,14 @@ ui <- fluidPage(
   tags$head(
     tags$style(HTML(tabset_css))
   ),
-  fluidRow(column(7, h2("San Diego Parcel Value Height Map"), 
+  fluidRow(column(6, h2("San Diego Parcel Value Height Map"), 
                   "Evaluating every lot's value through standardizing by area.", 
                   tags$a(href="https://github.com/bmhking/Parcel_value_app", 
                          "Repo link."), 
                   tags$a(href="https://bmhking.github.io/Parcel_value_app/", 
                          "How to use this app."),
                   deckglOutput("deck", height='675px')),
-           column(5, tabsetPanel(id = "filters",
+           column(6, tabsetPanel(id = "filters",
                                  tabPanel("Required Filters", br(),
                                             column(6, pickerInput("city", NULL, 
                                                                choices=names(table(gg_df$SITUS_COMM)), 
@@ -82,9 +82,13 @@ ui <- fluidPage(
                                    tabPanel("Lot Size Condition", br(),
                                             fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area)),
                                                       numericInput("lotsizemax", "Maximum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
-                                                     column(5, HTML("<b>1 Acre = 43560 SQFT</b>"),
-                                                            actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 110px")))
-                                            )
+                                                     column(5, br(), HTML("<b>1 Acre = 43560 SQFT</b>"), br(), br(),
+                                                            actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100%")))
+                                            ),
+                                 tabPanel("Additional Map Options", br(), 
+                                          radioButtons("mapmode", "Map Mode",
+                                                       c("Default" = "default", "Square Root" = "sqrt", 
+                                                         "100x Height" = "times100", "2-D (unimplemented yet)" = "twod")))
                                    ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
                              actionButton('filter', HTML("<b>Show Map</b>"), value=0))),

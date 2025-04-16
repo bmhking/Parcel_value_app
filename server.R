@@ -16,6 +16,9 @@ gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
+gg_df$sqrt_land_value_per_sqft <- sqrt(gg_df$land_value_per_sqft)
+gg_df$sqrt_impr_value_per_sqft <- sqrt(gg_df$impr_value_per_sqft)
+gg_df$sqrt_total_value_per_sqft <- sqrt(gg_df$total_value_per_sqft)
 gg_df$impr_land_ratio <- gg_df$impr_value/gg_df$land_value
 gg_df$zonecolor <- '#000000'
 gg_df$zonecolor[gg_df$zoning_type_group == 0] <- '#FFFFFF'
@@ -187,82 +190,64 @@ server <- function(input, output, session) {
   })
   
   layerdata <- reactive({
-    value_layer <- list()
+    value_layer <- list(
+      get_position=~lon+lat,
+      pickable=TRUE,
+      coverage = 0.02,
+      tooltip = use_tooltip(
+        html = tooltip_html,
+        style = "background: steelBlue; border-radius: 5px;"
+      ))
+    if(input$mapmode == 'times100'){
+      value_layer[['elevation_scale']]=300
+    }else if(input$mapmode == 'sqrt'){
+      value_layer[['elevation_scale']]=30
+    }else{
+      value_layer[['elevation_scale']]=3
+    }
     if(input$colortype == 'Zone Type'){
+      value_layer[['get_fill_color']]=~zonecolor
       if(input$datatype == 'Total Value/SQFT'){
-        value_layer <- list(
-          get_position=~lon+lat,
-          get_elevation=~total_value_per_sqft,
-          elevation_scale=3,
-          pickable=TRUE,
-          get_fill_color=~zonecolor,
-          coverage = 0.02,
-          tooltip = use_tooltip(
-            html = tooltip_html,
-            style = "background: steelBlue; border-radius: 5px;"
-          ))
+        if(input$mapmode == 'sqrt'){
+          value_layer[['get_elevation']]=~sqrt_total_value_per_sqft
+        }else{
+          value_layer[['get_elevation']]=~total_value_per_sqft
+        }
       }else if(input$datatype == 'Impr Value/SQFT'){
-        value_layer <- list(
-          get_position=~lon+lat,
-          get_elevation=~impr_value_per_sqft,
-          elevation_scale=3,
-          pickable=TRUE,
-          get_fill_color=~zonecolor,
-          coverage = 0.02,
-          tooltip = use_tooltip(
-            html = tooltip_html,
-            style = "background: steelBlue; border-radius: 5px;"
-          ))
+        if(input$mapmode == 'sqrt'){
+          value_layer[['get_elevation']]=~sqrt_impr_value_per_sqft
+        }else{
+          value_layer[['get_elevation']]=~impr_value_per_sqft
+        }
       }else if(input$datatype == 'Land Value/SQFT'){
-        value_layer <- list(
-          get_position=~lon+lat,
-          get_elevation=~land_value_per_sqft,
-          elevation_scale=3,
-          pickable=TRUE,
-          get_fill_color=~zonecolor,
-          coverage = 0.02,
-          tooltip = use_tooltip(
-            html = tooltip_html,
-            style = "background: steelBlue; border-radius: 5px;"
-          ))
+        if(input$mapmode == 'sqrt'){
+          value_layer[['get_elevation']]=~sqrt_land_value_per_sqft
+        }else{
+          value_layer[['get_elevation']]=~land_value_per_sqft
+        }
       }
     }else if(input$colortype == 'Value/SQFT'){
       if(input$datatype == 'Total Value/SQFT'){
-        value_layer <- list(
-          get_position=~lon+lat,
-          get_elevation=~total_value_per_sqft,
-          elevation_scale=3,
-          pickable=TRUE,
-          get_fill_color=~totalvaluecolor,
-          coverage = 0.02,
-          tooltip = use_tooltip(
-            html = tooltip_html,
-            style = "background: steelBlue; border-radius: 5px;"
-          ))
-      }else if(input$datatype == 'Land Value/SQFT'){
-        value_layer <- list(
-          get_position=~lon+lat,
-          get_elevation=~land_value_per_sqft,
-          elevation_scale=3,
-          pickable=TRUE,
-          get_fill_color=~landvaluecolor,
-          coverage = 0.02,
-          tooltip = use_tooltip(
-            html = tooltip_html,
-            style = "background: steelBlue; border-radius: 5px;"
-          ))
+        if(input$mapmode == 'sqrt'){
+          value_layer[['get_elevation']]=~sqrt_total_value_per_sqft
+        }else{
+          value_layer[['get_elevation']]=~total_value_per_sqft
+        }
+        value_layer[['get_fill_color']]=~totalvaluecolor
       }else if(input$datatype == 'Impr Value/SQFT'){
-        value_layer <- list(
-          get_position=~lon+lat,
-          get_elevation=~impr_value_per_sqft,
-          elevation_scale=3,
-          pickable=TRUE,
-          get_fill_color=~imprvaluecolor,
-          coverage = 0.02,
-          tooltip = use_tooltip(
-            html = tooltip_html,
-            style = "background: steelBlue; border-radius: 5px;"
-          ))
+        if(input$mapmode == 'sqrt'){
+          value_layer[['get_elevation']]=~sqrt_impr_value_per_sqft
+        }else{
+          value_layer[['get_elevation']]=~impr_value_per_sqft
+        }
+        value_layer[['get_fill_color']]=~imprvaluecolor
+      }else if(input$datatype == 'Land Value/SQFT'){
+        if(input$mapmode == 'sqrt'){
+          value_layer[['get_elevation']]=~sqrt_land_value_per_sqft
+        }else{
+          value_layer[['get_elevation']]=~land_value_per_sqft
+        }
+        value_layer[['get_fill_color']]=~landvaluecolor
       }
     }
     value_layer
