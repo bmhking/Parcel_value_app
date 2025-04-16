@@ -198,12 +198,10 @@ server <- function(input, output, session) {
         html = tooltip_html,
         style = "background: steelBlue; border-radius: 5px;"
       ))
-    if(input$mapmode == 'times100'){
-      value_layer[['elevation_scale']]=300
-    }else if(input$mapmode == 'sqrt'){
-      value_layer[['elevation_scale']]=30
-    }else{
+    if(is.na(input$heightmultiplier)){
       value_layer[['elevation_scale']]=3
+    }else{
+      value_layer[['elevation_scale']]=3 * input$heightmultiplier
     }
     if(input$colortype == 'Zone Type'){
       value_layer[['get_fill_color']]=~zonecolor
@@ -289,11 +287,24 @@ server <- function(input, output, session) {
     refilter()
     layer_properties <- layerdata()
     legend_table <- legenddata()
-    map_centroid <- c(33, -116.75)
     map_zoom <- 8.25
     if(!is.na(input$lat) & !is.na(input$lon)){
       map_centroid <- c(input$lat, input$lon)
-      map_zoom <- 12.5
+      map_zoom <- 12.25
+    }else{
+      # San Diego centroid is around (33, -116.75)
+      map_centroid <- c(mean(values$plot_df$lat), mean(values$plot_df$lon))
+      if(sum(values$plot_df$shape_area)>1e9){
+        map_zoom <- 8.25
+      }else if(sum(values$plot_df$shape_area)>7.5e8){
+        map_zoom <- 9.25
+      }else if(sum(values$plot_df$shape_area)>5e8){
+        map_zoom <- 10.25
+      }else if(sum(values$plot_df$shape_area)>2.5e8){
+        map_zoom <- 11.25
+      }else{
+        map_zoom <- 12.25
+      }
     }
     output$deck <- renderDeckgl({
       deckgl(longitude=map_centroid[2],

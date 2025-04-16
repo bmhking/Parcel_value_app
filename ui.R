@@ -85,10 +85,11 @@ ui <- fluidPage(
                                                      column(5, br(), HTML("<b>1 Acre = 43560 SQFT</b>"), br(), br(),
                                                             actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100%")))
                                             ),
-                                 tabPanel("Additional Map Options", br(), 
-                                          radioButtons("mapmode", "Map Mode",
-                                                       c("Default" = "default", "Square Root" = "sqrt", 
-                                                         "100x Height" = "times100", "2-D (unimplemented yet)" = "twod")))
+                                   tabPanel("Additional Map Options", br(), 
+                                            fluidRow(column(4, radioButtons("mapmode", "Map Mode",
+                                                         c("Default" = "default", "Square Root" = "sqrt", "2-D (unimplemented yet)" = "twod"))),
+                                                     column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)))
+                                            )
                                    ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
                              actionButton('filter', HTML("<b>Show Map</b>"), value=0))),
