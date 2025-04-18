@@ -74,7 +74,8 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Add sqrt mode to shrink downtown for easier comparison and 100x mode to better plot agriculture communities where land is cheap (04/15)
 - Edited map settings so now user can freely choose height multiplier (04/16)
 - Auto-centers map at the mean lat and lon of mapped parcels (04/16)
-- Add 2D mode
+- Add 2D mode (04/17)
+- Added error message if user does not select city/community, zoning, and usage (04/17)
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
 

@@ -5,6 +5,7 @@ library(readr)
 library(DT)
 library(shinyWidgets)
 library(shinyjs)
+library(shinyalert)
 
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
@@ -27,6 +28,7 @@ tabset_css <- "
 
 ui <- fluidPage(
   useShinyjs(),
+  useShinyalert(),
   tags$head(
     tags$style(HTML(tabset_css))
   ),
@@ -86,8 +88,8 @@ ui <- fluidPage(
                                                             actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100%")))
                                             ),
                                    tabPanel("Additional Map Options", br(), 
-                                            fluidRow(column(4, radioButtons("mapmode", "Map Mode",
-                                                         c("Default" = "default", "Square Root" = "sqrt", "2-D (unimplemented yet)" = "twod"))),
+                                            fluidRow(column(4, radioButtons("mapmode", "Column Height",
+                                                         c("Default" = "default", "Square Root" = "sqrt", "2-D" = "twod"))),
                                                      column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)))
                                             )
                                    ),

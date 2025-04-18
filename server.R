@@ -10,7 +10,10 @@ library(purrr)
 library(stringr)
 library(stringi)
 library(shinyjs)
+library(shinyalert)
+
 useShinyjs()
+useShinyalert()
 options(scipen=999)
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
@@ -182,6 +185,7 @@ server <- function(input, output, session) {
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
                 Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
                 Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
+    print(plotdata_df)
     values$agg_df <- plotdata_df_agg
     values$plot_df <- plotdata_df
     values$expanded_df <- plotdata_df_expanded
@@ -191,19 +195,26 @@ server <- function(input, output, session) {
   
   layerdata <- reactive({
     value_layer <- list(
+      diskResolution = 6,
       get_position=~lon+lat,
       pickable=TRUE,
-      coverage = 0.02,
+      radius=20,
+      # coverage = 0.02,
       tooltip = use_tooltip(
         html = tooltip_html,
         style = "background: steelBlue; border-radius: 5px;"
-      ))
+      )
+    )
     if(is.na(input$heightmultiplier)){
       value_layer[['elevation_scale']]=3
     }else{
       value_layer[['elevation_scale']]=3 * input$heightmultiplier
     }
-    if(input$colortype == 'Zone Type'){
+    if(input$mapmode == 'twod'){
+      value_layer[['get_fill_color']]="#FF0000"
+      value_layer[['get_elevation']]=1
+      value_layer[['radius']]=5
+    }else if(input$colortype == 'Zone Type'){
       value_layer[['get_fill_color']]=~zonecolor
       if(input$datatype == 'Total Value/SQFT'){
         if(input$mapmode == 'sqrt'){
@@ -284,98 +295,102 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$filter, {
-    refilter()
-    layer_properties <- layerdata()
-    legend_table <- legenddata()
-    map_zoom <- 8.25
-    if(!is.na(input$lat) & !is.na(input$lon)){
-      map_centroid <- c(input$lat, input$lon)
-      map_zoom <- 12.25
+    if(is.null(input$city) | is.null(input$zone) | is.null(input$use)){
+      shinyalert("Insufficient Filters", "Please select cities/communities, zones, and usages", type = "error")
     }else{
-      # San Diego centroid is around (33, -116.75)
-      map_centroid <- c(mean(values$plot_df$lat), mean(values$plot_df$lon))
-      if(sum(values$plot_df$shape_area)>1e9){
-        map_zoom <- 8.25
-      }else if(sum(values$plot_df$shape_area)>7.5e8){
-        map_zoom <- 9.25
-      }else if(sum(values$plot_df$shape_area)>5e8){
-        map_zoom <- 10.25
-      }else if(sum(values$plot_df$shape_area)>2.5e8){
-        map_zoom <- 11.25
-      }else{
+      refilter()
+      layer_properties <- layerdata()
+      legend_table <- legenddata()
+      map_zoom <- 8.25
+      if(!is.na(input$lat) & !is.na(input$lon)){
+        map_centroid <- c(input$lat, input$lon)
         map_zoom <- 12.25
+      }else{
+        # San Diego centroid is around (33, -116.75)
+        map_centroid <- c(mean(values$plot_df$lat), mean(values$plot_df$lon))
+        if(sum(values$plot_df$shape_area)>1e9){
+          map_zoom <- 8.25
+        }else if(sum(values$plot_df$shape_area)>7.5e8){
+          map_zoom <- 9.25
+        }else if(sum(values$plot_df$shape_area)>5e8){
+          map_zoom <- 10.25
+        }else if(sum(values$plot_df$shape_area)>2.5e8){
+          map_zoom <- 11.25
+        }else{
+          map_zoom <- 12.25
+        }
       }
+      output$deck <- renderDeckgl({
+        deckgl(longitude=map_centroid[2],
+               latitude=map_centroid[1],
+               zoom=map_zoom,
+               pitch=45.0,
+               width='100%',
+               height="100%",
+               bearing=0) %>%
+          add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
+          add_column_layer(data=values$plot_df, properties=layer_properties)
+      })
+      # deckgl_proxy('deck') %>%
+      #   add_column_layer(data=values$plot_df, properties=layer_properties )%>%
+      #   update_deckgl()
+      output$summarytable <- render_tableHTML({
+        display_df <- values$agg_df[, 1:5]
+        display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
+                                 c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
+        colnames(display_df) <- output_colnames
+        display_df <- display_df %>% 
+          mutate_if(is_noninteger_column, print_2_digits) %>%
+          tableHTML(widths = c(100, rep(150, 4)), rownames = FALSE) %>% 
+          add_css_column(css = list('text-align', 'right'), 
+                         columns = output_colnames[2:length(output_colnames)]) %>%
+          add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
+      })
+      output$expandedtable <- renderDT({
+        display_df <- values$expanded_df[, 1:7]
+        display_df <- display_df[order(match(display_df$use_type_text, zones_list)), c('use_type_text', 'Zone_Parcel_Num', 'Zone_Area', 'Zone_Avg_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
+        display_df$use_type_text <- as.factor(display_df$use_type_text)
+        colnames(display_df) <- output_colnames2
+        datatable(display_df %>% mutate_if(is_noninteger_column, print_2_digits), 
+                  filter = 'top', rownames = FALSE, 
+                  options = list(columnDefs = list(list(width = '100px', targets = 1))))
+      })
+      output$parcelareatable <- render_tableHTML({
+        display_df <- values$parcelarea_df[, 1:4]
+        display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
+                                 c('zoning_type_text', 'Zone_Parcel_Num', 'Zone_Avg_Area', 'Zone_Median_Area')]
+        colnames(display_df) <- output_colnames3
+        display_df %>% 
+          mutate_if(is_noninteger_column, print_2_digits) %>%
+          tableHTML(widths = c(100, 110, 150, 150),
+                    rownames = FALSE) %>% 
+          add_css_column(css = list('text-align', 'right'), 
+                         columns = output_colnames3[2:length(output_colnames3)]) %>%
+          add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
+      })
+      output$scrolldowntip <- renderText({
+        '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;">  &#x2193Scroll down to view usage-level summary  </b>'
+      })
+      output$legend <- render_tableHTML({
+        if(input$colortype == 'Zone Type'){
+          legend_table %>%
+            tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
+            add_css_rows_in_column(css = list('background-color',
+                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
+                                   column = 'Color') %>%
+            add_css_header(css = list('opacity', 0), headers = 1)
+        }else if(input$colortype == 'Value/SQFT'){
+          legend_table %>%
+            tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
+            add_css_rows_in_column(css = list('background-color',
+                                              c('#0B5345', '#14714E', '#1E9057', '#27AE60', '#65BF40', '#A3CF20', '#E1E000', '#F0B028', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
+                                   column = 'Color') %>%
+            add_css_header(css = list('opacity', 0), headers = 1)
+        }
+      })
+      enable("filter")
+      enable("downloadData")
     }
-    output$deck <- renderDeckgl({
-      deckgl(longitude=map_centroid[2],
-             latitude=map_centroid[1],
-             zoom=map_zoom,
-             pitch=45.0,
-             width = '100%',
-             height = "100%",
-             bearing=0) %>%
-        add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
-        add_column_layer(data=values$plot_df, properties=layer_properties)
-    })
-    # deckgl_proxy('deck') %>%
-    #   add_column_layer(data=values$plot_df, properties=layer_properties )%>%
-    #   update_deckgl()
-    output$summarytable <- render_tableHTML({
-      display_df <- values$agg_df[, 1:5]
-      display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
-        c('zoning_type_text', 'Zone_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
-      colnames(display_df) <- output_colnames
-      display_df <- display_df %>% 
-        mutate_if(is_noninteger_column, print_2_digits) %>%
-        tableHTML(widths = c(100, rep(150, 4)), rownames = FALSE) %>% 
-        add_css_column(css = list('text-align', 'right'), 
-                       columns = output_colnames[2:length(output_colnames)]) %>%
-        add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
-    })
-    output$expandedtable <- renderDT({
-      display_df <- values$expanded_df[, 1:7]
-      display_df <- display_df[order(match(display_df$use_type_text, zones_list)), c('use_type_text', 'Zone_Parcel_Num', 'Zone_Area', 'Zone_Avg_Area', 'Zone_Land_Value', 'Zone_Impr_Value', 'Zone_Total_Value')]
-      display_df$use_type_text <- as.factor(display_df$use_type_text)
-      colnames(display_df) <- output_colnames2
-      datatable(display_df %>% mutate_if(is_noninteger_column, print_2_digits), 
-                filter = 'top', rownames = FALSE, 
-                options = list(columnDefs = list(list(width = '100px', targets = 1))))
-    })
-    output$parcelareatable <- render_tableHTML({
-      display_df <- values$parcelarea_df[, 1:4]
-      display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 
-                               c('zoning_type_text', 'Zone_Parcel_Num', 'Zone_Avg_Area', 'Zone_Median_Area')]
-      colnames(display_df) <- output_colnames3
-      display_df %>% 
-        mutate_if(is_noninteger_column, print_2_digits) %>%
-        tableHTML(widths = c(100, 110, 150, 150),
-                  rownames = FALSE) %>% 
-        add_css_column(css = list('text-align', 'right'), 
-                       columns = output_colnames3[2:length(output_colnames3)]) %>%
-        add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
-    })
-    output$scrolldowntip <- renderText({
-      '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;">  &#x2193Scroll down to view usage-level summary  </b>'
-    })
-    output$legend <- render_tableHTML({
-      if(input$colortype == 'Zone Type'){
-        legend_table %>%
-          tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
-          add_css_rows_in_column(css = list('background-color',
-                                            c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
-                                 column = 'Color') %>%
-          add_css_header(css = list('opacity', 0), headers = 1)
-      }else if(input$colortype == 'Value/SQFT'){
-        legend_table %>%
-          tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
-          add_css_rows_in_column(css = list('background-color',
-                                            c('#0B5345', '#14714E', '#1E9057', '#27AE60', '#65BF40', '#A3CF20', '#E1E000', '#F0B028', '#FF7F50', '#FF4500', '#D21404', '#C54BBC', '#603FEF')),
-                                 column = 'Color') %>%
-          add_css_header(css = list('opacity', 0), headers = 1)
-      }
-    })
-    enable("filter")
-    enable("downloadData")
   })
   
   output$downloadData <- downloadHandler(
