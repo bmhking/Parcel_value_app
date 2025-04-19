@@ -77,6 +77,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Add 2D mode (04/17)
 - Added error message if user does not select city/community, zoning, and usage (04/17)
 - Changed column to 6 sides instead of 20. Now the map runs more smoothly (04/17)
+- Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
 
