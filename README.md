@@ -76,6 +76,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Auto-centers map at the mean lat and lon of mapped parcels (04/16)
 - Add 2D mode (04/17)
 - Added error message if user does not select city/community, zoning, and usage (04/17)
+- Changed column to 6 sides instead of 20. Now the map runs more smoothly (04/17)
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
 
@@ -85,3 +86,4 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Plot the parcels on their actual parcel map since the parcel shapefile is too large for my computer to run
 - Find a way to implement "reverse mode" - highlighting parcels with a low value per sqft
 - Explore other color schemes
+- Find other data sources where zoning, land use, and land unit data are more accurate

@@ -38,6 +38,11 @@ ui <- fluidPage(
                          "Repo link."), 
                   tags$a(href="https://bmhking.github.io/Parcel_value_app/", 
                          "How to use this app."),
+                  br(),
+                  tags$div(style="display:inline-block",
+                           title="The data is retrieved from SANDAG's Parcel dataset. While the assessment and size data are accurate, please note that land use and zoning fields are not regularly maintained by the Assessor's Office and should only be used as an approximate guide.",
+                           HTML("<b>A note on the dataset &#9432;</b>")
+                           ),
                   deckglOutput("deck", height='675px')),
            column(6, tabsetPanel(id = "filters",
                                  tabPanel("Required Filters", br(),
