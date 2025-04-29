@@ -81,9 +81,9 @@ ui <- fluidPage(
                                                                    c("Include" = "include", "Exclude" = "exclude"))))
                                             ),
                                    tabPanel("Latitude/Longitude", br(),
-                                            fluidRow(column(6, numericInput("lat", HTML("Latitude (SD center: 32.7157&#176;):"), NA, min = -90, max = 90),
-                                                            numericInput("lon", HTML("Longitude (SD center: -117.1611&#176;):"), NA, min = -180, max = 180)),
-                                                     column(5, numericInput("rad", HTML("Radius (&#176;): 0.01&#176; &asymp; 1 mile radius"), NA, min = 0, max = 90),
+                                            fluidRow(column(6, numericInput("lat", HTML("Latitude (&#176;): SD center: 32.7157&#176;"), NA, min = -90, max = 90),
+                                                            numericInput("lon", HTML("Longitude (&#176;): SD center: -117.1611&#176;"), NA, min = -180, max = 180)),
+                                                     column(5, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90),
                                                             br(), actionButton('resetlatlonrad', HTML("<b>Reset Tab</b>"), value=0, style = "width: 100%")))
                                             ),
                                    tabPanel("Lot Size Condition", br(),
