@@ -1,35 +1,74 @@
 # The value of standardizing value by area
-**The screenshots are taken from older versions of the dashboard.**
-The dashboard shows value/sqft of every taxable parcel in San Diego County. Why value/sqft instead of just value? Because land is the most important resource for the government and we measure yield with a standardized area. To illustrate the immense differences in value/sqft, I will compare the most expensive mansion in La Jolla and a Section 8 housing unit that used to be "where you bought weed".
+**Some screenshots are taken from older versions of the dashboard.**
+The dashboard shows value/sqft of every taxable parcel in San Diego County. Why value/sqft instead of just value? Because land is the most important resource for the government and we measure yield within a standardized area. To illustrate the immense differences in value/sqft, I will compare the most expensive mansion in La Jolla and a Section 8 housing unit that used to be "where you bought weed".
 
 Foxhill Estates is the most expensive property in La Jolla, spanning over 30 acres and just sold at $35 million. That means it is assessed at $25/sqft. In contrast, Meadowbrook Apartments in Bay Terrace is a Section 8 housing unit that houses more than 200 households. It used to be a very sketchy place, albeit in the past 10 years it has been improving. It is assessed at $65/sqft - 280% that of Foxhill Estate's. Therefore for the public to evaluate the efficacy of land, just looking at market or assessed value is not enough. The value must be standardized by area for it to be meaningful.
 
 I am using this methodology to write a paper on how high residential water usage and low property tax efficiency are connected in San Diego.
 
+I have given the dashboard a custom domain: [https://www.sdparcelmap.com](https://www.sdparcelmap.com).
+
 # How to use the app
+1. Basics
+
 When you open the link, the website looks like this:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_1.PNG)
-There are three columns of filters. After setting all the filters, you can click the `Apply Filter` button and wait for the map to load. For example, the following image shows the results for selecting parcels from every community, zoning type, and parcel usage:
+If you directly click `Show Map`, the following message will pop up:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_2.PNG)
-The left side is the map, while the right side includes summary statistics for every zoning type.
+You will need to select the city/community, zoning, and usages to map. These are the required filters. For example, the following image shows the results for selecting parcels from every community, zoning type, and parcel usage (the entire county):
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_3.PNG)
-Scrolling down gives the summary statistics for every usage type.
+The left side is the map, while the right side includes summary statistics for every zoning type.
+The following cities/communities are included in the SANDAG dataset:
+>AGUANGA, ALPINE, BONITA, BONSALL, BORREGO SPRINGS, BOULEVARD, CAMP PENDLETON, CAMPO, CARDIFF BY THE SEA, CARLSBAD, CHULA VISTA, CORONADO, DEL MAR, DESCANSO, DULZURA, EL CAJON, ENCINITAS, ESCONDIDO, FALLBROOK, GUATAY, IMPERIAL BEACH, JACUMBA, JAMUL, JULIAN, LA JOLLA, LA MESA, LAKESIDE, LEMON GROVE, LEUCADIA, MOUNT LAGUNA, NATIONAL CITY, OCEANSIDE, OCOTILLO, OLIVENHAIN, PALA, PALOMAR MOUNTAIN, PAUMA VALLEY, PINE VALLEY, POTRERO, POWAY, RAINBOW, RAMONA, RANCHITA, RANCHO SANTA FE, SAN CLEMENTE, SAN DIEGO, SAN MARCOS, SAN YSIDRO, SANTA YSABEL, SANTEE, SOLANA BEACH, SPRING VALLEY, TECATE, VALLEY CENTER, VISTA, WARNER SPRINGS
 
-In the first column, you can select different communities/zoning types/usages to map. The communities are taken from SANDAG, and selecting all of them gives you the full county. Note that the zoning types and usages are two separate classfications: just because a parcel is zoned for a specific type does not mean that the usage of the parcel is limited to that zoning type (e.g. a single family home zoning type parcel might still be a duplex or small corner store).
-
-The second column decides what value is plotted and the coloring scheme. There are three values to select: land, improvement, and total value per sqft. Land value + improvement value = total value. There are two coloring schemes: by value and by zoning type. The zoning type color scheme is taken from [New York's zoning guide](https://www.nyc.gov/assets/planning/download/pdf/applicants/applicant-portal/area_map_standard.pdf). The value color scheme was created by me to cater specifically to the three value types in San Diego County. While for all three value types, the color goes from dark green to red to blue, for each of the three value types, the thresholds are different.
-
-The third column is the APN box which allows you to write in prefixes for the 10-digit APN numbers associated with every parcel. The app will only show parcels that begin with those prefixes (you can enter any amount of prefixes, and there is no prefix digit requirement). Separate every prefix with a comma. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/example_alvaradoestates.png)
-Another example for Convoy district. All parcels in Convoy have an APN that start with 356:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_convoy.PNG)
+The `Download Data` button allows you to download statistics for every parcel mapped. In the previous case of the entire San Diego County, you will get more than 700,000 rows.
+The tooltip also tells you that scrolling down gives the summary statistics for every usage type.
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_4.PNG)
 Hovering over a column will show you information about that parcel:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_convoy_column.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_5.PNG)
+This will allow you to use the app directly. However, I have included additional functionality to select parcels more precisely.
+
+2. APN Prefixes
+
+Every parcel in San Diego is assigned a 10-digit APN. Some parcels include many subparcels (for example, condo buildings will have as many subparcels as there are units), and in that case the APN that I will use will be the range; for example, a 10-subparcel lot with subparcels 0000000001, 0000000002, ..., 0000000010 will be assigned APN 0000000001-0000000010.
+The dashboard provides a way to filter through APN prefixes. The APN prefixes can be of any length and must be separated by commas. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_6.PNG)
+Another example for Convoy district. All parcels in Convoy have an APN that start with 356:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_7.PNG)
+Selecting "exclude" will show every parcel except those with the corresponding prefixes. The following example excludes all parcels in Convoy (highlighted area is the location of Convoy):
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_8.PNG)
+
+3. Latitude/Longitude
+
+The dashboard allows for quick results by showing all parcels in a certain range of a given coordinate represented in Latitude and Longitude. All entries are in degrees. For example, San Diego's centroid is (32.7157, -117.1611) and 0.01 degrees in difference is around 1 mile, making the area selected being a 2 mile $/times$ 2 mile square. The resulting map is a good approximation of downtown San Diego:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_9.PNG)
+
+4. Lot Size Condition
+
+For people interested in lot sizes. Both minimum and maximum lot size conditions can be added.
+For example, Encanto recently revolted over the city footnote to change RS-1-2 (single family home lot with at least 20,000 sqft lot size) to RS-1-7 (single family home lot wit at least 5,000 sqft lot size), forcing the city to return the area to a RS-1-2 zoning.
+The RS-1-2 zones in Encanto covera round 541 single family homes.
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_10.PNG)
+Only 233 of these, or 43% of them have a lot size of over 20,000 sqft. Encanto is revolting so their homes are illegal again.
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_11.PNG)
+
+5. Additional Map Options
+
+There are two ways to enhance readability of the maps: changing map mode and map height multipliers.
+There are three map modes: the default option which plots the value/sqft as height, the square root option which plots the square root of the value/sqft as height, and the 2d option which plots every parcel in a same height plot:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_12_1.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_12_2.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_12_3.PNG)
+
+The map height multiplier option further inflates or deflates column height (applies for all three modes). For example, the default version of an Aguanga map is hard to read:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_13_1.PNG)
+Applying a height multiplier of 1000 makes it much easier to view:
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_13_2.PNG)
 
 # How to load the app in local
 This app requires `Shiny` to run in local. 
-I recommend using RStudio to run most R tasks, since RStudio integrates so well with many of the core functionalities of the language.  
-Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) (or use the `renv.lock` file to download the environment - requires `renv` package). Then, replace the default `data/parcel_value_sdcounty.csv` with the extracted one in the root menu, and click the `Run App` button in the RStudio interface. 
+I recommend using RStudio to run most R tasks, since RStudio integrates so well with many of the core functionalities of the language (I prefer VIM for other languages so that tells you a lot about how great RStudio is).  
+Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) (or use the `renv.lock` file to download the environment - requires `renv` package). Click the `Run App` button in the RStudio interface. 
 
 # Further examples of what you can do with the app:
 1. Rancho Santa Fe analysis
