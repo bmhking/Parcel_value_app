@@ -62,6 +62,7 @@ There are three map modes: the default option which plots the value/sqft as heig
 
 The map height multiplier option further inflates or deflates column height (applies for all three modes). For example, the default version of an Aguanga map is hard to read:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_13_1.PNG)
+
 Applying a height multiplier of 1000 makes it much easier to view:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_13_2.PNG)
 
