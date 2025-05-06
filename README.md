@@ -9,7 +9,7 @@ I am using this methodology to write a paper on how high residential water usage
 I have given the dashboard a custom domain: [https://www.sdparcelmap.com](https://www.sdparcelmap.com).
 
 # How to use the app
-1. Basics
+### 1. Basics
 
 When you open the link, the website looks like this:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_1.PNG)
@@ -28,7 +28,7 @@ Hovering over a column will show you information about that parcel:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_5.PNG)
 This will allow you to use the app directly. However, I have included additional functionality to select parcels more precisely.
 
-2. APN Prefixes
+### 2. APN Prefixes
 
 Every parcel in San Diego is assigned a 10-digit APN. Some parcels include many subparcels (for example, condo buildings will have as many subparcels as there are units), and in that case the APN that I will use will be the range; for example, a 10-subparcel lot with subparcels 0000000001, 0000000002, ..., 0000000010 will be assigned APN 0000000001-0000000010.
 The dashboard provides a way to filter through APN prefixes. The APN prefixes can be of any length and must be separated by commas. Use [SANDAG's Parcel Lookup Tool](https://sdgis.sandag.org/) to find APNs of specific parcels. Here is an example for Alvarado Estates:
@@ -38,12 +38,12 @@ Another example for Convoy district. All parcels in Convoy have an APN that star
 Selecting "exclude" will show every parcel except those with the corresponding prefixes. The following example excludes all parcels in Convoy (highlighted area is the location of Convoy):
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_8.PNG)
 
-3. Latitude/Longitude
+### 3. Latitude/Longitude
 
 The dashboard allows for quick results by showing all parcels in a certain range of a given coordinate represented in Latitude and Longitude. All entries are in degrees. For example, San Diego's centroid is (32.7157, -117.1611) and 0.01 degrees in difference is around 1 mile, making the area selected being a 2 mile $/times$ 2 mile square. The resulting map is a good approximation of downtown San Diego:
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_9.PNG)
 
-4. Lot Size Condition
+### 4. Lot Size Condition
 
 For people interested in lot sizes. Both minimum and maximum lot size conditions can be added.
 For example, Encanto recently revolted over the city footnote to change RS-1-2 (single family home lot with at least 20,000 sqft lot size) to RS-1-7 (single family home lot wit at least 5,000 sqft lot size), forcing the city to return the area to a RS-1-2 zoning.
@@ -52,7 +52,7 @@ The RS-1-2 zones in Encanto covera round 541 single family homes.
 Only 233 of these, or 43% of them have a lot size of over 20,000 sqft. Encanto is revolting so their homes are illegal again.
 ![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_11.PNG)
 
-5. Additional Map Options
+### 5. Additional Map Options
 
 There are two ways to enhance readability of the maps: changing map mode and map height multipliers.
 There are three map modes: the default option which plots the value/sqft as height, the square root option which plots the square root of the value/sqft as height, and the 2d option which plots every parcel in a same height plot:
@@ -72,20 +72,20 @@ I recommend using RStudio to run most R tasks, since RStudio integrates so well 
 Once you download RStudio, download the required libraries in `ui.R` and `server.R` (including `shiny`) (or use the `renv.lock` file to download the environment - requires `renv` package). Click the `Run App` button in the RStudio interface. 
 
 # Further examples of what you can do with the app:
-1. Rancho Santa Fe analysis
+### 1. Rancho Santa Fe analysis
 
 Rancho Santa Fe is the most affluent neighborhood in San Diego county. Are their houses as wealthy as we think they are?
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_ranchosantafe.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_14.PNG)
 Rancho Santa Fe is assessed at $25.54/sqft. San Diego city is assessed at $84.62/sqft - more than 3 times that of Rancho Santa Fe. Rancho Santa Fe is receiving subsidies that is paid for by citizens in the city. If Rancho Santa Fe was developed to San Diego city's average value/sqft, we would see an increase of property value equal to:
 
 $$(\$84.62-\$25.54)\times556,300,609.60=\$32,866,240,015.20$$
 
 That's 47 full Shohei Ohtani contracts, or 5 full lineups of him.
 
-2. Comparing the two sides of Balboa Park
+### 2. Comparing the two sides of Balboa Park
 
 To the west side of Balboa Park is 6th Ave which is full of "luxury" apartments (aka anything built in the past 10 years) whom white homeowners keep telling me makes housing unaffordable (I'm sure they live in very affordable homes) and will block the sun (because it is common knowledge that the sun rests on second floor). To the east of Balboa Park are a bunch of single family homes in North and South Park where a lot of these homeowners live:
-![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_balboaparkcomparison.PNG)
+![](https://raw.githubusercontent.com/bmhking/Parcel_value_app/main/tutorial/tutorial_15.PNG)
 The west side apartments full of million dollar, unaffordable condos are assessed at 6 times more than the east side 1.5 million dollar, affordable houses. The difference in property value is around $1.76 billion - or $17.6 million dollars of property tax income every year. It's obvious which side is more affordable for the local government
 
 # History of edits:
