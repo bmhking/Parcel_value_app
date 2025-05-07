@@ -16,13 +16,14 @@ useShinyjs()
 useShinyalert()
 options(scipen=999)
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+gg_df$total_value <- gg_df$land_value + gg_df$impr_value
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
 gg_df$sqrt_land_value_per_sqft <- sqrt(gg_df$land_value_per_sqft)
 gg_df$sqrt_impr_value_per_sqft <- sqrt(gg_df$impr_value_per_sqft)
 gg_df$sqrt_total_value_per_sqft <- sqrt(gg_df$total_value_per_sqft)
-gg_df$impr_land_ratio <- gg_df$impr_value/gg_df$land_value
+# gg_df$impr_land_ratio <- gg_df$impr_value/gg_df$land_value
 gg_df$zonecolor <- '#000000'
 gg_df$zonecolor[gg_df$zoning_type_group == 0] <- '#FFFFFF'
 gg_df$zonecolor[gg_df$zoning_type_group == 10] <- '#FFFF00'
@@ -78,8 +79,10 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 900 & gg_df$impr_value_per_sqft
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqft >= 900] <- '#C54BBC'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 
-use_text <- fromJSON(file = "data/use_code_sd.txt")
-use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
+# use_text <- fromJSON(file = "data/use_code_sd.txt")
+use_text <- fromJSON("data/use_code_sd.txt")
+# use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
+use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
@@ -96,7 +99,6 @@ print_2_digits <- function(x){
   return(format(round(x, digits=2), nsmall = 2, big.mark = ","))
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
-# gg_df <- read_csv("{data/parcel_value_sdcounty.csv")
 tooltip_html <- "APN: {{APN_list}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Lot Size in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
   # output$deck <- renderDeckgl({
@@ -118,6 +120,9 @@ server <- function(input, output, session) {
     plotdata_df <- plotdata_df %>% filter(SITUS_COMM %in% input$city)
     plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone)
     plotdata_df <- plotdata_df %>% filter(use_type_text %in% input$use)
+    if(!input$includenovalue){
+      plotdata_df <- plotdata_df %>% filter(total_value != 0)
+    }
     # find parcels that start with the typed in APN prefixes
     if(input$APNs != ''){
       APN_list <- unlist(strsplit(stri_replace_all_charclass(input$APNs, "\\p{WHITE_SPACE}", ""), ','))
@@ -149,6 +154,19 @@ server <- function(input, output, session) {
       }
       plotdata_df <- plotdata_df %>% filter(lat >= input$lat - filter_radius & lat <= input$lat + filter_radius & lon >= input$lon - filter_radius & lon <= input$lon + filter_radius)
     }
+    if(input$includetaxexempt){
+      apnlistcount <- table(plotdata_df$APN_list)
+      multipleapnlists <- names(apnlistcount)[apnlistcount > 1]
+      for(apn in multipleapnlists){
+        plotdata_df$land_value[which(plotdata_df$APN_list == apn)] <-
+          sum(plotdata_df$land_value[which(plotdata_df$APN_list == apn)])
+        plotdata_df$impr_value[which(plotdata_df$APN_list == apn)] <-
+          sum(plotdata_df$impr_value[which(plotdata_df$APN_list == apn)])
+        plotdata_df$total_value[which(plotdata_df$APN_list == apn)] <-
+          sum(plotdata_df$total_value[which(plotdata_df$APN_list == apn)])
+      }
+    }
+    plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -185,7 +203,6 @@ server <- function(input, output, session) {
                 Zone_Land_Value = sum(as.numeric(land_value))/sum(as.numeric(shape_area)),
                 Zone_Impr_Value = sum(as.numeric(impr_value))/sum(as.numeric(shape_area)),
                 Zone_Total_Value = sum(as.numeric(total_value))/sum(as.numeric(shape_area)))
-    print(plotdata_df)
     values$agg_df <- plotdata_df_agg
     values$plot_df <- plotdata_df
     values$expanded_df <- plotdata_df_expanded

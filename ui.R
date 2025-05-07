@@ -8,6 +8,7 @@ library(shinyjs)
 library(shinyalert)
 
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+gg_df$total_value <- gg_df$land_value + gg_df$impr_value
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
@@ -93,9 +94,12 @@ ui <- fluidPage(
                                                             actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100%")))
                                             ),
                                    tabPanel("Additional Map Options", br(), 
-                                            fluidRow(column(4, radioButtons("mapmode", "Column Height",
-                                                         c("Default" = "default", "Square Root" = "sqrt", "2-D" = "twod"))),
-                                                     column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)))
+                                            fluidRow(column(3, radioButtons("mapmode", "Column Height",
+                                                            c("Default" = "default", "Square Root" = "sqrt", "2-D" = "twod"))),
+                                                     column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)),
+                                                     column(4, checkboxInput("includetaxexempt", HTML("<b>Include Tax-Exempt Parcels</b>"), FALSE),
+                                                            checkboxInput("includenovalue", HTML("<b>Include Parcels With 0 Value</b>"), FALSE))
+                                                     )
                                             )
                                    ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
