@@ -79,10 +79,10 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 900 & gg_df$impr_value_per_sqft
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqft >= 900] <- '#C54BBC'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 
-# use_text <- fromJSON(file = "data/use_code_sd.txt")
-use_text <- fromJSON("data/use_code_sd.txt")
-# use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
+use_text <- rjson::fromJSON(file = "data/use_code_sd.txt")
 use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
+# use_text <- fromJSON("data/use_code_sd.txt")
+# use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
