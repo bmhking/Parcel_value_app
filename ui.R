@@ -57,7 +57,7 @@ ui <- fluidPage(
                                                    conditionalPanel("input.city.indexOf('SAN DIEGO') >= 0",
                                                                     pickerInput("comm", NULL, 
                                                                                 choices = comm_list, 
-                                                                                options = pickerOptions(actionsBox = TRUE, title = "Select city/communities", liveSearch = TRUE),
+                                                                                options = pickerOptions(actionsBox = TRUE, title = "Select San Diego City CPAs", liveSearch = TRUE),
                                                                                 multiple = TRUE)),
                                                    pickerInput("zone", NULL, 
                                                                choices = c('Unzoned',
