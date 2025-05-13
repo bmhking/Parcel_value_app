@@ -117,6 +117,8 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Add 2D mode (04/17)
 - Added error message if user does not select city/community, zoning, and usage (04/17)
 - Changed column to 6 sides instead of 20. Now the map runs more smoothly (04/17)
+- Added option to include non-taxable parcels and parcels with 0 value (05/07)
+- Added CPAs for San Diego city parcels. Now when you select "SAN DIEGO" in the city/community picker, a new picker will appear asking you to select which San Diego CPA to search for (5/12)
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long

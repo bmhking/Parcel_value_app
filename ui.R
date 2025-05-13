@@ -13,6 +13,9 @@ gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
 gg_df[which(gg_df$use_type_text == "NATURAL RESOURCES – MINING, EXTRACTIVE, PROCESSING CEMENT/SILICA PRODUCTS, ROCK & GRAVEL"), "use_type_text"] <-"NATURAL RESOURCES – MINING, ETC."
+city_list <- names(table(gg_df$SITUS_COMM))
+comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
+city_list <- sort(c(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO'], 'SAN DIEGO'))
 
 tabset_css <- "
 /* for the active tab */
@@ -29,7 +32,6 @@ tabset_css <- "
 
 ui <- fluidPage(
   useShinyjs(),
-  useShinyalert(),
   tags$head(
     tags$style(HTML(tabset_css))
   ),
@@ -47,9 +49,16 @@ ui <- fluidPage(
                   deckglOutput("deck", height='675px')),
            column(6, tabsetPanel(id = "filters",
                                  tabPanel("Required Filters", br(),
-                                            column(6, pickerInput("city", NULL, 
-                                                               choices=names(table(gg_df$SITUS_COMM)), 
-                                                               options = list(`actions-box` = TRUE, title = "Select city/communities"), multiple = T),
+                                            column(6, 
+                                                   pickerInput("city", NULL, 
+                                                               choices = city_list, 
+                                                               options = pickerOptions(actionsBox = TRUE, title = "Select city/communities", liveSearch = TRUE),
+                                                               multiple = TRUE),
+                                                   conditionalPanel("input.city.indexOf('SAN DIEGO') >= 0",
+                                                                    pickerInput("comm", NULL, 
+                                                                                choices = comm_list, 
+                                                                                options = pickerOptions(actionsBox = TRUE, title = "Select city/communities", liveSearch = TRUE),
+                                                                                multiple = TRUE)),
                                                    pickerInput("zone", NULL, 
                                                                choices = c('Unzoned',
                                                                            'Single-Family',
@@ -62,8 +71,10 @@ ui <- fluidPage(
                                                                            'Multi-Zone'), 
                                                                options = list(`actions-box` = TRUE, title = "Select zoning types"), multiple = T),
                                                    pickerInput("use", NULL, 
-                                                               choices = names(table(gg_df$use_type_text)),
-                                                               options = list(`actions-box` = TRUE, title = "Select parcel usages"), multiple = T)),
+                                                               choices = names(table(gg_df$use_type_text)), 
+                                                               options = pickerOptions(actionsBox = TRUE, title = "Select parcel usages", liveSearch = TRUE),
+                                                               multiple = T)
+                                            ),
                                             
                                             column(6, selectInput("datatype", "Metric Plotted",
                                                                    choices = c("Total Value/SQFT" = "Total Value/SQFT", 

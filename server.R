@@ -13,7 +13,6 @@ library(shinyjs)
 library(shinyalert)
 
 useShinyjs()
-useShinyalert()
 options(scipen=999)
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
 gg_df$total_value <- gg_df$land_value + gg_df$impr_value
@@ -81,8 +80,6 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 
 use_text <- rjson::fromJSON(file = "data/use_code_sd.txt")
 use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
-# use_text <- fromJSON("data/use_code_sd.txt")
-# use_df <- do.call("rbind", lapply(use_text$fields[34][[1]][[5]][[4]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
@@ -111,13 +108,20 @@ server <- function(input, output, session) {
   #            bearing=0) %>%
   #       add_mapbox_basemap("mapbox://styles/mapbox/light-v11")
   # })
+  
   values <- reactiveValues()
   values2 <- reactiveValues()
   refilter <- eventReactive(input$filter, {
+    print(input[["menu"]])
     disable("filter")
     disable("downloadData")
     plotdata_df <- gg_df
-    plotdata_df <- plotdata_df %>% filter(SITUS_COMM %in% input$city)
+    comms <- input$city
+    if(any(input$city == 'SAN DIEGO')){
+      comms <- comms[comms != 'SAN DIEGO']
+      comms <- c(comms, paste('SAN DIEGO - ', input$comm, sep = ''))
+    }
+    plotdata_df <- plotdata_df %>% filter(SITUS_COMM %in% comms)
     plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone)
     plotdata_df <- plotdata_df %>% filter(use_type_text %in% input$use)
     if(!input$includenovalue){
