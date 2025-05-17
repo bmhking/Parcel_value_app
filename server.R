@@ -78,8 +78,8 @@ gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 900 & gg_df$impr_value_per_sqft
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft < 1500 & gg_df$impr_value_per_sqft >= 900] <- '#C54BBC'
 gg_df$imprvaluecolor[gg_df$impr_value_per_sqft >= 1500] <- '#603FEF'
 
-use_text <- rjson::fromJSON(file = "data/use_code_sd.txt")
-use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
+# use_text <- rjson::fromJSON(file = "data/use_code_sd.txt")
+# use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
@@ -112,7 +112,6 @@ server <- function(input, output, session) {
   values <- reactiveValues()
   values2 <- reactiveValues()
   refilter <- eventReactive(input$filter, {
-    print(input[["menu"]])
     disable("filter")
     disable("downloadData")
     plotdata_df <- gg_df
@@ -169,8 +168,9 @@ server <- function(input, output, session) {
         plotdata_df$total_value[which(plotdata_df$APN_list == apn)] <-
           sum(plotdata_df$total_value[which(plotdata_df$APN_list == apn)])
       }
-    }
-    plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
+    }else(
+      plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
+    )
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -194,8 +194,8 @@ server <- function(input, output, session) {
        Zone_Total_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Total_Value) / sum(plotdata_df_agg$Zone_Area),
        Zone_Total_Value_2 = sum(plotdata_df_agg$Zone_Total_Value_2))
     plotdata_df <- plotdata_df %>% inner_join(plotdata_df_agg, by=join_by(zoning_type_text))
-    plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone) %>%
-      filter(use_type_text %in% input$use)
+    # plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone) %>%
+    #   filter(use_type_text %in% input$use)
     plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
     plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
     plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
