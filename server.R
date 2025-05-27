@@ -168,6 +168,7 @@ server <- function(input, output, session) {
         plotdata_df$total_value[which(plotdata_df$APN_list == apn)] <-
           sum(plotdata_df$total_value[which(plotdata_df$APN_list == apn)])
       }
+      plotdata_df <- plotdata_df %>% filter(!(TAXSTAT == 0 & APN_list %in% multipleapnlists))
     }else(
       plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
     )
