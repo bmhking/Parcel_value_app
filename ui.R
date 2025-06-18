@@ -49,7 +49,7 @@ ui <- fluidPage(
                   tags$a(href="https://sdlanduse.substack.com/", 
                          "Substack"), " | ",
                   tags$a(href="https://patreon.com/sdparcelmap", 
-                         "Donate for server costs"),
+                         "Help me cover server costs"),
                   deckglOutput("deck", height='675px')),
            column(6, tabsetPanel(id = "filters",
                                  tabPanel("Required Filters", br(),
