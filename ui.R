@@ -119,10 +119,11 @@ ui <- fluidPage(
                                    ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
                              actionButton('filter', HTML("<b>Show Map</b>"), value=0))),
+                           column(4, actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0)),
                            column(3, conditionalPanel(condition = "output.deck",
                              downloadButton("downloadData", HTML("<b>Download Data</b>"))
                            )),
-                           column(7, conditionalPanel(condition = "output.deck",
+                           column(3, conditionalPanel(condition = "output.deck",
                              htmlOutput('scrolldowntip')
                            ))
                            ),

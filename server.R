@@ -15,6 +15,7 @@ library(shinyalert)
 useShinyjs()
 options(scipen=999)
 gg_df <- read_csv("data/parcel_value_sdcounty.csv")
+all_uses <- names(table(gg_df$use_type_text))
 gg_df$total_value <- gg_df$land_value + gg_df$impr_value
 gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
 gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
@@ -305,6 +306,19 @@ server <- function(input, output, session) {
     legend_for_plot
   })
   
+  observeEvent(input$selectall, {
+    updatePickerInput(session, "zone", selected = c('Unzoned',
+                                                    'Single-Family',
+                                                    'Mixed-Use',
+                                                    'Multi-Family',
+                                                    'Commercial',
+                                                    'Industrial',
+                                                    'Agricultural',
+                                                    'Special/Misc.',
+                                                    'Multi-Zone'))
+    updatePickerInput(session, "use", selected = all_uses)
+  })
+  
   observeEvent(input$resetlotsize, {
     updateNumericInput(session, "lotsizemin", value = NA)
     updateNumericInput(session, "lotsizemax", value = NA)
@@ -391,7 +405,7 @@ server <- function(input, output, session) {
           add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
       })
       output$scrolldowntip <- renderText({
-        '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;">  &#x2193Scroll down to view usage-level summary  </b>'
+        '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;"> Scroll &#x2193 for use table</b>'
       })
       output$legend <- render_tableHTML({
         if(input$colortype == 'Zone Type'){
