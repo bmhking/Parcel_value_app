@@ -331,9 +331,14 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$filter, {
-    if(is.null(input$city) | is.null(input$zone) | is.null(input$use)){
+    if(length(input$city) == 0 | is.null(input$zone) | is.null(input$use)){
       shinyalert("Insufficient Filters", "Please select cities/communities, zones, and usages", type = "error")
+    }else if(is.null(input$comm) & identical(input$city, 'SAN DIEGO')){
+      shinyalert("Insufficient Filters", "Please select the community within San Diego", type = "error")
     }else{
+      if(is.null(input$comm) & 'SAN DIEGO' %in% input$city){
+        shinyalert("Insufficient Filters", "No community was selected in San Diego City, so the map will not include San Diego City parcels", type = "warning")
+      }
       refilter()
       layer_properties <- layerdata()
       legend_table <- legenddata()
