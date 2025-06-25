@@ -410,7 +410,7 @@ server <- function(input, output, session) {
           add_css_row(css = list('font-weight', 'bold'), rows = nrow(display_df) + 1)
       })
       output$scrolldowntip <- renderText({
-        '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;"> Scroll &#x2193 for use table</b>'
+        '<b style = "border: solid; border-width: 1px; border-color: black; border-radius: 10px; white-space: pre;"> Scroll &#x2193 for usage table</b>'
       })
       output$legend <- render_tableHTML({
         if(input$colortype == 'Zone Type'){
