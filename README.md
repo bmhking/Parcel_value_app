@@ -124,6 +124,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Fixed bug where parcels with both taxable and tax-exempt subparcels have their parcels double-counted when showing both taxable and tax-exempt parcels (05/26)
 - Added "Select All Zones and Uses" button as a shortcut (06/20)
 - Added error and warning messages to when San Diego city is selected but no community is selected (06/23)
+- Moved SAN DIEGO to the top of the city list since it's so commonly used (07/03)
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long

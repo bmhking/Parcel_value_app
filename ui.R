@@ -15,7 +15,7 @@ gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
 gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
 city_list <- names(table(gg_df$SITUS_COMM))
 comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
-city_list <- sort(c(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO'], 'SAN DIEGO'))
+city_list <- c('SAN DIEGO', sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
 
 tabset_css <- "
 /* for the active tab */
