@@ -125,6 +125,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Added "Select All Zones and Uses" button as a shortcut (06/20)
 - Added error and warning messages to when San Diego city is selected but no community is selected (06/23)
 - Moved SAN DIEGO to the top of the city list since it's so commonly used (07/03)
+- Rearranged lat/long and lot size tabs to an "Additional Filter" tab so I can add other options in the future (08/29)
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long

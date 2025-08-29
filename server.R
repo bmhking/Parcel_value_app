@@ -319,12 +319,12 @@ server <- function(input, output, session) {
     updatePickerInput(session, "use", selected = all_uses)
   })
   
-  observeEvent(input$resetlotsize, {
+  observeEvent(input$clearlotsize, {
     updateNumericInput(session, "lotsizemin", value = NA)
     updateNumericInput(session, "lotsizemax", value = NA)
   })
   
-  observeEvent(input$resetlatlonrad, {
+  observeEvent(input$clearlatlonrad, {
     updateNumericInput(session, "lat", value = NA)
     updateNumericInput(session, "lon", value = NA)
     updateNumericInput(session, "rad", value = NA)

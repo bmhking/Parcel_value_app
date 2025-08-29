@@ -92,21 +92,27 @@ ui <- fluidPage(
                                             ),
                                    tabPanel("APN Prefixes", br(),
                                             fluidRow(column(10, textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
-                                                          height = '140px', width = '100%')),
+                                                          height = '133px', width = '100%')),
                                                      column(2, radioButtons("includeorexclude", "", 
                                                                    c("Include" = "include", "Exclude" = "exclude"))))
                                             ),
-                                   tabPanel("Latitude/Longitude", br(),
-                                            fluidRow(column(6, numericInput("lat", HTML("Latitude (&#176;): SD center: 32.7157&#176;"), NA, min = -90, max = 90),
-                                                            numericInput("lon", HTML("Longitude (&#176;): SD center: -117.1611&#176;"), NA, min = -180, max = 180)),
-                                                     column(5, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90),
-                                                            br(), actionButton('resetlatlonrad', HTML("<b>Reset Tab</b>"), value=0, style = "width: 100%")))
-                                            ),
-                                   tabPanel("Lot Size Condition", br(),
-                                            fluidRow(column(6, numericInput("lotsizemin", "Minimum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area)),
-                                                      numericInput("lotsizemax", "Maximum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
-                                                     column(5, br(), HTML("<b>1 Acre = 43560 SQFT</b>"), br(), br(),
-                                                            actionButton('resetlotsize', HTML("<b>Reset Lot Size Range</b>"), value=0, style = "height: 100%")))
+                                   tabPanel('Additional Filters',
+                                      tabsetPanel(id = 'additional_filters',
+                                              tabPanel("Latitude/Longitude",
+                                                       fluidRow(column(4, numericInput("lat", HTML("Latitude (&#176;):"), NA, min = -90, max = 90)),
+                                                                column(4, numericInput("lon", HTML("Longitude (&#176;):"), NA, min = -180, max = 180)),
+                                                                column(4, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90))),
+                                                       fluidRow(column(5, HTML("<b>SD Center's lat/lon: (32.7157&#176;, -117.1611&#176;)</b>")), 
+                                                                column(2, actionButton('clearlatlonrad', HTML("<b>Clear All</b>"), value=0, style = "width: 100%"))),
+                                                       br()
+                                              ),
+                                              tabPanel("Lot Size Condition",
+                                                       fluidRow(column(4, numericInput("lotsizemin", "Minimum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
+                                                                column(4, numericInput("lotsizemax", "Maximum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
+                                                                column(4, HTML("<b>1 Acre = 43560 SQFT</b>"), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%"))
+                                                               )
+                                              )
+                                             )
                                             ),
                                    tabPanel("Additional Map Options", br(), 
                                             fluidRow(column(3, radioButtons("mapmode", "Column Height",
