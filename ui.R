@@ -99,18 +99,17 @@ ui <- fluidPage(
                                    tabPanel('Additional Filters',
                                       tabsetPanel(id = 'additional_filters',
                                               tabPanel("Latitude/Longitude",
-                                                       fluidRow(column(4, numericInput("lat", HTML("Latitude (&#176;):"), NA, min = -90, max = 90)),
-                                                                column(4, numericInput("lon", HTML("Longitude (&#176;):"), NA, min = -180, max = 180)),
-                                                                column(4, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90))),
-                                                       fluidRow(column(5, HTML("<b>SD Center's lat/lon: (32.7157&#176;, -117.1611&#176;)</b>")), 
-                                                                column(2, actionButton('clearlatlonrad', HTML("<b>Clear All</b>"), value=0, style = "width: 100%"))),
+                                                       fluidRow(column(3, numericInput("lat", HTML("Latitude (&#176;):"), NA, min = -90, max = 90)),
+                                                                column(3, numericInput("lon", HTML("Longitude (&#176;):"), NA, min = -180, max = 180)),
+                                                                column(4, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90)), 
+                                                                column(2, br(), actionButton('clearlatlonrad', HTML("<b>Clear All</b>"), value=0, style = "width: 100%"))),
+                                                       fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;For western longitudes, use \"-\". For example, San Diego's center is: (32.7157, -117.1611).</b>")),
                                                        br()
                                               ),
                                               tabPanel("Lot Size Condition",
-                                                       fluidRow(column(4, numericInput("lotsizemin", "Minimum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
-                                                                column(4, numericInput("lotsizemax", "Maximum Lot Size (SQFT):", NA, min = 0, max = max(gg_df$shape_area))),
-                                                                column(4, HTML("<b>1 Acre = 43560 SQFT</b>"), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%"))
-                                                               )
+                                                       fluidRow(column(5, numericRangeInput('lotsizerange', 'Range (SQFT, 1 Acre = 43560 SQFT):', c(NA,NA), separator='-')),
+                                                                column(1, br(), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%"))
+                                                       )
                                               )
                                              )
                                             ),

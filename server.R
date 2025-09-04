@@ -143,12 +143,15 @@ server <- function(input, output, session) {
         plotdata_df <- plotdata_df %>% filter(!(APN_list %in% APN_selected))
       }
     }
-    if(is.na(input$lotsizemax) & !is.na(input$lotsizemin)){
-      plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin)
-    }else if(!is.na(input$lotsizemax) & is.na(input$lotsizemin)){
-      plotdata_df <- plotdata_df %>% filter(shape_area <= input$lotsizemax)
-    }else if(!is.na(input$lotsizemax) & !is.na(input$lotsizemin)){
-      plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizemin & shape_area <= input$lotsizemax)
+    print(input$lotsizerange)
+    if(!is.null(input$lotsizerange)){
+      if(is.na(input$lotsizerange[1])){
+        plotdata_df <- plotdata_df %>% filter(shape_area <= input$lotsizerange[2])
+      }else if(is.na(input$lotsizerange[2])){
+        plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizerange[1])
+      }else{
+        plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizerange[1] & shape_area <= input$lotsizerange[2])
+      }
     }
     if(!is.na(input$lat) & !is.na(input$lon)){
       if(is.na(input$rad)){
@@ -320,8 +323,9 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$clearlotsize, {
-    updateNumericInput(session, "lotsizemin", value = NA)
-    updateNumericInput(session, "lotsizemax", value = NA)
+    updateNumericRangeInput(session, "lotsizerange", value = c(NA,NA))
+    # updateNumericInput(session, "lotsizemin", value = NA)
+    # updateNumericInput(session, "lotsizemax", value = NA)
   })
   
   observeEvent(input$clearlatlonrad, {
