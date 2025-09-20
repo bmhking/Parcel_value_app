@@ -110,6 +110,14 @@ ui <- fluidPage(
                                                        fluidRow(column(5, numericRangeInput('lotsizerange', 'Range (SQFT, 1 Acre = 43560 SQFT):', c(NA,NA), separator='-')),
                                                                 column(1, br(), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%"))
                                                        )
+                                              ),
+                                              tabPanel("Value Condition",
+                                                       fluidRow(column(6, numericRangeInput('landvaluerange', 'Land Value:', c(NA,NA), separator='-')),
+                                                                column(6, numericRangeInput('imprvaluerange', 'Impr Value:', c(NA,NA), separator='-'))
+                                                       ),
+                                                       fluidRow(column(6, numericRangeInput('totalvaluerange', 'Total Value:', c(NA,NA), separator='-')),
+                                                                column(6, radioButtons("parcelorsqft", "", c("By Parcel" = "byparcel", "By SQFT" = "bysqft"), inline=TRUE))
+                                                       )
                                               )
                                              )
                                             ),

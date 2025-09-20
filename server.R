@@ -96,6 +96,23 @@ is_noninteger_column <- function(x){
 print_2_digits <- function(x){
   return(format(round(x, digits=2), nsmall = 2, big.mark = ","))
 }
+filter_by_numeric_range <- function(range_item, df_to_filter, col_to_filter){
+  # col_to_filter must be a string, e.g. "Row_ID" instead of just Row_ID in dplyr format
+  if(is.na(range_item[1])){
+    return(df_to_filter %>% filter(!! sym(col_to_filter) <= range_item[2]))
+  }else if(is.na(range_item[2])){
+    return(df_to_filter %>% filter(!! sym(col_to_filter) >= range_item[1]))
+  }else{
+    return(df_to_filter %>% filter(!! sym(col_to_filter) >= range_item[1] & !! sym(col_to_filter) <= range_item[2]))
+  }
+}
+filter_by_numeric_range_valuemetric <- function(range_item, df_to_filter, col_to_filter, parcel_switch){
+  if(parcel_switch == 'byparcel'){
+    return(filter_by_numeric_range(range_item, df_to_filter, col_to_filter))
+  }else if(parcel_switch == 'bysqft'){
+    return(filter_by_numeric_range(range_item, df_to_filter, paste0(col_to_filter, '_per_sqft')))
+  }
+}
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 tooltip_html <- "APN: {{APN_list}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Lot Size in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
@@ -143,15 +160,8 @@ server <- function(input, output, session) {
         plotdata_df <- plotdata_df %>% filter(!(APN_list %in% APN_selected))
       }
     }
-    print(input$lotsizerange)
     if(!is.null(input$lotsizerange)){
-      if(is.na(input$lotsizerange[1])){
-        plotdata_df <- plotdata_df %>% filter(shape_area <= input$lotsizerange[2])
-      }else if(is.na(input$lotsizerange[2])){
-        plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizerange[1])
-      }else{
-        plotdata_df <- plotdata_df %>% filter(shape_area >= input$lotsizerange[1] & shape_area <= input$lotsizerange[2])
-      }
+      plotdata_df <- filter_by_numeric_range(input$lotsizerange, plotdata_df, 'shape_area')
     }
     if(!is.na(input$lat) & !is.na(input$lon)){
       if(is.na(input$rad)){
@@ -160,6 +170,15 @@ server <- function(input, output, session) {
         filter_radius <- input$rad
       }
       plotdata_df <- plotdata_df %>% filter(lat >= input$lat - filter_radius & lat <= input$lat + filter_radius & lon >= input$lon - filter_radius & lon <= input$lon + filter_radius)
+    }
+    if(!is.null(input$landvaluerange)){
+      plotdata_df <- filter_by_numeric_range_valuemetric(input$landvaluerange, plotdata_df, 'land_value', input$parcelorsqft)
+    }
+    if(!is.null(input$imprvaluerange)){
+      plotdata_df <- filter_by_numeric_range_valuemetric(input$imprvaluerange, plotdata_df, 'impr_value', input$parcelorsqft)
+    }
+    if(!is.null(input$totalvaluerange)){
+      plotdata_df <- filter_by_numeric_range_valuemetric(input$totalvaluerange, plotdata_df, 'total_value', input$parcelorsqft)
     }
     if(input$includetaxexempt){
       apnlistcount <- table(plotdata_df$APN_list)
