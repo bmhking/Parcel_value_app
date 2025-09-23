@@ -8,11 +8,11 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyalert)
 
-gg_df <- read_csv("data/parcel_value_sdcounty.csv")
-gg_df$total_value <- gg_df$land_value + gg_df$impr_value
-gg_df$land_value_per_sqft <- gg_df$land_value/gg_df$shape_area
-gg_df$impr_value_per_sqft <- gg_df$impr_value/gg_df$shape_area
-gg_df$total_value_per_sqft <- gg_df$total_value/gg_df$shape_area
+gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
+gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
+gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
+gg_df <- gg_df_value %>% inner_join(gg_df_landuse, by = join_by('APN_list', 'TAXSTAT')) %>%
+  inner_join(gg_df_location, by = join_by('APN_list', 'TAXSTAT'))
 city_list <- names(table(gg_df$SITUS_COMM))
 comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
 city_list <- c('SAN DIEGO', sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))

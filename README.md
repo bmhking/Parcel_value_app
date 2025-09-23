@@ -128,6 +128,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Rearranged lat/long and lot size tabs to an "Additional Filter" tab so I can add other options in the future (08/29)
 - Updated lat/long and lot size tabs to fit the new tab format better. Now I can add other filter options (09/03)
 - Added value based filtering, per parcel or per SQFT (09/19)
+- Reorganized data to make it easier to read. Added address for the parcels. If a parcel contains multiple subparcels, all addresses of the subparcels areprinted (09/22)
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
