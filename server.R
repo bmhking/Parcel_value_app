@@ -17,6 +17,7 @@ options(scipen=999)
 gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
 gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
 gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
+highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
 gg_df <- gg_df_value %>% inner_join(gg_df_landuse, by = join_by('APN_list', 'TAXSTAT')) %>%
   inner_join(gg_df_location, by = join_by('APN_list', 'TAXSTAT'))
 all_uses <- names(table(gg_df$use_type_text))
@@ -24,6 +25,7 @@ gg_df$sqrt_land_value_per_sqft <- sqrt(gg_df$land_value_per_sqft)
 gg_df$sqrt_impr_value_per_sqft <- sqrt(gg_df$impr_value_per_sqft)
 gg_df$sqrt_total_value_per_sqft <- sqrt(gg_df$total_value_per_sqft)
 
+# old code to read usage data from a file. Now usage data is read from the parcel dataset
 # use_text <- rjson::fromJSON(file = "data/use_code_sd.txt")
 # use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
@@ -37,6 +39,9 @@ is_noninteger_column <- function(x){
   }else{
     return(FALSE)
   }
+}
+print_int <- function(x){
+  return(format(x, nsmall = 0, big.mark = ","))
 }
 print_2_digits <- function(x){
   return(format(round(x, digits=2), nsmall = 2, big.mark = ","))
@@ -59,7 +64,6 @@ filter_by_numeric_range_valuemetric <- function(range_item, df_to_filter, col_to
   }
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
-tooltip_html <- "APN: {{APN_list}}<br>Address: {{unique_address}}<br>Zone Type: {{zoning_type_text}}<br>Usage: {{use_type_text}}<br>Lot Size in SQFT: {{shape_print}}<br>Land Value/SQFT: {{land_print}}<br>Impr Value/SQFT: {{impr_print}}<br>Total Value/SQFT: {{total_print}}"
 server <- function(input, output, session) {
   # output$deck <- renderDeckgl({
   #     deckgl(longitude=-116.75,
@@ -163,11 +167,12 @@ server <- function(input, output, session) {
        Zone_Total_Value = sum(plotdata_df_agg$Zone_Area*plotdata_df_agg$Zone_Total_Value) / sum(plotdata_df_agg$Zone_Area),
        Zone_Total_Value_2 = sum(plotdata_df_agg$Zone_Total_Value_2))
     plotdata_df <- plotdata_df %>% inner_join(plotdata_df_agg, by=join_by(zoning_type_text))
-    # plotdata_df <- plotdata_df %>% filter(zoning_type_text %in% input$zone) %>%
-    #   filter(use_type_text %in% input$use)
-    plotdata_df$land_print <- print_2_digits(plotdata_df$land_value_per_sqft)
-    plotdata_df$impr_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
-    plotdata_df$total_print <- print_2_digits(plotdata_df$total_value_per_sqft)
+    plotdata_df$land_print <- print_int(plotdata_df$land_value)
+    plotdata_df$impr_print <- print_int(plotdata_df$impr_value)
+    plotdata_df$total_print <- print_int(plotdata_df$total_value)
+    plotdata_df$land_per_sqft_print <- print_2_digits(plotdata_df$land_value_per_sqft)
+    plotdata_df$impr_per_sqft_print <- print_2_digits(plotdata_df$impr_value_per_sqft)
+    plotdata_df$total_per_sqft_print <- print_2_digits(plotdata_df$total_value_per_sqft)
     plotdata_df$shape_print <- print_2_digits(plotdata_df$shape_area)
     plotdata_df_expanded <- plotdata_df %>% group_by(use_type_text) %>% 
       summarize(Zone_Parcel_Num = n(),
@@ -184,6 +189,14 @@ server <- function(input, output, session) {
   })
   
   layerdata <- reactive({
+    tooltip_html_list <- c()
+    for(i in 1:nrow(highlight_text_columns)){
+      if(highlight_text_columns$text_option[i] %in% input$parcelhighlighttext){
+        tooltip_html_list <- c(tooltip_html_list, 
+                               paste0(highlight_text_columns$text_option[i], ': {{', highlight_text_columns$column_to_write[i], '}}'))
+      }
+    }
+    tooltip_html <- paste(tooltip_html_list, collapse = '<br>')
     value_layer <- list(
       diskResolution = 6,
       get_position=~lon+lat,
@@ -204,8 +217,7 @@ server <- function(input, output, session) {
       value_layer[['get_fill_color']]="#FF0000"
       value_layer[['get_elevation']]=1
       value_layer[['radius']]=5
-    }else if(input$colortype == 'Zone Type'){
-      value_layer[['get_fill_color']]=~zonecolor
+    }else{
       if(input$datatype == 'Total Value/SQFT'){
         if(input$mapmode == 'sqrt'){
           value_layer[['get_elevation']]=~sqrt_total_value_per_sqft
@@ -225,27 +237,13 @@ server <- function(input, output, session) {
           value_layer[['get_elevation']]=~land_value_per_sqft
         }
       }
-    }else if(input$colortype == 'Value/SQFT'){
-      if(input$datatype == 'Total Value/SQFT'){
-        if(input$mapmode == 'sqrt'){
-          value_layer[['get_elevation']]=~sqrt_total_value_per_sqft
-        }else{
-          value_layer[['get_elevation']]=~total_value_per_sqft
-        }
+      if(input$colortype == 'Zone Type'){
+        value_layer[['get_fill_color']]=~zonecolor
+      }else if(input$datatype == 'Total Value/SQFT'){
         value_layer[['get_fill_color']]=~totalvaluecolor
       }else if(input$datatype == 'Impr Value/SQFT'){
-        if(input$mapmode == 'sqrt'){
-          value_layer[['get_elevation']]=~sqrt_impr_value_per_sqft
-        }else{
-          value_layer[['get_elevation']]=~impr_value_per_sqft
-        }
         value_layer[['get_fill_color']]=~imprvaluecolor
       }else if(input$datatype == 'Land Value/SQFT'){
-        if(input$mapmode == 'sqrt'){
-          value_layer[['get_elevation']]=~sqrt_land_value_per_sqft
-        }else{
-          value_layer[['get_elevation']]=~land_value_per_sqft
-        }
         value_layer[['get_fill_color']]=~landvaluecolor
       }
     }
@@ -288,8 +286,6 @@ server <- function(input, output, session) {
   
   observeEvent(input$clearlotsize, {
     updateNumericRangeInput(session, "lotsizerange", value = c(NA,NA))
-    # updateNumericInput(session, "lotsizemin", value = NA)
-    # updateNumericInput(session, "lotsizemax", value = NA)
   })
   
   observeEvent(input$clearlatlonrad, {
@@ -340,9 +336,6 @@ server <- function(input, output, session) {
           add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
           add_column_layer(data=values$plot_df, properties=layer_properties)
       })
-      # deckgl_proxy('deck') %>%
-      #   add_column_layer(data=values$plot_df, properties=layer_properties )%>%
-      #   update_deckgl()
       output$summarytable <- render_tableHTML({
         display_df <- values$agg_df[, 1:5]
         display_df <- display_df[order(match(display_df$zoning_type_text, c(zones_list, 'total'))), 

@@ -129,6 +129,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Updated lat/long and lot size tabs to fit the new tab format better. Now I can add other filter options (09/03)
 - Added value based filtering, per parcel or per SQFT (09/19)
 - Reorganized data to make it easier to read. Added address for the parcels. If a parcel contains multiple subparcels, all addresses of the subparcels areprinted (09/22)
+- Reorganized additional map options and added map option to show the type of information displayed when highlight a parcel. By default, everything is shown. (09/24)
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long
@@ -140,4 +141,3 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Find a way to implement "reverse mode" - highlighting parcels with a low value per sqft
 - Explore other color schemes
 - Find other data sources where zoning, land use, and land unit data are more accurate
-- Find a way to add address information.

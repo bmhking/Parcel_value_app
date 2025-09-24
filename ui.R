@@ -11,9 +11,8 @@ library(shinyalert)
 gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
 gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
 gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
-gg_df <- gg_df_value %>% inner_join(gg_df_landuse, by = join_by('APN_list', 'TAXSTAT')) %>%
-  inner_join(gg_df_location, by = join_by('APN_list', 'TAXSTAT'))
-city_list <- names(table(gg_df$SITUS_COMM))
+highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
+city_list <- names(table(gg_df_location$SITUS_COMM))
 comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
 city_list <- c('SAN DIEGO', sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
 
@@ -75,7 +74,7 @@ ui <- fluidPage(
                                                                            'Multi-Zone'), 
                                                                options = list(`actions-box` = TRUE, title = "Select zoning types"), multiple = T),
                                                    pickerInput("use", NULL, 
-                                                               choices = names(table(gg_df$use_type_text)), 
+                                                               choices = names(table(gg_df_landuse$use_type_text)), 
                                                                options = pickerOptions(actionsBox = TRUE, title = "Select parcel usages", liveSearch = TRUE),
                                                                multiple = T)
                                             ),
@@ -121,14 +120,28 @@ ui <- fluidPage(
                                               )
                                              )
                                             ),
-                                   tabPanel("Additional Map Options", br(), 
-                                            fluidRow(column(3, radioButtons("mapmode", "Column Height",
-                                                            c("Default" = "default", "Square Root" = "sqrt", "2-D" = "twod"))),
-                                                     column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)),
-                                                     column(4, checkboxInput("includetaxexempt", HTML("<b>Include Tax-Exempt Parcels</b>"), FALSE),
-                                                            checkboxInput("includenovalue", HTML("<b>Include Parcels With 0 Value</b>"), FALSE))
-                                                     )
-                                            )
+                                   tabPanel("Additional Map Options",
+                                      tabsetPanel(id = 'additional_map_options',
+                                              tabPanel("Column Height",
+                                                       fluidRow(column(3, radioButtons("mapmode", "Column Height",
+                                                                       c("Default" = "default", "Square Root" = "sqrt", "2-D" = "twod"))),
+                                                                column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)))
+                                              ),
+                                              tabPanel("Non-Taxed Parcels",
+                                                       fluidRow(column(12, checkboxInput("includetaxexempt", HTML("<b>Include Valued But Tax-Exempt Parcels</b>"), FALSE)),
+                                                                column(12, checkboxInput("includenovalue", HTML("<b>Include Parcels With 0 Value</b>"), FALSE))
+                                                       )
+                                              ),
+                                              tabPanel("Highlighted Text",
+                                                       fluidRow(column(12, pickerInput("parcelhighlighttext", 
+                                                                     "Select text to show on a highlighted parcel (by default, show all)", 
+                                                                   choices = highlight_text_columns$text_option, 
+                                                                   selected = highlight_text_columns$text_option,
+                                                                   options = list(`actions-box` = TRUE), multiple = T, width = '95%'))
+                                                       )
+                                              )
+                                          )
+                                      )
                                    ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
                              actionButton('filter', HTML("<b>Show Map</b>"), value=0))),
@@ -149,5 +162,4 @@ ui <- fluidPage(
            ),
   br(),
   fluidRow(column(12, DTOutput('expandedtable')))
-
 )
