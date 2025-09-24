@@ -8,7 +8,8 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyalert)
 
-gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
+# not needed for ui part
+# gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
 gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
 gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
 highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
