@@ -134,11 +134,13 @@ ui <- fluidPage(
                                                        )
                                               ),
                                               tabPanel("Highlighted Text",
-                                                       fluidRow(column(12, pickerInput("parcelhighlighttext", 
+                                                       fluidRow(column(8, pickerInput("parcelhighlighttext", 
                                                                      "Select text to show on a highlighted parcel (by default, show all)", 
                                                                    choices = highlight_text_columns$text_option, 
                                                                    selected = highlight_text_columns$text_option,
-                                                                   options = list(`actions-box` = TRUE), multiple = T, width = '95%'))
+                                                                   options = list(`actions-box` = TRUE), multiple = T, width = '95%')),
+                                                                column(4, conditionalPanel("input.parcelhighlighttext.indexOf('Address') >= 0",
+                                                                  numericInput("maxaddresslength", "Characters shown for Address", value = 100, min = 0)))
                                                        )
                                               )
                                           )

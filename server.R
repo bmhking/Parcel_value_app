@@ -144,6 +144,8 @@ server <- function(input, output, session) {
     }else(
       plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
     )
+    plotdata_df$unique_address[nchar(plotdata_df$unique_address) > input$maxaddresslength] <- 
+      paste0(substr(plotdata_df$unique_address, 1, input$maxaddresslength), ' ...')
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -205,7 +207,7 @@ server <- function(input, output, session) {
       # coverage = 0.02,
       tooltip = use_tooltip(
         html = tooltip_html,
-        style = "background: steelBlue; border-radius: 5px;"
+        style = "background: steelBlue; border-radius: 5px; width: 100%"
       )
     )
     if(is.na(input$heightmultiplier)){
@@ -299,6 +301,8 @@ server <- function(input, output, session) {
       shinyalert("Insufficient Filters", "Please select cities/communities, zones, and usages", type = "error")
     }else if(is.null(input$comm) & identical(input$city, 'SAN DIEGO')){
       shinyalert("Insufficient Filters", "Please select the community within San Diego", type = "error")
+    }else if('Address' %in% input$parcelhighlighttext & ((input$maxaddresslength < 1) | (!is.integer(input$maxaddresslength)))){
+      shinyalert("Character count must be an integer > 1", "Please enter new count", type = "error")
     }else{
       if(is.null(input$comm) & 'SAN DIEGO' %in% input$city){
         shinyalert("Insufficient Filters", "No community was selected in San Diego City, so the map will not include San Diego City parcels", type = "warning")
