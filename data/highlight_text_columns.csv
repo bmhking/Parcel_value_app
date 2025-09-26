@@ -1,0 +1,12 @@
+text_option,column_to_write
+APN,APN_list
+Address,unique_address
+Zone Type,zoning_type_text
+Usage,use_type_text
+Lot Size in SQFT,shape_print
+Land Value,land_print
+Impr Value,impr_print
+Total Value,total_print
+Land Value/SQFT,land_per_sqft_print
+Impr Value/SQFT,impr_per_sqft_print
+Total Value/SQFT,total_per_sqft_print
