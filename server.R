@@ -128,6 +128,13 @@ server <- function(input, output, session) {
     }
     if(!is.null(input$totalvaluerange)){
       plotdata_df <- filter_by_numeric_range_valuemetric(input$totalvaluerange, plotdata_df, 'total_value', input$parcelorsqft)
+    }    
+    if(!is.null(input$address)){
+      if(grepl('[0-9]', substr(input$address, 1, 1))){
+        plotdata_df <- plotdata_df[grepl(toupper(input$address), plotdata_df$unique_address), ]
+      }else{
+        plotdata_df <- plotdata_df[grepl(paste0(' ', toupper(input$address)), plotdata_df$unique_address), ]
+      }
     }
     if(input$includetaxexempt){
       apnlistcount <- table(plotdata_df$APN_list)

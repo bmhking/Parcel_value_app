@@ -131,6 +131,8 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Reorganized data to make it easier to read. Added address for the parcels. If a parcel contains multiple subparcels, all addresses of the subparcels areprinted (09/22)
 - Reorganized additional map options and added map option to show the type of information displayed when highlight a parcel. By default, everything is shown. (09/24)
 - Added option to select how many characters to show when printing address. Default is 100 (09/25)
+- Added option to filter by address (09/29)
+- Expand address filter capability by allowing to filter by multiple addresses
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long

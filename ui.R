@@ -98,7 +98,7 @@ ui <- fluidPage(
                                             ),
                                    tabPanel('Additional Filters',
                                       tabsetPanel(id = 'additional_filters',
-                                              tabPanel("Latitude/Longitude",
+                                              tabPanel("By Latitude/Longitude",
                                                        fluidRow(column(3, numericInput("lat", HTML("Latitude (&#176;):"), NA, min = -90, max = 90)),
                                                                 column(3, numericInput("lon", HTML("Longitude (&#176;):"), NA, min = -180, max = 180)),
                                                                 column(4, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90)), 
@@ -106,18 +106,22 @@ ui <- fluidPage(
                                                        fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;For western longitudes, use \"-\". For example, San Diego's center is: (32.7157, -117.1611).</b>")),
                                                        br()
                                               ),
-                                              tabPanel("Lot Size Condition",
+                                              tabPanel("By Lot Size",
                                                        fluidRow(column(5, numericRangeInput('lotsizerange', 'Range (SQFT, 1 Acre = 43560 SQFT):', c(NA,NA), separator='-')),
                                                                 column(1, br(), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%"))
                                                        )
                                               ),
-                                              tabPanel("Value Condition",
+                                              tabPanel("By Value Condition",
                                                        fluidRow(column(6, numericRangeInput('landvaluerange', 'Land Value:', c(NA,NA), separator='-')),
                                                                 column(6, numericRangeInput('imprvaluerange', 'Impr Value:', c(NA,NA), separator='-'))
                                                        ),
                                                        fluidRow(column(6, numericRangeInput('totalvaluerange', 'Total Value:', c(NA,NA), separator='-')),
                                                                 column(6, radioButtons("parcelorsqft", "", c("By Parcel" = "byparcel", "By SQFT" = "bysqft"), inline=TRUE))
                                                        )
+                                              ),
+                                              tabPanel("By Address",
+                                                       fluidRow(column(6, textInput('address', 'Address (do not enter city or ZIP code)'))),
+                                                       fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter a street name or an address (case insensitive), e.g. C St or 202 C St.<br>&nbsp;&nbsp;&nbsp;&nbsp;The address is based on the property tax rolls.</b>"))
                                               )
                                              )
                                             ),
