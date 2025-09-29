@@ -121,7 +121,8 @@ ui <- fluidPage(
                                               ),
                                               tabPanel("By Address",
                                                        fluidRow(column(6, textInput('address', 'Address (do not enter city or ZIP code)'))),
-                                                       fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter a street name or an address (case insensitive), e.g. C St or 202 C St.<br>&nbsp;&nbsp;&nbsp;&nbsp;The address is based on the property tax rolls.</b>"))
+                                                       fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter a street name or an address (case insensitive), e.g. C St or 202 C St.<br>&nbsp;&nbsp;&nbsp;&nbsp;The address is based on the property tax rolls.</b>")),
+                                                       br()
                                               )
                                              )
                                             ),
