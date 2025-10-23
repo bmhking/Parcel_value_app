@@ -132,6 +132,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Reorganized additional map options and added map option to show the type of information displayed when highlight a parcel. By default, everything is shown. (09/24)
 - Added option to select how many characters to show when printing address. Default is 100 (09/25)
 - Added option to filter by address (09/29)
+- Improved UI. Now the UI is also more friendly on mobile (10/23)
 - Expand address filter capability by allowing to filter by multiple addresses
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
