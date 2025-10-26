@@ -30,8 +30,8 @@ gg_df$sqrt_total_value_per_sqft <- sqrt(gg_df$total_value_per_sqft)
 # use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
-output_colnames <- c('Zone Type', 'Total Area in SQFT', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
-output_colnames2 <- c('Usage', '# of Parcels', 'Total Area in SQFT', 'Mean Lot Area', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
+output_colnames <- c('Zone Type', 'Total Area (SQFT)', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
+output_colnames2 <- c('Usage', '# of Parcels', 'Total Area (SQFT)', 'Mean Lot Area', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
 output_colnames3 <- c('Zone Type', '# of Parcels', 'Mean Lot Area', 'Median Lot Area')
 is_noninteger_column <- function(x){
   if(is.numeric(x)){
@@ -152,7 +152,8 @@ server <- function(input, output, session) {
       plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
     )
     plotdata_df$unique_address[nchar(plotdata_df$unique_address) > input$maxaddresslength] <- 
-      paste0(substr(plotdata_df$unique_address, 1, input$maxaddresslength), ' ...')
+      paste0(substr(plotdata_df$unique_address[nchar(plotdata_df$unique_address) > input$maxaddresslength],
+                1, input$maxaddresslength), ' ...')
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -295,6 +296,11 @@ server <- function(input, output, session) {
   
   observeEvent(input$clearlotsize, {
     updateNumericRangeInput(session, "lotsizerange", value = c(NA,NA))
+  })
+  
+  observeEvent(input$apn_help, {
+    shinyalert("", HTML('<p style="text-align: left">All APNs in San Diego are 10-digits, but prefixes are enough. The dashboard searches for all parcels with APNs that start with the prefixes (separated by comma) included.<br><br>For example:<br>&#9679;&nbsp;To show Convoy, just enter 356<br>&#9679;&nbsp;To show HINAR Dessert Bar and Storyhouse Spirits, enter 53515604,53515608. If you just enter 535156, the dashboard will show all buildings in that block<br>&#9679;&nbsp;For parcels with subparcels (represented as "first APN-last APN"), enter the prefix of the combined APN text e.g. to show Park Row Community, enter 53354410,53354412 as those prefixes start the APN texts for the two parcels that form the condo complex (5335441001-5335441182 and 5335441201-5335441269)</p>'), 
+               html=TRUE, size='m', type='info')
   })
   
   observeEvent(input$clearlatlonrad, {

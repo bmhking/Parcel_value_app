@@ -91,7 +91,9 @@ ui <- fluidPage(
                                         fluidRow(column(10, textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
                                                                           height = '133px', width = '100%')),
                                                  column(2, radioButtons("includeorexclude", "", 
-                                                                        c("Include" = "include", "Exclude" = "exclude"))))
+                                                                        c("Include" = "include", "Exclude" = "exclude")),
+                                                          actionButton("apn_help", "Help on APNs", value=0))
+                                        )
                                ),
                                tabPanel('Additional Filters',
                                         tabsetPanel(id = 'additional_filters', type='pill',
@@ -112,7 +114,7 @@ ui <- fluidPage(
                                                                       column(6, numericRangeInput('imprvaluerange', 'Impr Value:', c(NA,NA), separator='-'))
                                                              ),
                                                              fluidRow(column(6, numericRangeInput('totalvaluerange', 'Total Value:', c(NA,NA), separator='-')),
-                                                                      column(6, radioButtons("parcelorsqft", "", c("By Parcel" = "byparcel", "By SQFT" = "bysqft"), inline=TRUE))
+                                                                      column(6, radioButtons("parcelorsqft", "", c("By Value/SQFT" = "bysqft", "By Total Value" = "byparcel"), inline=TRUE))
                                                              )
                                                     ),
                                                     tabPanel("By Address",
