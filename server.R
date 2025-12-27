@@ -130,11 +130,15 @@ server <- function(input, output, session) {
       plotdata_df <- filter_by_numeric_range_valuemetric(input$totalvaluerange, plotdata_df, 'total_value', input$parcelorsqft)
     }    
     if(!is.null(input$address)){
-      if(grepl('[0-9]', substr(input$address, 1, 1))){
-        plotdata_df <- plotdata_df[grepl(toupper(input$address), plotdata_df$unique_address), ]
-      }else{
-        plotdata_df <- plotdata_df[grepl(paste0(' ', toupper(input$address)), plotdata_df$unique_address), ]
-      }
+      address_list <- toupper(unlist(strsplit(input$address, ',')))
+      address_list[!grepl('[0-9]', substr(address_list, 1, 1))] <- paste0(' ', address_list[!grepl('[0-9]', substr(address_list, 1, 1))])
+      address_patterns <- paste(address_list, collapse='|')
+      plotdata_df <- plotdata_df[grepl(address_patterns, plotdata_df$unique_address), ]
+      # if(grepl('[0-9]', substr(input$address, 1, 1))){
+      #   plotdata_df <- plotdata_df[grepl(toupper(input$address), plotdata_df$unique_address), ]
+      # }else{
+      #   plotdata_df <- plotdata_df[grepl(paste0(' ', toupper(input$address)), plotdata_df$unique_address), ]
+      # }
     }
     if(input$includetaxexempt){
       apnlistcount <- table(plotdata_df$APN_list)
