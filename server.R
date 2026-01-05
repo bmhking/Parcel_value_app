@@ -315,7 +315,7 @@ server <- function(input, output, session) {
   
   observeEvent(input$filter, {
     if(length(input$city) == 0 | is.null(input$zone) | is.null(input$use)){
-      shinyalert("Insufficient Filters", "Please select cities/communities, zones, and usages", type = "error")
+      shinyalert("Insufficient Filters", 'Please select cities/communities, zones, and usages from the "Required Filters" tab', type = "error")
     }else if(is.null(input$comm) & identical(input$city, 'SAN DIEGO')){
       shinyalert("Insufficient Filters", "Please select the community within San Diego", type = "error")
     }else if('Address' %in% input$parcelhighlighttext & ((input$maxaddresslength < 1) | (!is.integer(input$maxaddresslength)))){

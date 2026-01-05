@@ -50,7 +50,7 @@ ui <- fluidPage(
                   ),
                   tabsetPanel(id = "filters", type='pill',
                                tabPanel("Required Filters",
-                                        column(6, 
+                                        fluidRow(column(6, 
                                                pickerInput("city", NULL, 
                                                            choices = city_list, 
                                                            options = pickerOptions(actionsBox = TRUE, title = "Select city/communities", liveSearch = TRUE),
@@ -85,14 +85,16 @@ ui <- fluidPage(
                                                selectInput("colortype", "Coloring Scheme",
                                                            choices = c("Value/SQFT" = "Value/SQFT",
                                                                        "Zone Type" = "Zone Type"),
-                                                           selected = "Value/SQFT"))
+                                                           selected = "Value/SQFT"),
+                                               actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%'))
+                                        )         
                                ),
                                tabPanel("APN Prefixes",
                                         fluidRow(column(10, textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
                                                                           height = '133px', width = '100%')),
                                                  column(2, radioButtons("includeorexclude", "", 
                                                                         c("Include" = "include", "Exclude" = "exclude")),
-                                                          actionButton("apn_help", "Help on APNs", value=0))
+                                                          actionButton("apn_help", "Help on APNs", value=0, style='font-size:90%'))
                                         )
                                ),
                                tabPanel('Additional Filters',
@@ -101,12 +103,12 @@ ui <- fluidPage(
                                                              fluidRow(column(3, numericInput("lat", HTML("Latitude (&#176;):"), NA, min = -90, max = 90)),
                                                                       column(3, numericInput("lon", HTML("Longitude (&#176;):"), NA, min = -180, max = 180)),
                                                                       column(4, numericInput("rad", HTML("Range (&#176;): 0.01&#176; &asymp; 2 mile square"), NA, min = 0, max = 90)), 
-                                                                      column(2, br(), actionButton('clearlatlonrad', HTML("<b>Clear All</b>"), value=0, style = "width: 100%"))),
+                                                                      column(2, br(), actionButton('clearlatlonrad', HTML("<b>Clear All</b>"), value=0, style = "width: 100%, font-size:90%"))),
                                                              fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;For western longitudes, use \"-\". For example, San Diego's center is: (32.7157, -117.1611).</b>"))
                                                     ),
                                                     tabPanel("By Lot Size",
                                                              fluidRow(column(5, numericRangeInput('lotsizerange', 'Range (SQFT, 1 Acre = 43560 SQFT):', c(NA,NA), separator='-')),
-                                                                      column(1, br(), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%"))
+                                                                      column(1, br(), actionButton('clearlotsize', HTML("<b>Clear All</b>"), value=0, style = "height: 100%, font-size:90%"))
                                                              )
                                                     ),
                                                     tabPanel("By Value Condition",
@@ -150,10 +152,9 @@ ui <- fluidPage(
                                )
                          ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
-                                              actionButton('filter', HTML("<b>Show Map</b>"), value=0))),
-                           column(4, actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0))
+                                              actionButton('filter', HTML("<b>Show Map</b>"), value=0, style='font-size:90%')))
                   ),
-                  fluidRow(column(9, br(), div(tableOutput('summarytable')), 
+                  fluidRow(column(9, div(tableOutput('summarytable')), 
                                   br(), div(tableOutput('parcelareatable')), style = "font-size:90%"),
                            column(3, tableOutput('legend'), 
                                   br(), conditionalPanel(condition = "output.deck",
