@@ -16,6 +16,7 @@ highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
 city_list <- names(table(gg_df_location$SITUS_COMM))
 comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
 city_list <- c('SAN DIEGO', sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
+# city_list <- list('SAN DIEGO' = list(comm_list), sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
 
 tabset_css <- "
 /* for the active tab */
@@ -51,43 +52,68 @@ ui <- fluidPage(
                   tabsetPanel(id = "filters", type='pill',
                                tabPanel("Required Filters",
                                         fluidRow(column(6, 
-                                               pickerInput("city", NULL, 
-                                                           choices = city_list, 
-                                                           options = pickerOptions(actionsBox = TRUE, title = "Select city/communities", liveSearch = TRUE),
-                                                           multiple = TRUE),
-                                               conditionalPanel("input.city.indexOf('SAN DIEGO') >= 0",
-                                                                pickerInput("comm", NULL, 
-                                                                            choices = comm_list, 
-                                                                            options = pickerOptions(actionsBox = TRUE, title = "Select San Diego City CPAs", liveSearch = TRUE),
-                                                                            multiple = TRUE)),
-                                               pickerInput("zone", NULL, 
-                                                           choices = c('Unzoned',
-                                                                       'Single-Family',
-                                                                       'Mixed-Use',
-                                                                       'Multi-Family',
-                                                                       'Commercial',
-                                                                       'Industrial',
-                                                                       'Agricultural',
-                                                                       'Special/Misc.',
-                                                                       'Multi-Zone'), 
-                                                           options = list(`actions-box` = TRUE, title = "Select zoning types"), multiple = T),
-                                               pickerInput("use", NULL, 
-                                                           choices = names(table(gg_df_landuse$use_type_text)), 
-                                                           options = pickerOptions(actionsBox = TRUE, title = "Select parcel usages", liveSearch = TRUE),
-                                                           multiple = T)
+                                              fluidRow(column(2, HTML('<b>Region</b>')),
+                                                       column(10, pickerInput("city", NULL, 
+                                                                          choices = city_list, 
+                                                                          options = pickerOptions(actionsBox = TRUE, title = "Select city/communities", liveSearch = TRUE),
+                                                                          multiple = TRUE))
+                                              ), 
+                                              fluidRow(column(2, HTML('<b>Zone</b>')),
+                                                       column(10, pickerInput("zone", NULL, 
+                                                                              choices = c('Unzoned',
+                                                                                          'Single-Family',
+                                                                                          'Mixed-Use',
+                                                                                          'Multi-Family',
+                                                                                          'Commercial',
+                                                                                          'Industrial',
+                                                                                          'Agricultural',
+                                                                                          'Special/Misc.',
+                                                                                          'Multi-Zone'), 
+                                                                              options = list(`actions-box` = TRUE, title = "Select zoning types"), multiple = T))
+                                              ), 
+                                              fluidRow(column(2, HTML('<b>Use</b>')),
+                                                       column(10, pickerInput("use", NULL, 
+                                                                          choices = names(table(gg_df_landuse$use_type_text)), 
+                                                                          options = pickerOptions(actionsBox = TRUE, title = "Select parcel usages", liveSearch = TRUE),
+                                                                          multiple = T))
+                                              )
                                         ),
+                                        column(6,
+                                               conditionalPanel("input.city.indexOf('SAN DIEGO') >= 0",
+                                                  fluidRow(column(4, HTML('<b>San Diego Areas</b>')),
+                                                           column(8, pickerInput("comm", NULL, 
+                                                                          choices = comm_list, 
+                                                                          options = pickerOptions(actionsBox = TRUE, title = "Select San Diego City CPAs", liveSearch = TRUE),
+                                                                          multiple = TRUE))
+                                                  )
+                                               ),
+                                               fluidRow(column(4, HTML('<b>Metric Plotted</b>')),
+                                                        column(8, selectInput("datatype", NULL,
+                                                                           choices = c("Total Value/SQFT" = "Total Value/SQFT",
+                                                                                       "Land Value/SQFT" = "Land Value/SQFT",
+                                                                                       "Impr Value/SQFT" = "Impr Value/SQFT"),
+                                                                           selected = "Total Value/SQFT"))
+                                                        ),
+                                               fluidRow(column(4, HTML('<b>Color Scheme</b>')),
+                                                        column(8, selectInput("colortype", NULL,
+                                                                           choices = c("Value/SQFT" = "Value/SQFT",
+                                                                                       "Zone Type" = "Zone Type"),
+                                                                           selected = "Value/SQFT"))
+                                                        )
+                                               )
                                         
-                                        column(6, selectInput("datatype", "Metric Plotted",
-                                                              choices = c("Total Value/SQFT" = "Total Value/SQFT", 
-                                                                          "Land Value/SQFT" = "Land Value/SQFT", 
-                                                                          "Impr Value/SQFT" = "Impr Value/SQFT"),
-                                                              selected = "Total Value/SQFT"),
-                                               selectInput("colortype", "Coloring Scheme",
-                                                           choices = c("Value/SQFT" = "Value/SQFT",
-                                                                       "Zone Type" = "Zone Type"),
-                                                           selected = "Value/SQFT"),
-                                               actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%'))
-                                        )         
+                                        # column(6, selectInput("datatype", "Metric Plotted",
+                                        #                       choices = c("Total Value/SQFT" = "Total Value/SQFT",
+                                        #                                   "Land Value/SQFT" = "Land Value/SQFT",
+                                        #                                   "Impr Value/SQFT" = "Impr Value/SQFT"),
+                                        #                       selected = "Total Value/SQFT"),
+                                        #        selectInput("colortype", "Coloring Scheme",
+                                        #                    choices = c("Value/SQFT" = "Value/SQFT",
+                                        #                                "Zone Type" = "Zone Type"),
+                                        #                    selected = "Value/SQFT"),
+                                        #        actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%')
+                                        #        )
+                                        )
                                ),
                                tabPanel("APN Prefixes",
                                         fluidRow(column(10, textAreaInput("APNs", NULL, placeholder = 'Separate prefixes with a comma e.g. 001,0022', 
@@ -112,26 +138,38 @@ ui <- fluidPage(
                                                              )
                                                     ),
                                                     tabPanel("By Value Condition",
-                                                             fluidRow(column(6, numericRangeInput('landvaluerange', 'Land Value:', c(NA,NA), separator='-')),
-                                                                      column(6, numericRangeInput('imprvaluerange', 'Impr Value:', c(NA,NA), separator='-'))
-                                                             ),
-                                                             fluidRow(column(6, numericRangeInput('totalvaluerange', 'Total Value:', c(NA,NA), separator='-')),
-                                                                      column(6, radioButtons("parcelorsqft", "", c("By Value/SQFT" = "bysqft", "By Total Value" = "byparcel"), inline=TRUE))
+                                                             fluidRow(column(6, fluidRow(column(2, HTML('<b>Land</b>')),
+                                                                                         column(9, numericRangeInput('landvaluerange', NULL, c(NA,NA), separator='-'))),
+                                                                        fluidRow(column(2, HTML('<b>Total</b>')),
+                                                                                 column(9, numericRangeInput('totalvaluerange', NULL, c(NA,NA), separator='-')))
+                                                                 ),
+                                                                 column(6, fluidRow(column(3, HTML('<b>Improvement</b>')),
+                                                                                    column(9, numericRangeInput('imprvaluerange', NULL, c(NA,NA), separator='-'))), 
+                                                                        fluidRow(column(12, radioButtons("parcelorsqft", NULL, c("By Value/SQFT" = "bysqft", "By Total Value" = "byparcel"), inline=TRUE))))
                                                              )
                                                     ),
+                                                    # tabPanel("By Value Condition",
+                                                    #          fluidRow(column(6, numericRangeInput('landvaluerange', 'Land Value:', c(NA,NA), separator='-')),
+                                                    #                   column(6, numericRangeInput('imprvaluerange', 'Impr Value:', c(NA,NA), separator='-'))
+                                                    #          ),
+                                                    #          fluidRow(column(6, numericRangeInput('totalvaluerange', 'Total Value:', c(NA,NA), separator='-')),
+                                                    #                   column(6, radioButtons("parcelorsqft", "", c("By Value/SQFT" = "bysqft", "By Total Value" = "byparcel"), inline=TRUE))
+                                                    #          )
+                                                    # ),
                                                     tabPanel("By Address",
                                                              fluidRow(column(12, textInput('address', 'Do not enter city, ZIP code; case insensitive.'))),
-                                                             fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter street names or addresses based on property tax roll, e.g. C St or 202 C St.</b>")),
-                                                             fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;If entering multiple addresses, separate with a comma with no space e.g. 202 C St,B St.</b>"))
+                                                             fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter street names or addresses based on property tax roll, separated with a comma e.g. 202 C St, B St.</b>"))
                                                     )
                                         )
                                ),
                                tabPanel("Additional Map Options",
                                         tabsetPanel(id = 'additional_map_options', type='pill',
-                                                    tabPanel("Column Height",
-                                                             fluidRow(column(3, radioButtons("mapmode", "Column Height",
-                                                                                             c("Default" = "default", "Square Root" = "sqrt", "2-D" = "twod"))),
-                                                                      column(4, numericInput("heightmultiplier", "Column Height Multiplier:", NA, min=0)))
+                                                    tabPanel("Column Options",
+                                                             fluidRow(column(2, radioButtons("mapmode", "Height Scale",
+                                                                                             c("Default" = "default", "Sqrt" = "sqrt", "Flat" = "twod"))),
+                                                                      column(2, numericInput("columnwidth", "Width", 10, min=0)), 
+                                                                      column(3, numericInput("heightmultiplier", "Height Multiplier", NA, min=0))
+                                                             )
                                                     ),
                                                     tabPanel("Non-Taxed Parcels",
                                                              fluidRow(column(12, checkboxInput("includetaxexempt", HTML("<b>Include Valued But Tax-Exempt Parcels</b>"), FALSE)),
@@ -140,7 +178,7 @@ ui <- fluidPage(
                                                     ),
                                                     tabPanel("Highlighted Text",
                                                              fluidRow(column(8, pickerInput("parcelhighlighttext", 
-                                                                                            "Select text to show on a highlighted parcel (by default, show all)", 
+                                                                                            "Select text to show on a highlighted parcel", 
                                                                                             choices = highlight_text_columns$text_option, 
                                                                                             selected = highlight_text_columns$text_option,
                                                                                             options = list(`actions-box` = TRUE), multiple = T, width = '95%')),
@@ -152,9 +190,11 @@ ui <- fluidPage(
                                )
                          ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
-                                              actionButton('filter', HTML("<b>Show Map</b>"), value=0, style='font-size:90%')))
+                                              actionButton('filter', HTML("<b>Show Map</b>"), value=0, style='font-size:90%'))),
+                           column(2, actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%'))
                   ),
-                  fluidRow(column(9, div(tableOutput('summarytable')), 
+                  fluidRow(column(12, br(), actionButton(inputId = "warning", label = h3("Choose Region, Zoning Type, and Usage before rendering!"), disabled = TRUE)),
+                           column(9, div(tableOutput('summarytable')), 
                                   br(), div(tableOutput('parcelareatable')), style = "font-size:90%"),
                            column(3, tableOutput('legend'), 
                                   br(), conditionalPanel(condition = "output.deck",
@@ -164,8 +204,7 @@ ui <- fluidPage(
                                   )
                   )
                   ),
-           column(6, br(), deckglOutput("deck", height='750px')
-           )
+           column(6, br(), deckglOutput("deck", height='750px'))
   ),
   br(),
   fluidRow(column(12, DTOutput('expandedtable')))

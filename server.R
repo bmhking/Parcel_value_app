@@ -65,6 +65,7 @@ filter_by_numeric_range_valuemetric <- function(range_item, df_to_filter, col_to
 }
 Sys.setenv(MAPBOX_API_TOKEN = "pk.eyJ1IjoiYm1oa2luZyIsImEiOiJjbGw5bXowNXMxNHhhM2xxaGF3OWFhdTNlIn0.EH2wndceM6KvF0Pp8_oBNQ")
 server <- function(input, output, session) {
+  ## base map load should look like this
   # output$deck <- renderDeckgl({
   #     deckgl(longitude=-116.75,
   #            latitude=33,
@@ -81,6 +82,7 @@ server <- function(input, output, session) {
   refilter <- eventReactive(input$filter, {
     disable("filter")
     disable("downloadData")
+    hide('warning')
     plotdata_df <- gg_df
     comms <- input$city
     if(any(input$city == 'SAN DIEGO')){
@@ -95,7 +97,7 @@ server <- function(input, output, session) {
     }
     # find parcels that start with the typed in APN prefixes
     if(input$APNs != ''){
-      APN_list <- unlist(strsplit(stri_replace_all_charclass(input$APNs, "\\p{WHITE_SPACE}", ""), ','))
+      APN_list <- unlist(strsplit(stri_replace_all_charclass(input$APNs, "\\p{WHITE_SPACE}", ""), ","))
       prefix_lengths <- names(table(nchar(APN_list)))
       APN_selected <- c()
       for(prefix_length in prefix_lengths){
@@ -130,15 +132,10 @@ server <- function(input, output, session) {
       plotdata_df <- filter_by_numeric_range_valuemetric(input$totalvaluerange, plotdata_df, 'total_value', input$parcelorsqft)
     }    
     if(!is.null(input$address)){
-      address_list <- toupper(unlist(strsplit(input$address, ',')))
+      address_list <- toupper(unlist(strsplit(input$address, ", ")))
       address_list[!grepl('[0-9]', substr(address_list, 1, 1))] <- paste0(' ', address_list[!grepl('[0-9]', substr(address_list, 1, 1))])
       address_patterns <- paste(address_list, collapse='|')
       plotdata_df <- plotdata_df[grepl(address_patterns, plotdata_df$unique_address), ]
-      # if(grepl('[0-9]', substr(input$address, 1, 1))){
-      #   plotdata_df <- plotdata_df[grepl(toupper(input$address), plotdata_df$unique_address), ]
-      # }else{
-      #   plotdata_df <- plotdata_df[grepl(paste0(' ', toupper(input$address)), plotdata_df$unique_address), ]
-      # }
     }
     if(input$includetaxexempt){
       apnlistcount <- table(plotdata_df$APN_list)
@@ -215,8 +212,7 @@ server <- function(input, output, session) {
       diskResolution = 6,
       get_position=~lon+lat,
       pickable=TRUE,
-      radius=20,
-      # coverage = 0.02,
+      radius=input$columnwidth,
       tooltip = use_tooltip(
         html = tooltip_html,
         style = "background: steelBlue; border-radius: 5px; width: 100%"
@@ -283,6 +279,15 @@ server <- function(input, output, session) {
       }
     }
     legend_for_plot
+  })
+  
+  observeEvent(input$filters, {
+    if(input$filters == "Required Filters"){
+      runjs("document.getElementById('selectall').style.visibility = 'visible';")
+    }
+    else{
+      runjs("document.getElementById('selectall').style.visibility = 'hidden';")
+    }
   })
   
   observeEvent(input$selectall, {
