@@ -16,7 +16,6 @@ highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
 city_list <- names(table(gg_df_location$SITUS_COMM))
 comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
 city_list <- c('SAN DIEGO', sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
-# city_list <- list('SAN DIEGO' = list(comm_list), sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
 
 tabset_css <- "
 /* for the active tab */
@@ -101,18 +100,6 @@ ui <- fluidPage(
                                                                            selected = "Value/SQFT"))
                                                         )
                                                )
-                                        
-                                        # column(6, selectInput("datatype", "Metric Plotted",
-                                        #                       choices = c("Total Value/SQFT" = "Total Value/SQFT",
-                                        #                                   "Land Value/SQFT" = "Land Value/SQFT",
-                                        #                                   "Impr Value/SQFT" = "Impr Value/SQFT"),
-                                        #                       selected = "Total Value/SQFT"),
-                                        #        selectInput("colortype", "Coloring Scheme",
-                                        #                    choices = c("Value/SQFT" = "Value/SQFT",
-                                        #                                "Zone Type" = "Zone Type"),
-                                        #                    selected = "Value/SQFT"),
-                                        #        actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%')
-                                        #        )
                                         )
                                ),
                                tabPanel("APN Prefixes",
@@ -148,14 +135,6 @@ ui <- fluidPage(
                                                                         fluidRow(column(12, radioButtons("parcelorsqft", NULL, c("By Value/SQFT" = "bysqft", "By Total Value" = "byparcel"), inline=TRUE))))
                                                              )
                                                     ),
-                                                    # tabPanel("By Value Condition",
-                                                    #          fluidRow(column(6, numericRangeInput('landvaluerange', 'Land Value:', c(NA,NA), separator='-')),
-                                                    #                   column(6, numericRangeInput('imprvaluerange', 'Impr Value:', c(NA,NA), separator='-'))
-                                                    #          ),
-                                                    #          fluidRow(column(6, numericRangeInput('totalvaluerange', 'Total Value:', c(NA,NA), separator='-')),
-                                                    #                   column(6, radioButtons("parcelorsqft", "", c("By Value/SQFT" = "bysqft", "By Total Value" = "byparcel"), inline=TRUE))
-                                                    #          )
-                                                    # ),
                                                     tabPanel("By Address",
                                                              fluidRow(column(12, textInput('address', 'Do not enter city, ZIP code; case insensitive.'))),
                                                              fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter street names or addresses based on property tax roll, separated with a comma e.g. 202 C St, B St.</b>"))
