@@ -63,7 +63,7 @@ filter_by_numeric_range_valuemetric <- function(range_item, df_to_filter, col_to
     return(filter_by_numeric_range(range_item, df_to_filter, paste0(col_to_filter, '_per_sqft')))
   }
 }
-print(Sys.getenv("MAPBOX_API_TOKEN"))
+print(Sys.getenv())
 server <- function(input, output, session) {
   ## code to load San Diego map should look like this
   # output$deck <- renderDeckgl({
