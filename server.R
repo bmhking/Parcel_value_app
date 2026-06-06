@@ -82,7 +82,7 @@ server <- function(input, output, session) {
   refilter <- eventReactive(input$filter, {
     disable("filter")
     disable("downloadData")
-    hide('warning')
+    hide('entrancewarning')
     plotdata_df <- gg_df
     comms <- input$city
     if(any(input$city == 'SAN DIEGO')){

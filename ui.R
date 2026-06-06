@@ -172,7 +172,8 @@ ui <- fluidPage(
                                               actionButton('filter', HTML("<b>Show Map</b>"), value=0, style='font-size:90%'))),
                            column(2, actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%'))
                   ),
-                  fluidRow(column(12, br(), actionButton(inputId = "warning", label = h3("Choose Region, Zoning Type, and Usage before rendering!"), disabled = TRUE)),
+                  fluidRow(column(12, br(), actionButton(inputId = "entrancewarning", label = h2("Fill out everything in Required Filters first!"), 
+                                                         style="color: #fff; background-color: #FF474C; border-color: #2e6da4", disabled = TRUE)),
                            column(9, div(tableOutput('summarytable')), 
                                   br(), div(tableOutput('parcelareatable')), style = "font-size:90%"),
                            column(3, tableOutput('legend'), 
