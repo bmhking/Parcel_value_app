@@ -135,6 +135,7 @@ The west side apartments full of million dollar, unaffordable condos are assesse
 - Improved UI. Now the UI is also more friendly on mobile (10/23)
 - Added ability to search for multiple addresses in address filter (12/26)
 - Expand address filter capability by allowing to filter by multiple addresses
+- Rewrote parts of code for better APN and address visibility options. Now instead of providing a range of APNs, it shows all APNs. (06/14/2026)
 - Reorganize usage options
 - Add ability to read in a file of APNs - currently not working on it since you already can copy/paste a list of APNs into the APN section. I might work on this later
 - Add ability to show average value of surrounding parcels of a parcel (likely in a certain radius) - currently can do it with lat/long

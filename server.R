@@ -14,20 +14,19 @@ library(shinyalert)
 
 useShinyjs()
 options(scipen=999)
-gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
-gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
-gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
-highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
-gg_df <- gg_df_value %>% inner_join(gg_df_landuse, by = join_by('APN_list', 'TAXSTAT')) %>%
-  inner_join(gg_df_location, by = join_by('APN_list', 'TAXSTAT'))
+## old gg_df reading code. Required joins but better for column organizing. Will drop comment in later updates
+# gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
+# gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
+# gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
+# gg_df <- gg_df_value %>% inner_join(gg_df_landuse, by = join_by('APN_list', 'TAXSTAT')) %>%
+#   inner_join(gg_df_location, by = join_by('APN_list', 'TAXSTAT'))
+gg_df_1 <- read_csv("data/parcel_value_sdcounty_1.csv", show_col_types = FALSE)
+gg_df_2 <- read_csv("data/parcel_value_sdcounty_2.csv", show_col_types = FALSE)
+gg_df_3 <- read_csv("data/parcel_value_sdcounty_3.csv", show_col_types = FALSE)
+gg_df <- rbind(gg_df_1,gg_df_2,gg_df_3) %>% arrange(zone, use)
+highlight_text_columns <- read_csv("data/highlight_text_columns.csv", show_col_types = FALSE)
 all_uses <- names(table(gg_df$use_type_text))
-gg_df$sqrt_land_value_per_sqft <- sqrt(gg_df$land_value_per_sqft)
-gg_df$sqrt_impr_value_per_sqft <- sqrt(gg_df$impr_value_per_sqft)
-gg_df$sqrt_total_value_per_sqft <- sqrt(gg_df$total_value_per_sqft)
 
-# old code to read usage data from a file. Now usage data is read from the parcel dataset
-# use_text <- rjson::fromJSON(file = "data/use_code_sd.txt")
-# use_df <- do.call("rbind", lapply(use_text$fields$domain$codedValues[[34]], as.data.frame))
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
                 'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
 output_colnames <- c('Zone Type', 'Total Area (SQFT)', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
@@ -102,13 +101,13 @@ server <- function(input, output, session) {
       APN_selected <- c()
       for(prefix_length in prefix_lengths){
         prefixs <- APN_list[nchar(APN_list) == prefix_length]
-        APN_selected <- c(APN_selected, gg_df$APN_list[substring(gg_df$APN_list, 1, prefix_length) %in% prefixs])
+        APN_selected <- c(APN_selected, gg_df$APN[substring(gg_df$APN, 1, prefix_length) %in% prefixs])
       }
       APN_selected <- APN_selected[!duplicated(APN_selected)]
       if(input$includeorexclude == "include"){
-        plotdata_df <- plotdata_df %>% filter(APN_list %in% APN_selected)
+        plotdata_df <- plotdata_df %>% filter(APN %in% APN_selected)
       }else{
-        plotdata_df <- plotdata_df %>% filter(!(APN_list %in% APN_selected))
+        plotdata_df <- plotdata_df %>% filter(!(APN %in% APN_selected))
       }
     }
     if(!is.null(input$lotsizerange)){
@@ -138,23 +137,92 @@ server <- function(input, output, session) {
       plotdata_df <- plotdata_df[grepl(address_patterns, plotdata_df$unique_address), ]
     }
     if(input$includetaxexempt){
-      apnlistcount <- table(plotdata_df$APN_list)
+      apnlistcount <- table(plotdata_df$APN)
       multipleapnlists <- names(apnlistcount)[apnlistcount > 1]
       for(apn in multipleapnlists){
-        plotdata_df$land_value[which(plotdata_df$APN_list == apn)] <-
-          sum(plotdata_df$land_value[which(plotdata_df$APN_list == apn)])
-        plotdata_df$impr_value[which(plotdata_df$APN_list == apn)] <-
-          sum(plotdata_df$impr_value[which(plotdata_df$APN_list == apn)])
-        plotdata_df$total_value[which(plotdata_df$APN_list == apn)] <-
-          sum(plotdata_df$total_value[which(plotdata_df$APN_list == apn)])
+        plotdata_df$land_value[which(plotdata_df$APN == apn)] <-
+          sum(plotdata_df$land_value[which(plotdata_df$APN == apn)])
+        plotdata_df$impr_value[which(plotdata_df$APN == apn)] <-
+          sum(plotdata_df$impr_value[which(plotdata_df$APN == apn)])
+        plotdata_df$total_value[which(plotdata_df$APN == apn)] <-
+          sum(plotdata_df$total_value[which(plotdata_df$APN == apn)])
       }
-      plotdata_df <- plotdata_df %>% filter(!(TAXSTAT == 0 & APN_list %in% multipleapnlists))
+      plotdata_df <- plotdata_df %>% filter(!(TAXSTAT == 0 & APN %in% multipleapnlists))
     }else(
       plotdata_df <- plotdata_df %>% filter(TAXSTAT == 1)
     )
-    plotdata_df$unique_address[nchar(plotdata_df$unique_address) > input$maxaddresslength] <- 
-      paste0(substr(plotdata_df$unique_address[nchar(plotdata_df$unique_address) > input$maxaddresslength],
-                1, input$maxaddresslength), ' ...')
+    plotdata_df <- plotdata_df %>% group_by(PARCELID, SITUS_COMM) %>%
+      summarise(APN_list = str_c(APN, collapse = ", "),
+                unique_address = str_c(unique(unique_address), collapse = "; "),
+                land_value = sum(land_value),
+                impr_value = sum(impr_value),
+                total_value = sum(total_value),
+                zoning_type_text = str_c(unique(zoning_type_text), collapse = "; "),
+                use_type_text = str_c(unique(use_type_text), collapse = "; "),
+                lon = mean(lon),
+                lat = mean(lat),
+                shape_area = mean(shape_area), .groups = 'drop')
+    if(input$showmultizoneuse){
+      plotdata_df$zoning_type_text[grepl("; ", plotdata_df$zoning_type_text)] <- "Multi-Zone"
+      plotdata_df$use_type_text[grepl("; ", plotdata_df$use_type_text)] <- "MULTI-USE"
+    }
+    plotdata_df$land_value_per_sqft <- plotdata_df$land_value / plotdata_df$shape_area
+    plotdata_df$impr_value_per_sqft <- plotdata_df$impr_value / plotdata_df$shape_area
+    plotdata_df$total_value_per_sqft <- plotdata_df$total_value / plotdata_df$shape_area
+    plotdata_df$sqrt_land_value_per_sqft <- sqrt(plotdata_df$land_value_per_sqft)
+    plotdata_df$sqrt_impr_value_per_sqft <- sqrt(plotdata_df$impr_value_per_sqft)
+    plotdata_df$sqrt_total_value_per_sqft <- sqrt(plotdata_df$total_value_per_sqft)
+    plotdata_df$zonecolor <- '#6F4E37'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Unzoned"] <- '#FFFFFF'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Single-Family"] <- '#FFFF00'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Mixed-Use"] <- '#FF7F50'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Multi-Family"] <- '#FFA500'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Commercial"] <- '#FF0000'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Industrial"] <- '#800080'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Agricultural"] <- '#00FF00'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Special/Misc."] <- '#0000FF'
+    plotdata_df$totalvaluecolor <- '#000000'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 25 & plotdata_df$total_value_per_sqft >= 0] <- '#0B5345'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 50 & plotdata_df$total_value_per_sqft >= 25] <- '#0E6655'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 75 & plotdata_df$total_value_per_sqft >= 50] <- '#1E8449'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 100 & plotdata_df$total_value_per_sqft >= 75] <- '#229954'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 150 & plotdata_df$total_value_per_sqft >= 100] <- '#27AE60'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 200 & plotdata_df$total_value_per_sqft >= 150] <- '#9ACD32'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 250 & plotdata_df$total_value_per_sqft >= 200] <- '#E1E000'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 350 & plotdata_df$total_value_per_sqft >= 250] <- '#FEBA4F'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 500 & plotdata_df$total_value_per_sqft >= 350] <- '#FF7F50'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 750 & plotdata_df$total_value_per_sqft >= 500] <- '#FF4500'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 1000 & plotdata_df$total_value_per_sqft >= 750] <- '#D21404'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft < 2000 & plotdata_df$total_value_per_sqft >= 1000] <- '#C54BBC'
+    plotdata_df$totalvaluecolor[plotdata_df$total_value_per_sqft >= 2000] <- '#603FEF'
+    plotdata_df$landvaluecolor <- '#000000'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 10 & plotdata_df$land_value_per_sqft >= 0] <- '#0B5345'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 20 & plotdata_df$land_value_per_sqft >= 10] <- '#0E6655'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 35 & plotdata_df$land_value_per_sqft >= 20] <- '#1E8449'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 50 & plotdata_df$land_value_per_sqft >= 35] <- '#229954'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 75 & plotdata_df$land_value_per_sqft >= 50] <- '#27AE60'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 100 & plotdata_df$land_value_per_sqft >= 75] <- '#9ACD32'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 125 & plotdata_df$land_value_per_sqft >= 100] <- '#E1E000'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 150 & plotdata_df$land_value_per_sqft >= 125] <- '#FEBA4F'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 200 & plotdata_df$land_value_per_sqft >= 150] <- '#FF7F50'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 300 & plotdata_df$land_value_per_sqft >= 200] <- '#FF4500'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 400 & plotdata_df$land_value_per_sqft >= 300] <- '#D21404'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft < 500 & plotdata_df$land_value_per_sqft >= 400] <- '#C54BBC'
+    plotdata_df$landvaluecolor[plotdata_df$land_value_per_sqft >= 500] <- '#603FEF'
+    plotdata_df$imprvaluecolor <- '#000000'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 10 & plotdata_df$impr_value_per_sqft >= 0] <- '#008000'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 20 & plotdata_df$impr_value_per_sqft >= 10] <- '#0E6655'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 35 & plotdata_df$impr_value_per_sqft >= 20] <- '#1E8449'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 50 & plotdata_df$impr_value_per_sqft >= 35] <- '#229954'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 75 & plotdata_df$impr_value_per_sqft >= 50] <- '#27AE60'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 100 & plotdata_df$impr_value_per_sqft >= 75] <- '#9ACD32'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 150 & plotdata_df$impr_value_per_sqft >= 100] <- '#E1E000'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 200 & plotdata_df$impr_value_per_sqft >= 150] <- '#FEBA4F'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 300 & plotdata_df$impr_value_per_sqft >= 200] <- '#FF7F50'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 500 & plotdata_df$impr_value_per_sqft >= 300] <- '#FF4500'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 900 & plotdata_df$impr_value_per_sqft >= 500] <- '#D21404'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft < 1500 & plotdata_df$impr_value_per_sqft >= 900] <- '#C54BBC'
+    plotdata_df$imprvaluecolor[plotdata_df$impr_value_per_sqft >= 1500] <- '#603FEF'
     plotdata_df$city_total_area <- sum(plotdata_df$shape_area)
     plotdata_df_agg <- plotdata_df %>% group_by(zoning_type_text) %>% 
       summarize(Zone_Area = sum(as.numeric(shape_area)),
@@ -330,6 +398,15 @@ server <- function(input, output, session) {
         shinyalert("Insufficient Filters", "No community was selected in San Diego City, so the map will not include San Diego City parcels", type = "warning")
       }
       refilter()
+      output_data <- values$plot_df
+      # you can cut APNs this way because every APN is a 10 digit number and all APNs are separated by ", "
+      # therefore the number of chars for n APNs is n*10+(n-1)*2=n*12-2
+      output_data$APN_list[nchar(output_data$APN_list) > (12 * input$apnsshown - 2)] <- 
+        paste0(substr(output_data$APN_list[nchar(output_data$APN_list) > (12 * input$apnsshown - 2)],
+                      1, 12 * input$apnsshown), '...')
+      output_data$unique_address[nchar(output_data$unique_address) > input$maxaddresslength] <-
+        paste0(substr(output_data$unique_address[nchar(output_data$unique_address) > input$maxaddresslength],
+                  1, input$maxaddresslength), ' ...')
       layer_properties <- layerdata()
       legend_table <- legenddata()
       map_zoom <- 8.25
@@ -360,7 +437,7 @@ server <- function(input, output, session) {
                height="100%",
                bearing=0) %>%
           add_mapbox_basemap("mapbox://styles/mapbox/light-v11") %>%
-          add_column_layer(data=values$plot_df, properties=layer_properties)
+          add_column_layer(data=output_data, properties=layer_properties)
       })
       output$summarytable <- render_tableHTML({
         display_df <- values$agg_df[, 1:5]
@@ -404,7 +481,7 @@ server <- function(input, output, session) {
           legend_table %>%
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color',
-                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', 'black')),
+                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', '#6F4E37')),
                                    column = 'Color') %>%
             add_css_header(css = list('opacity', 0), headers = 1)
         }else if(input$colortype == 'Value/SQFT'){
@@ -422,9 +499,9 @@ server <- function(input, output, session) {
   })
   
   output$downloadData <- downloadHandler(
-    filename = "dashboardata.csv",
+    filename = "dashboarddata.csv",
     content = function(file) {
-      write.csv(values$plot_df[, 1:14], file, row.names = FALSE)
+      write.csv(values$plot_df[, 1:15], file, row.names = FALSE)
     }
   )
 }

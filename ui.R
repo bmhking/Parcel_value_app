@@ -8,12 +8,16 @@ library(shinyWidgets)
 library(shinyjs)
 library(shinyalert)
 
-# not needed for ui part
+## old gg_df reading code. Required joins but better for column organizing. Will drop comment in later updates
 # gg_df_value <- read_csv("data/parcel_value_sdcounty_value.csv")
-gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
-gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
-highlight_text_columns <- read_csv("data/highlight_text_columns.csv")
-city_list <- names(table(gg_df_location$SITUS_COMM))
+# gg_df_landuse <- read_csv("data/parcel_value_sdcounty_landuse.csv")
+# gg_df_location <- read_csv("data/parcel_value_sdcounty_location.csv")
+gg_df_1 <- read_csv("data/parcel_value_sdcounty_1.csv", show_col_types = FALSE)
+gg_df_2 <- read_csv("data/parcel_value_sdcounty_2.csv", show_col_types = FALSE)
+gg_df_3 <- read_csv("data/parcel_value_sdcounty_3.csv", show_col_types = FALSE)
+gg_df <- rbind(gg_df_1,gg_df_2,gg_df_3)
+highlight_text_columns <- read_csv("data/highlight_text_columns.csv", show_col_types = FALSE)
+city_list <- names(table(gg_df$SITUS_COMM))
 comm_list <- str_sub(city_list[str_sub(city_list, 1, 9) == 'SAN DIEGO'], 13, -1)
 city_list <- c('SAN DIEGO', sort(city_list[str_sub(city_list, 1, 9) != 'SAN DIEGO']))
 
@@ -72,7 +76,7 @@ ui <- fluidPage(
                                               ), 
                                               fluidRow(column(2, HTML('<b>Use</b>')),
                                                        column(10, pickerInput("use", NULL, 
-                                                                          choices = names(table(gg_df_landuse$use_type_text)), 
+                                                                          choices = names(table(gg_df$use_type_text)), 
                                                                           options = pickerOptions(actionsBox = TRUE, title = "Select parcel usages", liveSearch = TRUE),
                                                                           multiple = T))
                                               )
@@ -137,7 +141,7 @@ ui <- fluidPage(
                                                     ),
                                                     tabPanel("By Address",
                                                              fluidRow(column(12, textInput('address', 'Do not enter city, ZIP code; case insensitive.'))),
-                                                             fluidRow(HTML("<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter street names or addresses based on property tax roll, separated with a comma e.g. 202 C St, B St.</b>"))
+                                                             fluidRow(HTML('<b>&nbsp;&nbsp;&nbsp;&nbsp;Enter street names or addresses based on property tax roll, separated with ", " e.g. 202 C St, B St.</b>'))
                                                     )
                                         )
                                ),
@@ -146,8 +150,15 @@ ui <- fluidPage(
                                                     tabPanel("Column Options",
                                                              fluidRow(column(2, radioButtons("mapmode", "Height Scale",
                                                                                              c("Default" = "default", "Sqrt" = "sqrt", "Flat" = "twod"))),
-                                                                      column(2, numericInput("columnwidth", "Width", 10, min=0)), 
-                                                                      column(3, numericInput("heightmultiplier", "Height Multiplier", NA, min=0))
+                                                                      column(3,
+                                                                        fluidRow(column(5, HTML('<b>Width</b>')),
+                                                                                 column(7, numericInput("columnwidth", NULL, 10, min=0))
+                                                                        ), 
+                                                                        fluidRow(column(5, HTML('<b>Height Multiplier</b>')),
+                                                                                 column(7, numericInput("heightmultiplier", NULL, NA, min=0))
+                                                                        )
+                                                                      ),
+                                                                      column(3, checkboxInput('showmultizoneuse', HTML("<b>Condense Multi-Zones and Uses</b>"), value=TRUE))
                                                              )
                                                     ),
                                                     tabPanel("Non-Taxed Parcels",
@@ -156,13 +167,19 @@ ui <- fluidPage(
                                                              )
                                                     ),
                                                     tabPanel("Highlighted Text",
-                                                             fluidRow(column(8, pickerInput("parcelhighlighttext", 
+                                                             fluidRow(column(6, pickerInput("parcelhighlighttext", 
                                                                                             "Select text to show on a highlighted parcel", 
                                                                                             choices = highlight_text_columns$text_option, 
                                                                                             selected = highlight_text_columns$text_option,
                                                                                             options = list(`actions-box` = TRUE), multiple = T, width = '95%')),
-                                                                      column(4, conditionalPanel("input.parcelhighlighttext.indexOf('Address') >= 0",
-                                                                                                 numericInput("maxaddresslength", "Characters shown for Address", value = 100, min = 0)))
+                                                                      column(5, conditionalPanel("input.parcelhighlighttext.indexOf('Address') >= 0",
+                                                                                                 fluidRow(column(5, HTML('<b>APNs Shown</b>')),
+                                                                                                          column(4, numericInput("apnsshown", NULL, value = 10, min = 0))), 
+                                                                                                 fluidRow(column(5, HTML('<b>Address Characters</b>')),
+                                                                                                          column(4, numericInput("maxaddresslength", NULL, value = 100, min=0)))
+                                                                                                 # numericInput("maxaddresslength", "Characters shown for Address", value = 100, min = 0)))
+                                                                            )
+                                                                      )
                                                              )
                                                     )
                                         )
@@ -170,7 +187,7 @@ ui <- fluidPage(
                          ),
                   fluidRow(column(2, tags$div(style="display:inline-block",title="If San Diego city is selected it will take a while to load",
                                               actionButton('filter', HTML("<b>Show Map</b>"), value=0, style='font-size:90%'))),
-                           column(2, actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%'))
+                           column(4, actionButton('selectall', HTML("<b>Select All Zones and Uses</b>"), value=0, style='font-size:90%'))
                   ),
                   fluidRow(column(12, br(), actionButton(inputId = "entrancewarning", label = h2("Fill out everything in Required Filters first!"), 
                                                          style="color: #fff; background-color: #FF474C; border-color: #2e6da4", disabled = TRUE)),
