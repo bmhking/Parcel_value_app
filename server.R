@@ -28,7 +28,7 @@ highlight_text_columns <- read_csv("data/highlight_text_columns.csv", show_col_t
 all_uses <- names(table(gg_df$use_type_text))
 
 zones_list <- c("Unzoned", "Single-Family", 'Mixed-Use', 'Multi-Family', 
-                'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.', 'Multi-Zone')
+                'Commercial', 'Industrial', 'Agricultural', 'Special/Misc.')
 output_colnames <- c('Zone Type', 'Total Area (SQFT)', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
 output_colnames2 <- c('Usage', '# of Parcels', 'Total Area (SQFT)', 'Mean Lot Area', 'Land Value/SQFT', 'Impr Value/SQFT', 'Total Value/SQFT')
 output_colnames3 <- c('Zone Type', '# of Parcels', 'Mean Lot Area', 'Median Lot Area')
@@ -173,7 +173,7 @@ server <- function(input, output, session) {
     plotdata_df$sqrt_impr_value_per_sqft <- sqrt(plotdata_df$impr_value_per_sqft)
     plotdata_df$sqrt_total_value_per_sqft <- sqrt(plotdata_df$total_value_per_sqft)
     plotdata_df$zonecolor <- '#6F4E37'
-    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Unzoned"] <- '#FFFFFF'
+    plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Unzoned"] <- '#C0C0C0'
     plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Single-Family"] <- '#FFFF00'
     plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Mixed-Use"] <- '#FF7F50'
     plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Multi-Family"] <- '#FFA500'
@@ -330,10 +330,10 @@ server <- function(input, output, session) {
   
   legenddata <- reactive({
     if(input$colortype == 'Zone Type'){
-      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 8))
+      legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 9))
       legend_for_plot[, 1] <- ''
       colnames(legend_for_plot) <- c('Color', 'Legend')
-      legend_for_plot$Legend <- c(' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.', 'Multi-Zone')
+      legend_for_plot$Legend <- c(' Unzoned',' Single-Family', ' Mixed-Use', ' Multi-Family', ' Commercial', ' Industrial', ' Agricultural', ' Special/Misc.', 'Multi-Zone')
     }else if(input$colortype == 'Value/SQFT'){
       legend_for_plot <- data.frame(matrix(ncol = 2, nrow = 13))
       legend_for_plot[, 1] <- ''
@@ -366,8 +366,7 @@ server <- function(input, output, session) {
                                                     'Commercial',
                                                     'Industrial',
                                                     'Agricultural',
-                                                    'Special/Misc.',
-                                                    'Multi-Zone'))
+                                                    'Special/Misc.'))
     updatePickerInput(session, "use", selected = all_uses)
   })
   
@@ -481,7 +480,7 @@ server <- function(input, output, session) {
           legend_table %>%
             tableHTML(rownames = FALSE, border = 0, collapse = 'separate_shiny', spacing = '5px 1px') %>%
             add_css_rows_in_column(css = list('background-color',
-                                              c('yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', '#6F4E37')),
+                                              c('#C0C0C0', 'yellow', 'coral', 'orange', 'red', 'purple', 'green', 'blue', '#6F4E37')),
                                    column = 'Color') %>%
             add_css_header(css = list('opacity', 0), headers = 1)
         }else if(input$colortype == 'Value/SQFT'){

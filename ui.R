@@ -70,8 +70,7 @@ ui <- fluidPage(
                                                                                           'Commercial',
                                                                                           'Industrial',
                                                                                           'Agricultural',
-                                                                                          'Special/Misc.',
-                                                                                          'Multi-Zone'), 
+                                                                                          'Special/Misc.'), 
                                                                               options = list(`actions-box` = TRUE, title = "Select zoning types"), multiple = T))
                                               ), 
                                               fluidRow(column(2, HTML('<b>Use</b>')),
