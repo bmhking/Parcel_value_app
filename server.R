@@ -110,9 +110,6 @@ server <- function(input, output, session) {
         plotdata_df <- plotdata_df %>% filter(!(APN %in% APN_selected))
       }
     }
-    if(!is.null(input$lotsizerange)){
-      plotdata_df <- filter_by_numeric_range(input$lotsizerange, plotdata_df, 'shape_area')
-    }
     if(!is.na(input$lat) & !is.na(input$lon)){
       if(is.na(input$rad)){
         filter_radius <- 0.00001
@@ -121,15 +118,6 @@ server <- function(input, output, session) {
       }
       plotdata_df <- plotdata_df %>% filter(lat >= input$lat - filter_radius & lat <= input$lat + filter_radius & lon >= input$lon - filter_radius & lon <= input$lon + filter_radius)
     }
-    if(!is.null(input$landvaluerange)){
-      plotdata_df <- filter_by_numeric_range_valuemetric(input$landvaluerange, plotdata_df, 'land_value', input$parcelorsqft)
-    }
-    if(!is.null(input$imprvaluerange)){
-      plotdata_df <- filter_by_numeric_range_valuemetric(input$imprvaluerange, plotdata_df, 'impr_value', input$parcelorsqft)
-    }
-    if(!is.null(input$totalvaluerange)){
-      plotdata_df <- filter_by_numeric_range_valuemetric(input$totalvaluerange, plotdata_df, 'total_value', input$parcelorsqft)
-    }    
     if(!is.null(input$address)){
       address_list <- toupper(unlist(strsplit(input$address, ", ")))
       address_list[!grepl('[0-9]', substr(address_list, 1, 1))] <- paste0(' ', address_list[!grepl('[0-9]', substr(address_list, 1, 1))])
@@ -166,12 +154,24 @@ server <- function(input, output, session) {
       plotdata_df$zoning_type_text[grepl("; ", plotdata_df$zoning_type_text)] <- "Multi-Zone"
       plotdata_df$use_type_text[grepl("; ", plotdata_df$use_type_text)] <- "MULTI-USE"
     }
+    if(!is.null(input$lotsizerange)){
+      plotdata_df <- filter_by_numeric_range(input$lotsizerange, plotdata_df, 'shape_area')
+    }
     plotdata_df$land_value_per_sqft <- plotdata_df$land_value / plotdata_df$shape_area
     plotdata_df$impr_value_per_sqft <- plotdata_df$impr_value / plotdata_df$shape_area
     plotdata_df$total_value_per_sqft <- plotdata_df$total_value / plotdata_df$shape_area
     plotdata_df$sqrt_land_value_per_sqft <- sqrt(plotdata_df$land_value_per_sqft)
     plotdata_df$sqrt_impr_value_per_sqft <- sqrt(plotdata_df$impr_value_per_sqft)
     plotdata_df$sqrt_total_value_per_sqft <- sqrt(plotdata_df$total_value_per_sqft)
+    if(!is.null(input$landvaluerange)){
+      plotdata_df <- filter_by_numeric_range_valuemetric(input$landvaluerange, plotdata_df, 'land_value', input$parcelorsqft)
+    }
+    if(!is.null(input$imprvaluerange)){
+      plotdata_df <- filter_by_numeric_range_valuemetric(input$imprvaluerange, plotdata_df, 'impr_value', input$parcelorsqft)
+    }
+    if(!is.null(input$totalvaluerange)){
+      plotdata_df <- filter_by_numeric_range_valuemetric(input$totalvaluerange, plotdata_df, 'total_value', input$parcelorsqft)
+    }    
     plotdata_df$zonecolor <- '#6F4E37'
     plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Unzoned"] <- '#C0C0C0'
     plotdata_df$zonecolor[plotdata_df$zoning_type_text == "Single-Family"] <- '#FFFF00'
